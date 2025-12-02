@@ -2,7 +2,7 @@ import psycopg2
 import pymongo
 from datetime import datetime
 import uuid
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from config import *
 
 class ZooBackend:
@@ -533,7 +533,7 @@ class ZooBackend:
         - 於同一交易內鎖定飼料、檢查庫存、寫入餵食紀錄與庫存扣減
         """
         try:
-            normalized_amount = Decimal(str(amount))
+            normalized_amount = Decimal(str(amount)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP)
         except Exception:
             return False, "餵食數量格式錯誤"
 
@@ -554,6 +554,10 @@ class ZooBackend:
             # 1. Check and Lock Inventory
             # This ensures only one transaction can modify inventory for this feed at a time
             cur.execute(f"SELECT {COL_FEED_ID} FROM {TABLE_FEEDS} WHERE {COL_FEED_ID} = %s FOR UPDATE", (f_id,))
+            feed_row = cur.fetchone()
+            if not feed_row:
+                self.pg_conn.rollback()
+                return False, "指定飼料不存在"
 
             # [CRITICAL FIX] Lock Tables for Safe ID Generation
             # SHARE ROW EXCLUSIVE mode protects against concurrent data changes and serializes table modifications
