@@ -8,7 +8,7 @@ venv/
 .DS_Store
 
 # Large/Old Data
-zoo.backup
+# zoo.backup (Included for submission)
 zoo_readable.sql
 *.pdf
 
