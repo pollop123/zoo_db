@@ -137,6 +137,5 @@ pg_restore --clean --if-exists -U postgres -d zoo_db -F c zoo_final.backup
 *   `action/`: **[模組化邏輯]** 包含各項業務功能的實作 (如 `feeding.py`, `inventory.py`)，採用 Command Pattern 設計。
 *   `role/`: **[角色定義]** 定義不同角色的權限與選單介面 (如 `employee.py`)。
 *   `test/`: 包含自動化測試套件的目錄 (`test_agent.py` 等)。
-*   `scripts/`: 包含設定與工具腳本的目錄 (`setup_shifts.py`, `setup_skills.py`)。
 *   `CHANGELOG.md`: 系統變更與更新的詳細紀錄。
 *   `zoo_final.backup`: 資料庫備份檔。
