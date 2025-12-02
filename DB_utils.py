@@ -80,13 +80,6 @@ class ZooBackend:
                 self.pg_conn.rollback()
             return False, None, None
 
-    def add_feeding(self, a_id, f_id, amount, user_id):
-        """
-        B. 核心交易 (Transactions) - 飼養員功能
-        轉呼叫 add_feeding_record，沿用完整的權限與庫存檢查，並保持舊 API 相容。
-        """
-        return self.add_feeding_record(a_id, f_id, amount, user_id)
-
     def add_animal_state(self, a_id, weight, user_id):
         """
         [NEW] 新增動物身體資訊 (User)
