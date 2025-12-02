@@ -83,56 +83,9 @@ class ZooBackend:
     def add_feeding(self, a_id, f_id, amount, user_id):
         """
         B. 核心交易 (Transactions) - 飼養員功能
-        1. INSERT 餵食紀錄。
-        2. INSERT 庫存扣減 (負值)。
-        3. 失敗則 Rollback。
+        轉呼叫 add_feeding_record，沿用完整的權限與庫存檢查，並保持舊 API 相容。
         """
-        if not self.pg_conn:
-            return False, "Database not connected"
-            return False, "資料庫未連線"
-
-        try:
-            cur = self.pg_conn.cursor()
-            
-            # Start Transaction implicitly (psycopg2 handles this)
-            
-            # 1. INSERT 餵食紀錄
-            # SQL: feeding_id(PK), a_id, f_id, feed_date, feeding_amount_kg, fed_by
-            # Note: feeding_id is manually generated in SQL file? Or serial?
-            # The SQL file uses explicit IDs. We should probably use a sequence or max+1.
-            # But usually PKs are SERIAL. Let's check SQL... BIGINT PRIMARY KEY. No SERIAL.
-            # We need to generate ID.
-            
-            # Get Max ID (String -> Int -> +1 -> String)
-            cur.execute(f"SELECT COALESCE(MAX(CAST({COL_FEEDING_ID} AS INTEGER)), 0) + 1 FROM {TABLE_FEEDING}")
-            new_fid = str(cur.fetchone()[0])
-
-            insert_feeding_query = f"""
-                INSERT INTO {TABLE_FEEDING} ({COL_FEEDING_ID}, a_id, f_id, {COL_AMOUNT}, fed_by, feed_date)
-                VALUES (%s, %s, %s, %s, %s, NOW())
-            """
-            cur.execute(insert_feeding_query, (new_fid, a_id, f_id, amount, user_id))
-
-            # 2. INSERT 庫存扣減 (負值)
-            # SQL: stock_entry_id(PK), f_id, location_id, datetime, quantity_delta_kg, reason, feeding_id
-            # Need Max ID for inventory too
-            cur.execute(f"SELECT COALESCE(MAX(CAST({COL_STOCK_ID} AS INTEGER)), 0) + 1 FROM {TABLE_INVENTORY}")
-            new_inv_id = str(cur.fetchone()[0])
-
-            insert_inventory_query = f"""
-                INSERT INTO {TABLE_INVENTORY} ({COL_STOCK_ID}, f_id, {COL_QUANTITY_DELTA}, reason, feeding_id, datetime)
-                VALUES (%s, %s, %s, 'feeding', %s, NOW())
-            """
-            # Deduct amount (negative value)
-            cur.execute(insert_inventory_query, (new_inv_id, f_id, -float(amount), new_fid))
-
-            # Commit Transaction
-            self.pg_conn.commit()
-            return True, "餵食紀錄新增成功，庫存已扣除。"
-
-        except Exception as e:
-            self.pg_conn.rollback()
-            return False, f"新增失敗: {e}"
+        return self.add_feeding_record(a_id, f_id, amount, user_id)
 
     def add_animal_state(self, a_id, weight, user_id):
         """
@@ -575,7 +528,18 @@ class ZooBackend:
     def add_feeding_record(self, a_id, f_id, amount, user_id):
         """
         [NEW] 新增餵食紀錄 (Transaction)
+        - 確認使用者當前班表與技能
+        - 驗證庫存並以 Decimal 避免浮點誤差
+        - 於同一交易內寫入餵食紀錄與庫存扣減
         """
+        try:
+            normalized_amount = Decimal(str(amount))
+        except Exception:
+            return False, "餵食數量格式錯誤"
+
+        if normalized_amount <= 0:
+            return False, "餵食數量需為正值"
+
         # 0. Check Permission
         allowed, msg = self.check_shift_permission(user_id, a_id)
         if not allowed:
@@ -586,19 +550,20 @@ class ZooBackend:
 
         try:
             cur = self.pg_conn.cursor()
-            
+
             # 1. Check and Lock Inventory
             # This ensures only one transaction can modify inventory for this feed at a time
             cur.execute(f"SELECT {COL_FEED_ID} FROM {TABLE_FEEDS} WHERE {COL_FEED_ID} = %s FOR UPDATE", (f_id,))
-            
+
             # [CRITICAL FIX] Lock Tables for Safe ID Generation
             # SHARE ROW EXCLUSIVE mode protects against concurrent data changes and serializes table modifications
             cur.execute(f"LOCK TABLE {TABLE_FEEDING}, {TABLE_INVENTORY} IN SHARE ROW EXCLUSIVE MODE")
 
             cur.execute(f"SELECT SUM(quantity_delta_kg) FROM {TABLE_INVENTORY} WHERE f_id = %s", (f_id,))
-            current_stock = cur.fetchone()[0] or 0
-            
-            if current_stock < amount:
+            current_stock = cur.fetchone()[0]
+            current_stock = Decimal(current_stock) if current_stock is not None else Decimal("0")
+
+            if current_stock < normalized_amount:
                 self.pg_conn.rollback()
                 return False, f"庫存不足! 目前僅剩 {current_stock} kg"
 
@@ -611,7 +576,7 @@ class ZooBackend:
                 INSERT INTO {TABLE_FEEDING} ({COL_FEEDING_ID}, a_id, f_id, {COL_AMOUNT}, feed_date, fed_by)
                 VALUES (%s, %s, %s, %s, NOW(), %s)
             """
-            cur.execute(insert_feeding_query, (new_fid, a_id, f_id, amount, user_id))
+            cur.execute(insert_feeding_query, (new_fid, a_id, f_id, normalized_amount, user_id))
 
             # 3. Update Inventory (deduct amount)
             # Generate ID
@@ -622,7 +587,7 @@ class ZooBackend:
                 INSERT INTO {TABLE_INVENTORY} ({COL_STOCK_ID}, f_id, quantity_delta_kg, datetime, reason, feeding_id)
                 VALUES (%s, %s, %s, NOW(), 'feeding', %s)
             """
-            cur.execute(insert_inventory_query, (new_sid, f_id, -amount, new_fid))
+            cur.execute(insert_inventory_query, (new_sid, f_id, -normalized_amount, new_fid))
 
             # 4. Commit Transaction
             self.pg_conn.commit()
