@@ -80,8 +80,7 @@ class ZooBackend:
                 self.pg_conn.rollback()
             return False, None, None
 
-    def add_feeding(self, a_id, f_id, amount, user_id):
-        return self.add_feeding_record(a_id, f_id, amount, user_id)
+
 
     def add_animal_state(self, a_id, weight, user_id):
         """

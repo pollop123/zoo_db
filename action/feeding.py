@@ -7,5 +7,5 @@ class AddFeedingAction(Action):
         amount = kwargs.get('amount')
         user_id = kwargs.get('user_id')
         
-        success, msg = db_utils.add_feeding(a_id, f_id, amount, user_id)
+        success, msg = db_utils.add_feeding_record(a_id, f_id, amount, user_id)
         return {"success": success, "message": msg}
