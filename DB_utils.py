@@ -529,8 +529,8 @@ class ZooBackend:
         """
         [NEW] 新增餵食紀錄 (Transaction)
         - 確認使用者當前班表與技能
-        - 驗證庫存並以 Decimal 避免浮點誤差
-        - 於同一交易內寫入餵食紀錄與庫存扣減
+        - 以 Decimal 正規化餵食數量，避免浮點誤差並拒絕零/負值
+        - 於同一交易內鎖定飼料、檢查庫存、寫入餵食紀錄與庫存扣減
         """
         try:
             normalized_amount = Decimal(str(amount))
