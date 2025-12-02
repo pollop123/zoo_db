@@ -28,6 +28,19 @@
 *   **修復負庫存問題**: 為所有飼料注入了初始的「進貨 (Purchase)」紀錄 (5000kg)，解決因缺乏歷史資料導致的負庫存顯示。
 *   **修復管理員登入**: 將員工 `E001` (Admin) 的狀態從 'inactive' 更新為 'active'，以允許登入系統。
 
+### [Final] - 2025-12-02
+- **Data Refinement**:
+    - Reclassified animal skill requirements (Lion/Tiger=Carnivore, Koala/Panda=General).
+    - Reset employee skills for demo (E005 has no skills).
+    - Generated specific shift schedules for E003, E004, E005 (One animal per person).
+- **Documentation**:
+    - Added "Demo Guide" to README.md.
+    - Added "Hybrid Database Architecture" explanation.
+- **Cleanup**:
+    - Archived old scripts and backups.
+    - Removed `scripts/` from production deployment.
+
+### [T006] - 2025-12-01
 ### 展示用資料 (Demo Data)
 *   **資料整併與重編號**:
     *   將所有 `T004` (體重測量) 的班表合併至日常照護。
