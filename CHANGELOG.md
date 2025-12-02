@@ -29,16 +29,16 @@
 *   **修復管理員登入**: 將員工 `E001` (Admin) 的狀態從 'inactive' 更新為 'active'，以允許登入系統。
 
 ### [Final] - 2025-12-02
-- **Data Refinement**:
-    - Reclassified animal skill requirements (Lion/Tiger=Carnivore, Koala/Panda=General).
-    - Reset employee skills for demo (E005 has no skills).
-    - Generated specific shift schedules for E003, E004, E005 (One animal per person).
-- **Documentation**:
-    - Added "Demo Guide" to README.md.
-    - Added "Hybrid Database Architecture" explanation.
-- **Cleanup**:
-    - Archived old scripts and backups.
-    - Removed `scripts/` from production deployment.
+- **資料優化 (Data Refinement)**:
+    - 重新分類動物證照需求 (獅子/老虎=肉食證照，無尾熊/熊貓=無門檻)。
+    - 重置展示用員工技能 (E005 無任何證照)。
+    - 生成 E003, E004, E005 的專屬班表 (一人負責一隻動物)。
+- **文件更新 (Documentation)**:
+    - 於 README.md 新增「展示指南 (Demo Guide)」。
+    - 新增「混合式資料庫架構」說明。
+- **專案清理 (Cleanup)**:
+    - 歸檔舊的腳本與備份檔。
+    - 從正式部署中移除 `scripts/` 目錄。
 
 ### [T006] - 2025-12-01
 ### 展示用資料 (Demo Data)
