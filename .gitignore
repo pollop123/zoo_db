@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# System
+.DS_Store
+
+# Large/Old Data
+zoo.backup
+zoo_readable.sql
+*.pdf
+
+# Logs
+*.log
