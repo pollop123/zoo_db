@@ -13,4 +13,8 @@ zoo_readable.sql
 *.pdf
 
 # Logs
+# Logs
 *.log
+
+# Archive
+_archive/
