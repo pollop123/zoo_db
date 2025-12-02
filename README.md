@@ -80,7 +80,7 @@
 2.  **還原資料**:
     將提供的備份檔還原至剛建立的資料庫：
     ```bash
-    pg_restore -U postgres -d zoo_db -F c zoo_final.backup
+    pg_restore -U postgres -d zoo_db -F c zoo.backup
     ```
 
 3.  **MongoDB 設定**:
@@ -126,7 +126,7 @@ python test/test_agent.py
 ```
 **注意**: 測試程式會對資料庫進行真實的寫入操作 (如扣除庫存、新增班表)。若您希望在測試後將資料庫恢復至初始狀態，請執行以下指令：
 ```bash
-pg_restore --clean --if-exists -U postgres -d zoo_db -F c zoo_final.backup
+pg_restore --clean --if-exists -U postgres -d zoo_db -F c zoo.backup
 ```
 
 ## 檔案結構 (File Structure)
@@ -138,4 +138,4 @@ pg_restore --clean --if-exists -U postgres -d zoo_db -F c zoo_final.backup
 *   `role/`: **[角色定義]** 定義不同角色的權限與選單介面 (如 `employee.py`)。
 *   `test/`: 包含自動化測試套件的目錄 (`test_agent.py` 等)。
 *   `CHANGELOG.md`: 系統變更與更新的詳細紀錄。
-*   `zoo_final.backup`: 資料庫備份檔。
+*   `zoo.backup`: 資料庫備份檔。
