@@ -67,6 +67,8 @@
 *   Python 3.8 或更高版本
 *   PostgreSQL 17
 *   MongoDB Community Edition
+    *   **MacOS 安裝**: `brew tap mongodb/brew && brew install mongodb-community@7.0`
+    *   **啟動服務**: `brew services start mongodb/brew/mongodb-community`
 
 ### 2. 資料庫初始化 (Database Initialization)
 請依照以下步驟設定您的本地資料庫：
