@@ -93,7 +93,7 @@ class ZooBackend:
 
 
 
-    def add_animal_state(self, a_id, weight, user_id):
+    def add_animal_state(self, a_id, weight, user_id, state_id=1):
         """
         [NEW] 新增動物身體資訊 (User)
         1. INSERT animal_state_record
@@ -115,9 +115,9 @@ class ZooBackend:
 
             query = f"""
                 INSERT INTO {TABLE_ANIMAL_STATE} (record_id, {COL_ANIMAL_ID}, datetime, {COL_WEIGHT}, state_id, recorded_by)
-                VALUES (%s, %s, NOW(), %s, 1, %s)
+                VALUES (%s, %s, NOW(), %s, %s, %s)
             """
-            cur.execute(query, (new_id, a_id, weight, user_id))
+            cur.execute(query, (new_id, a_id, weight, state_id, user_id))
             self.pg_conn.commit()
             return True, "身體資訊已更新。"
         except Exception as e:
@@ -721,6 +721,8 @@ class ZooBackend:
                 query = f"SELECT t_id, t_name FROM task ORDER BY t_id"
             elif table_name == "employee":
                 query = f"SELECT e_id, e_name, role FROM employee ORDER BY e_id"
+            elif table_name == "status_type":
+                query = f"SELECT s_id, s_name, description FROM status_type ORDER BY s_id"
             else:
                 return []
 

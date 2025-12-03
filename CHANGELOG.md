@@ -38,6 +38,7 @@
     -   重構 API：移除舊版 `add_feeding` 方法，全面改用 `add_feeding_record`，消除冗餘代碼。
     -   優化登入回饋：區分「查無帳號」與「帳號狀態異常 (Inactive/Leave)」，提供更明確的錯誤訊息。
     -   新增 API：`add_employee_skill`，允許透過 API 為員工新增專業證照。
+    -   功能增強：`add_animal_state` 支援選擇動物狀態 (`status_type`)，如食慾異常、行動異常等，強化健康追蹤。
 -   **文件更新 (Documentation)**:
     -   於 README.md 新增「展示指南 (Demo Guide)」。
     -   新增「混合式資料庫架構」說明。

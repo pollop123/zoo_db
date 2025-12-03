@@ -230,8 +230,31 @@ def add_body_info_ui(user_id):
             break
         console.print("[red]體重必須大於 0[/red]")
         
+    # [NEW] Select Status
+    state_id = 1 # Default Normal
+    resp_status = client.send_request("get_reference_data", {"table_name": "status_type"})
+    if resp_status.get("success"):
+        statuses = resp_status.get("data", [])
+        if statuses:
+            console.print("\n[bold]請選擇動物狀態:[/bold]")
+            for s in statuses:
+                console.print(f"{s[0]}. {s[1]} ({s[2]})")
+            
+            while True:
+                try:
+                    state_input = IntPrompt.ask("請輸入狀態 ID", default=1)
+                    # Validate input
+                    valid_ids = [s[0] for s in statuses]
+                    if state_input in valid_ids:
+                        state_id = state_input
+                        break
+                    else:
+                        console.print("[red]無效的 ID，請重新輸入[/red]")
+                except:
+                    console.print("[red]請輸入數字[/red]")
+
     response = client.send_request("add_animal_state", {
-        "a_id": a_id, "weight": weight, "user_id": user_id
+        "a_id": a_id, "weight": weight, "user_id": user_id, "state_id": state_id
     })
     
     if response.get("success"):
