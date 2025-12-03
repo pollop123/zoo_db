@@ -200,7 +200,7 @@ class ZooBackend:
                 
                 if req_skill != 'General':
                     cur.execute(f"""
-                        SELECT skill_id FROM employee_skills 
+                        SELECT skill_id FROM {TABLE_EMPLOYEE_SKILLS} 
                         WHERE e_id = %s AND skill_name = %s
                     """, (e_id, req_skill))
                     if not cur.fetchone():
@@ -506,7 +506,7 @@ class ZooBackend:
             
             if req_skill != 'General':
                 cur.execute(f"""
-                    SELECT skill_id FROM employee_skills 
+                    SELECT skill_id FROM {TABLE_EMPLOYEE_SKILLS} 
                     WHERE e_id = %s AND skill_name = %s
                 """, (e_id, req_skill))
                 if not cur.fetchone():
@@ -714,13 +714,13 @@ class ZooBackend:
             
             if table_name == "animal":
                 # Animal table has no name, use species twice or species + sex
-                query = f"SELECT a_id, species, sex FROM animal ORDER BY a_id"
+                query = f"SELECT a_id, species, sex FROM {TABLE_ANIMAL} ORDER BY a_id"
             elif table_name == "feeds":
-                query = f"SELECT f_id, feed_name, category FROM feeds ORDER BY f_id"
+                query = f"SELECT f_id, feed_name, category FROM {TABLE_FEEDS} ORDER BY f_id"
             elif table_name == "task":
-                query = f"SELECT t_id, t_name FROM task ORDER BY t_id"
+                query = f"SELECT t_id, t_name FROM {TABLE_TASK} ORDER BY t_id"
             elif table_name == "employee":
-                query = f"SELECT e_id, e_name, role FROM employee ORDER BY e_id"
+                query = f"SELECT e_id, e_name, role FROM {TABLE_EMPLOYEES} ORDER BY e_id"
             elif table_name == "status_type":
                 query = f"SELECT s_id, s_name, description FROM {TABLE_STATUS_TYPE} ORDER BY s_id"
             else:
