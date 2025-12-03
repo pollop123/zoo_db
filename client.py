@@ -148,15 +148,15 @@ def manage_skills_ui():
     
     console.print("\n[bold]可用證照列表:[/bold]")
     console.print("1. Carnivore (食肉動物)")
-    console.print("2. Herbivore (食草動物)")
-    console.print("3. Marine (海洋生物)")
+    console.print("2. Marine (海洋生物)")
+    console.print("3. Veterinarian (獸醫專業)")
     
     choice = Prompt.ask("請選擇證照代號", choices=["1", "2", "3"])
     
     skill_map = {
         "1": "Carnivore",
-        "2": "Herbivore",
-        "3": "Marine"
+        "2": "Marine",
+        "3": "Veterinarian"
     }
     skill_name = skill_map[choice]
     
