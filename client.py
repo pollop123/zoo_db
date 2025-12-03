@@ -147,16 +147,16 @@ def manage_skills_ui():
     target_e_id = Prompt.ask("請輸入員工 ID")
     
     console.print("\n[bold]可用證照列表:[/bold]")
-    console.print("1. Carnivore (食肉動物)")
-    console.print("2. Marine (海洋生物)")
-    console.print("3. Veterinarian (獸醫專業)")
+    console.print("1. Carnivore (猛獸專家)")
+    console.print("2. Penguin (企鵝專家)")
+    console.print("3. Endangered (珍稀動物專家)")
     
     choice = Prompt.ask("請選擇證照代號", choices=["1", "2", "3"])
     
     skill_map = {
         "1": "Carnivore",
-        "2": "Marine",
-        "3": "Veterinarian"
+        "2": "Penguin",
+        "3": "Endangered"
     }
     skill_name = skill_map[choice]
     
