@@ -20,6 +20,8 @@ TABLE_TASK = "task"                     # 工作項目表
 TABLE_EMPLOYEE_SHIFT = "employee_shift" # 員工班表
 TABLE_FEEDS = "feeds"                   # 飼料表
 TABLE_ANIMAL = "animal"                 # 動物表
+TABLE_STATUS_TYPE = "status_type"       # 狀態代碼表
+TABLE_EMPLOYEE_SKILLS = "employee_skills" # 員工證照表
 
 # Column Names (SQL)
 COL_FEEDING_ID = "feeding_id"

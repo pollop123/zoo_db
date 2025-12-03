@@ -524,7 +524,7 @@ class ZooBackend:
             return False, "資料庫未連線"
         try:
             cur = self.pg_conn.cursor()
-            cur.execute("INSERT INTO employee_skills (e_id, skill_name) VALUES (%s, %s)", (target_e_id, skill_name))
+            cur.execute(f"INSERT INTO {TABLE_EMPLOYEE_SKILLS} (e_id, skill_name) VALUES (%s, %s)", (target_e_id, skill_name))
             self.pg_conn.commit()
             return True, f"已授予 {target_e_id} '{skill_name}' 證照。"
         except Exception as e:
@@ -722,7 +722,7 @@ class ZooBackend:
             elif table_name == "employee":
                 query = f"SELECT e_id, e_name, role FROM employee ORDER BY e_id"
             elif table_name == "status_type":
-                query = f"SELECT s_id, s_name, description FROM status_type ORDER BY s_id"
+                query = f"SELECT s_id, s_name, description FROM {TABLE_STATUS_TYPE} ORDER BY s_id"
             else:
                 return []
 
