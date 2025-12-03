@@ -1,7 +1,6 @@
 import psycopg2
 import pymongo
 from datetime import datetime
-
 from decimal import Decimal
 from config import *
 
