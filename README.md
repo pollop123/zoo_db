@@ -83,8 +83,13 @@
     pg_restore -U postgres -d zoo_db -F c zoo.backup
     ```
 
-3.  **MongoDB 設定**:
-    請確保 MongoDB 正在本地預設連接埠 (27017) 運行，且無需帳號密碼驗證 (預設設定)。
+3.  **MongoDB 設定 (MongoDB Setup)**:
+    請確保 MongoDB 正在本地預設連接埠 (27017) 運行。若需還原 NoSQL 資料 (稽核日誌等)，請執行：
+    ```bash
+    mongoimport --db zoo_nosql --collection login_logs --file mongo_login_logs.json --jsonArray
+    mongoimport --db zoo_nosql --collection audit_logs --file mongo_audit_logs.json --jsonArray
+    mongoimport --db zoo_nosql --collection health_alerts --file mongo_health_alerts.json --jsonArray
+    ```
 
 ### 3. 系統設定 (Configuration)
 本系統的資料庫連線設定位於 `config.py` 檔案中。請務必確認該檔案內的設定與您的本地環境一致：

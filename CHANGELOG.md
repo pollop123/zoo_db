@@ -39,6 +39,7 @@
 -   **文件更新 (Documentation)**:
     -   於 README.md 新增「展示指南 (Demo Guide)」。
     -   新增「混合式資料庫架構」說明。
+    -   新增 MongoDB 資料還原指南與備份檔 (`mongo_*.json`)。
 -   **專案清理 (Cleanup)**:
     -   歸檔舊的腳本與備份檔。
     -   從正式部署中移除 `scripts/` 目錄。
