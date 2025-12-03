@@ -12,6 +12,7 @@ class AssignTaskAction(Action):
         t_id = kwargs.get('t_id')
         start_time = kwargs.get('start_time')
         end_time = kwargs.get('end_time')
+        a_id = kwargs.get('a_id')
         
-        success, msg = db_utils.assign_task(e_id, t_id, start_time, end_time)
+        success, msg = db_utils.assign_task(e_id, t_id, start_time, end_time, a_id)
         return {"success": success, "message": msg}
