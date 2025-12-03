@@ -19,7 +19,7 @@
 ### 3. 庫存管理 (Inventory Management)
 *   **即時追蹤**: 精確追蹤飼料庫存水位。
 *   **併發控制 (Concurrency Control)**: 實作「列級鎖定 (Row-Level Locking)」與「表級鎖定 (Table Locking)」機制，防止多用戶同時操作時發生競態條件 (Race Conditions)。
-*   **自動化補貨**: 提供管理員專用的庫存補給工具。
+*   **庫存補給 (Inventory Restock)**: 提供管理員專用的庫存補給工具，自動處理庫存加總與紀錄。
 
 ### 4. 異常偵測與分析 (Anomaly Detection & Analytics)
 *   **體重監測**: 自動偵測顯著的體重波動 (閾值: 5%) 並標記潛在健康問題。
