@@ -3,12 +3,12 @@ from action.base import Action
 class LoginAction(Action):
     def execute(self, db_utils, **kwargs):
         e_id = kwargs.get('e_id')
-        success, name, role = db_utils.login(e_id)
+        success, name, role, msg = db_utils.login(e_id)
         return {
             "success": success,
             "name": name,
             "role": role,
-            "message": "Login successful" if success else "Login failed"
+            "message": msg
         }
 
 class LogoutAction(Action):

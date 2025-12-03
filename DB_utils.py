@@ -46,14 +46,26 @@ class ZooBackend:
 
         try:
             cur = self.pg_conn.cursor()
-            # 1. Check SQL
-            query = f"SELECT {COL_NAME}, {COL_ROLE} FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s AND {COL_STATUS} = 'active'"
+            # 1. Check SQL (Query without status filter first)
+            query = f"SELECT {COL_NAME}, {COL_ROLE}, {COL_STATUS} FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s"
             cur.execute(query, (e_id,))
             result = cur.fetchone()
 
             if result:
-                name, role = result
-                # 2. [NoSQL] Log login
+                name, role, status = result
+                
+                if status != 'active':
+                    # Log failed attempt (Inactive)
+                    log_entry = {
+                        "event_type": "LOGIN",
+                        "employee_id": e_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "status": f"FAILED ({status})"
+                    }
+                    self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
+                    return False, None, None, f"登入失敗: 帳號狀態異常 ({status})"
+
+                # 2. [NoSQL] Log login (Success)
                 log_entry = {
                     "event_type": "LOGIN",
                     "employee_id": e_id,
@@ -61,17 +73,17 @@ class ZooBackend:
                     "status": "SUCCESS"
                 }
                 self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
-                return True, name, role
+                return True, name, role, "登入成功"
             else:
-                # Log failed attempt
+                # Log failed attempt (User not found)
                 log_entry = {
                     "event_type": "LOGIN",
                     "employee_id": e_id,
                     "timestamp": datetime.now().isoformat(),
-                    "status": "FAILED"
+                    "status": "FAILED (Not Found)"
                 }
                 self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
-                return False, None, None
+                return False, None, None, "登入失敗: 查無此員工 ID"
 
         except Exception as e:
             print(f"Login error: {e}")
