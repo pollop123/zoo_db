@@ -750,7 +750,7 @@ class ZooBackend:
                 query = f"""
                     SELECT r.{COL_FEEDING_ID}, r.feed_date, f.feed_name, r.{COL_AMOUNT}
                     FROM {TABLE_FEEDING} r
-                    JOIN feeds f ON r.f_id = f.f_id
+                    JOIN {TABLE_FEEDS} f ON r.f_id = f.f_id
                     WHERE r.a_id = %s
                     ORDER BY r.feed_date DESC
                     LIMIT 10
