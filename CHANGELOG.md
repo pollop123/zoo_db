@@ -37,6 +37,7 @@
     -   優化 `add_feeding_record` 邏輯：引入 `Decimal` 進行精確數值運算，防止浮點誤差，並增加正值檢核。
     -   重構 API：移除舊版 `add_feeding` 方法，全面改用 `add_feeding_record`，消除冗餘代碼。
     -   優化登入回饋：區分「查無帳號」與「帳號狀態異常 (Inactive/Leave)」，提供更明確的錯誤訊息。
+    -   新增 API：`add_employee_skill`，允許透過 API 為員工新增專業證照。
 -   **文件更新 (Documentation)**:
     -   於 README.md 新增「展示指南 (Demo Guide)」。
     -   新增「混合式資料庫架構」說明。

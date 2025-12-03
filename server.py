@@ -17,6 +17,7 @@ from action.analysis import (
 )
 from action.reference import GetReferenceDataAction
 from action.body_info import AddAnimalStateAction
+from action.skill import AddEmployeeSkillAction
 
 # Configuration
 HOST = '127.0.0.1'
@@ -40,7 +41,8 @@ ACTION_MAP = {
     "get_audit_logs": GetAuditLogsAction,
     "get_careless_employees": GetCarelessEmployeesAction,
     "get_reference_data": GetReferenceDataAction,
-    "add_animal_state": AddAnimalStateAction
+    "add_animal_state": AddAnimalStateAction,
+    "add_employee_skill": AddEmployeeSkillAction
 }
 
 class ClientHandler(threading.Thread):
