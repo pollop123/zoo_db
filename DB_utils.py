@@ -649,7 +649,7 @@ class ZooBackend:
                     f.feed_name, 
                     SUM(i.quantity_delta_kg) as current_stock
                 FROM {TABLE_INVENTORY} i
-                JOIN feeds f ON i.f_id = f.f_id
+                JOIN {TABLE_FEEDS} f ON i.f_id = f.f_id
                 GROUP BY f.feed_name
                 ORDER BY current_stock ASC
             """
@@ -686,7 +686,7 @@ class ZooBackend:
             feeding_query = f"""
                 SELECT feed_date, f.feed_name, r.{COL_AMOUNT}
                 FROM {TABLE_FEEDING} r
-                JOIN feeds f ON r.f_id = f.f_id
+                JOIN {TABLE_FEEDS} f ON r.f_id = f.f_id
                 WHERE r.a_id = %s
                 ORDER BY feed_date DESC
                 LIMIT 5

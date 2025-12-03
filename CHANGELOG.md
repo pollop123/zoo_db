@@ -41,7 +41,7 @@
     -   功能增強：`add_animal_state` 支援選擇動物狀態 (`status_type`)，如食慾異常、行動異常等，強化健康追蹤。
     -   介面優化：簡化證照選擇列表，更新為 **Carnivore (猛獸)**、**Penguin (企鵝)**、**Endangered (珍稀動物)**。
     -   資料庫調整：大象暫時移除「珍稀動物」證照需求，回歸一般區。
-    -   程式重構：將 `status_type`、`employee_skills` 及所有資料表名稱全面移至 `config.py` 統一管理，消除 Magic Strings。
+    -   程式重構：將 `status_type`、`employee_skills` 及 `feeds` 等所有資料表名稱全面移至 `config.py` 統一管理，消除 Magic Strings。
 -   **文件更新 (Documentation)**:
     -   README.md 全面中文化並移除表情符號，提升專業感。
     -   於 README.md 新增「展示指南 (Demo Guide)」。
