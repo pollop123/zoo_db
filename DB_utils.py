@@ -176,7 +176,7 @@ class ZooBackend:
 
                 query = f"""
                     INSERT INTO {TABLE_INVENTORY} ({COL_STOCK_ID}, f_id, quantity_delta_kg, datetime, reason)
-                    VALUES (%s, %s, %s, NOW(), 'restock')
+                    VALUES (%s, %s, %s, NOW(), 'purchase')
                 """
                 cur.execute(query, (new_sid, f_id, amount))
                 conn.commit()
@@ -407,17 +407,17 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 # Get all live animals
-                cur.execute(f"SELECT a_id, a_name FROM animal WHERE life_status = 'In_Zoo'")
+                cur.execute(f"SELECT a_id, species FROM animal WHERE life_status = 'In_Zoo'")
                 animals = cur.fetchall()
             
             # Connection is returned here.
             # Now iterate and call check_weight_anomaly which gets its own connection.
-            for a_id, a_name in animals:
+            for a_id, species in animals:
                 is_anomaly, msg, pct = self.check_weight_anomaly(a_id)
                 if is_anomaly:
                     anomalies_found.append({
                         "id": a_id,
-                        "name": a_name,
+                        "name": species,
                         "msg": msg,
                         "pct": pct
                     })

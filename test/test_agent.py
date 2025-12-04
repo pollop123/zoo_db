@@ -22,8 +22,8 @@ class TestAgent:
     def test_user_01_add_feeding(self):
         print("\n[User 1/6] Add Feeding Record...")
         backend = self.get_backend()
-        # E003 -> A001 (Lion) with F001 (Beef)
-        success, msg = backend.add_feeding_record("A001", "F001", 5.0, "E003")
+        # E003 -> A002 (Lion, requires Carnivore skill - E003 has it and is on shift today)
+        success, msg = backend.add_feeding_record("A002", "F001", 5.0, "E003")
         if success:
             print(f"[PASS] Feeding added. Msg: {msg}")
         else:
@@ -33,7 +33,7 @@ class TestAgent:
     def test_user_02_add_body_info(self):
         print("\n[User 2/6] Add Body Info...")
         backend = self.get_backend()
-        success, msg = backend.add_animal_state("A001", 205.0, "E003")
+        success, msg = backend.add_animal_state("A002", 205.0, "E003")
         if success:
             print(f"[PASS] Body info added. Msg: {msg}")
         else:
@@ -131,7 +131,8 @@ class TestAgent:
         backend = self.get_backend()
         start = (datetime.now() + timedelta(days=2)).replace(hour=10, minute=0).strftime('%Y-%m-%d %H:%M:%S')
         end = (datetime.now() + timedelta(days=2)).replace(hour=12, minute=0).strftime('%Y-%m-%d %H:%M:%S')
-        success, msg = backend.assign_task("E003", "T002", start, end, a_id="A001")
+        # E003 has Carnivore skill, A005 requires Carnivore
+        success, msg = backend.assign_task("E003", "T002", start, end, a_id="A005")
         if success:
             print(f"[PASS] Task assigned. Msg: {msg}")
         else:
