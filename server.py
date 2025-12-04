@@ -47,7 +47,7 @@ ACTION_MAP = {
 
 class ClientHandler(threading.Thread):
     def __init__(self, conn, addr, db_backend):
-        super().__init__()
+        super().__init__(daemon=True)  # 設為 daemon，主程式結束時自動終止
         self.conn = conn
         self.addr = addr
         self.db_backend = db_backend
@@ -145,6 +145,7 @@ def start_server():
     db_backend = ZooBackend()
     
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # 允許重用地址
     server.bind((HOST, PORT))
     server.listen()
     print(f"[LISTENING] Server is listening on {HOST}:{PORT}")
@@ -156,10 +157,11 @@ def start_server():
             thread.start()
             print(f"[ONLINE] 目前上線人數: {threading.active_count() - 1}")
     except KeyboardInterrupt:
-        print("[STOPPING] Server is stopping...")
+        print("\n[STOPPING] Server is stopping...")
     finally:
         db_backend.close()
         server.close()
+        print("[STOPPED] Server stopped.")
 
 if __name__ == "__main__":
     start_server()
