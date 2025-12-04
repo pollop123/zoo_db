@@ -1,79 +1,87 @@
 # 資料庫變更日誌 (Database Changelog)
 
-本文件記錄了為支援新版動物園管理系統功能，對原始 `zoo.backup` 資料庫所做的所有變更。
+本文件記錄了動物園管理系統的所有重要變更。
 
-## 1. 資料庫結構變更 (Schema Changes)
+---
 
-### 新增資料表 (New Tables)
-*   **`employee_skills` (員工專業證照表)**:
-    *   用於儲存員工擁有的專業技能證照 (例如: 食肉動物照護、爬蟲類照護)。
-    *   此表取代了原有的 `animal_schedule` 功能，提供更靈活的權限管理。
-*   **`task` (工作項目表)**:
-    *   新增工作項目 (日常照護)，最終編號為 `T006`。
+## [v1.3.0] - 2025-12-04
 
-### 修改資料表 (Modified Tables)
-*   **`employee` (員工表)**:
-    *   新增 `role` 欄位 (VARCHAR): 用於區分系統角色 ('Admin' 管理員 / 'User' 一般員工)。
-*   **`animal` (動物表)**:
-    *   新增 `required_skill` 欄位 (VARCHAR): 指定照顧該動物所需的專業證照 (例如: 獅子需要 'Carnivore' 證照)。
-*   **`employee_shift` (員工班表)**:
-    *   新增 `a_id` 欄位 (VARCHAR, FK): 連結該班次負責的特定動物 (Responsible Animal)。
+### 資料庫變更
+- 新增 `a_name` 欄位至 `animal` 表，提供動物友善名稱顯示
+- 移除 `Bird`、`Reptile` 證照
+- 新增 `Penguin` 證照 (5 名員工)
+- 新增 `Endangered` 證照 (10 名員工)
+- 更新 `zoo.backup` 備份檔
 
-### 移除資料表 (Removed Tables)
-*   **`animal_schedule`**: 已廢棄，改用新的「證照/班表」雙重驗證邏輯。
+### 程式修正
+- 修正 `batch_check_anomalies`: 使用 `a_name` 取代不存在的 `a_name` 欄位
+- 修正 `add_inventory_stock`: 將 `restock` 改為 `purchase` (符合 check constraint)
+- 修正 `add_animal_state`: 新增 `record_id` 自動產生
+- 修正 `action/schedule.py`: 新增 `a_id` 參數傳遞
+- 修正 `test/test_agent.py`: 新增缺失的 `get_backend()` 方法與測試案例
 
-## 2. 資料修正與更新 (Data Fixes & Updates)
+### 文件更新
+- 新增 `DEMO_GUIDE.md` 展示指南
+- 更新 `README.md` 結構與安裝說明
 
-### 錯誤修復 (Bug Fixes)
-*   **修復負庫存問題**: 為所有飼料注入了初始的「進貨 (Purchase)」紀錄 (5000kg)，解決因缺乏歷史資料導致的負庫存顯示。
-*   **修復管理員登入**: 將員工 `E001` (Admin) 的狀態從 'inactive' 更新為 'active'，以允許登入系統。
+---
 
-### [Final] - 2025-12-02
--   **資料優化 (Data Refinement)**:
-    -   重新分類動物證照需求 (獅子/老虎=肉食證照，無尾熊/熊貓=無門檻)。
-    -   重置展示用員工技能 (E005 無任何證照)。
-    -   生成 E003, E004, E005 的專屬班表 (一人負責一隻動物)。
--   **程式優化 (Code Refinement)**:
-    -   優化 `add_feeding_record` 邏輯：引入 `Decimal` 進行精確數值運算，防止浮點誤差，並增加正值檢核。
-    -   重構 API：移除舊版 `add_feeding` 方法，全面改用 `add_feeding_record`，消除冗餘代碼。
-    -   優化登入回饋：區分「查無帳號」與「帳號狀態異常 (Inactive/Leave)」，提供更明確的錯誤訊息。
-    -   新增 API：`add_employee_skill`，允許透過 API 為員工新增專業證照。
-    -   功能增強：`add_animal_state` 支援選擇動物狀態 (`status_type`)，如食慾異常、行動異常等，強化健康追蹤。
-    -   介面優化：簡化證照選擇列表，更新為 **Carnivore (猛獸)**、**Penguin (企鵝)**、**Endangered (珍稀動物)**。
-    -   資料庫調整：大象暫時移除「珍稀動物」證照需求，回歸一般區。
-    -   程式重構：將 `status_type`、`employee_skills` 及 `feeds` 等所有資料表名稱全面移至 `config.py` 統一管理，消除 Magic Strings。
-    -   架構升級：引入 `psycopg2.pool.ThreadedConnectionPool`，解決多執行緒交易衝突問題，提升併發效能。
--   **文件更新 (Documentation)**:
-    -   README.md 全面中文化並移除表情符號，提升專業感。
-    -   於 README.md 新增「展示指南 (Demo Guide)」。
-    -   新增「混合式資料庫架構」說明。
-    -   新增 MongoDB 資料還原指南與備份檔 (`mongo_*.json`)。
-    -   新增 `OPERATION_MANUAL.md` (操作手冊)，提供詳細的系統部署與操作指引。
--   **專案清理 (Cleanup)**:
-    -   移除 `DB_utils.py` 中未使用的 `uuid` 套件引入。
-    -   歸檔舊的腳本與備份檔。
-    -   從正式部署中移除 `scripts/` 目錄。
+## [v1.2.0] - 2025-12-02
 
-### [T006] - 2025-12-01
-### 展示用資料 (Demo Data)
-*   **資料整併與重編號**:
-    *   將所有 `T004` (體重測量) 的班表合併至日常照護。
-    *   將重複的環境消毒工作 (`T003`, `T005`, `T008`) 合併為單一 `T003`。
-    *   **全面重編號**:
-        *   `T001`: 籠舍清潔
-        *   `T002`: 用藥紀錄
-        *   `T003`: 環境消毒
-        *   `T004`: 特殊訓練
-        *   `T005`: 健康檢查
-        *   `T006`: 日常照護
-*   **超級班表**: 為 `E003`, `E004`, `E005` 指派了今日全天 (24小時) 的班表，方便展示。
-*   **隨機分派**: 為現有的 300+ 筆歷史班表隨機指派了負責動物 (僅限照護、醫療等相關工作)，讓報表更豐富。
-*   **證照資料**: 授予 `E001`, `E003`, `E004` 'Carnivore' (食肉) 與 'Reptile' (爬蟲) 證照。
-*   **對照組設定**: 保留 `E006` (菜鳥) 無任何證照，以展示權限拒絕功能。
+### 資料優化
+- 重新分類動物證照需求 (獅子/老虎=Carnivore，無尾熊/熊貓=Endangered)
+- 重置展示用員工技能 (E005 無任何證照)
+- 生成 E003, E004, E005 的專屬班表
 
-## 3. 本次更新啟用的系統功能
-*   **角色權限控管 (RBAC)**: 區分管理員與一般使用者的操作介面。
-*   **嚴格權限驗證系統**:
-    *   **班表檢查**: 員工只能在值班時間、對負責的動物進行操作。
-    *   **證照檢查**: 員工必須持有該動物要求的特定證照 (例如: 獅子需食肉動物證照) 才能操作。
-*   **庫存管理**: 精確追蹤進貨與餵食消耗。
+### 程式優化
+- 引入 `Decimal` 進行精確數值運算，防止浮點誤差
+- 重構 API：移除舊版 `add_feeding` 方法，全面改用 `add_feeding_record`
+- 優化登入回饋：區分「查無帳號」與「帳號狀態異常」
+- 新增 `add_employee_skill` API
+- `add_animal_state` 支援選擇動物狀態 (`status_type`)
+- 將所有資料表名稱移至 `config.py` 統一管理
+- 引入 `psycopg2.pool.ThreadedConnectionPool` 提升併發效能
+
+### 文件更新
+- README.md 全面中文化
+- 新增 MongoDB 資料還原指南
+- 新增 `OPERATION_MANUAL.md`
+
+---
+
+## [v1.1.0] - 2025-12-01
+
+### 資料整併與重編號
+- 合併重複的工作類型
+- 工作項目重新編號：
+  - `T001`: 籠舍清潔
+  - `T002`: 用藥紀錄
+  - `T003`: 環境消毒
+  - `T004`: 特殊訓練
+  - `T005`: 健康檢查
+  - `T006`: 日常照護
+
+### 展示用資料
+- 為 E003, E004, E005 指派今日全天班表
+- 為歷史班表隨機指派負責動物
+- 授予 E001, E003, E004 初始證照
+
+---
+
+## [v1.0.0] - 初始版本
+
+### 新增資料表
+- `employee_skills`: 員工專業證照表
+- `task`: 工作項目表
+
+### 修改資料表
+- `employee`: 新增 `role` 欄位 (Admin/User)
+- `animal`: 新增 `required_skill` 欄位
+- `employee_shift`: 新增 `a_id` 欄位
+
+### 移除資料表
+- `animal_schedule`: 改用新的證照/班表雙重驗證邏輯
+
+### 錯誤修復
+- 修復負庫存問題：注入初始進貨紀錄
+- 修復管理員登入：更新 E001 狀態為 active
