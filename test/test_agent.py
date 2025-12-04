@@ -229,6 +229,48 @@ class TestAgent:
         
         print("\n[Test Agent] All 17 tests completed.")
 
+    def restore_database(self):
+        """Restore PostgreSQL database from backup."""
+        import subprocess
+        
+        backup_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo.backup")
+        
+        print("\n[Restore] Restoring database from zoo.backup...")
+        
+        try:
+            # Use psql to restore (zoo.backup is plain SQL format)
+            env = os.environ.copy()
+            env['PGPASSWORD'] = PG_PASSWORD
+            
+            result = subprocess.run(
+                ['psql', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, '-d', PG_DB, '-f', backup_path],
+                capture_output=True,
+                text=True,
+                env=env
+            )
+            
+            if result.returncode == 0:
+                print("[Restore] Database restored successfully.")
+            else:
+                print(f"[Restore] Warning: {result.stderr[:200] if result.stderr else 'Unknown error'}")
+                
+        except FileNotFoundError:
+            print("[Restore] Error: psql not found. Please restore manually:")
+            print(f"  psql -U {PG_USER} -d {PG_DB} < zoo.backup")
+        except Exception as e:
+            print(f"[Restore] Error: {e}")
+
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Zoo DB Test Agent')
+    parser.add_argument('--no-restore', action='store_true', help='Skip database restore after tests')
+    args = parser.parse_args()
+    
     agent = TestAgent()
     agent.run_all()
+    
+    if not args.no_restore:
+        agent.restore_database()
+    else:
+        print("\n[Info] Skipping database restore (--no-restore flag used)")
