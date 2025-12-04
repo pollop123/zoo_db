@@ -154,7 +154,10 @@ def start_server():
             conn, addr = server.accept()
             thread = ClientHandler(conn, addr, db_backend)
             thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+            # 只在多個連線時顯示
+            active = threading.active_count() - 1
+            if active > 1:
+                print(f"[ACTIVE CONNECTIONS] {active}")
     except KeyboardInterrupt:
         print("[STOPPING] Server is stopping...")
     finally:
