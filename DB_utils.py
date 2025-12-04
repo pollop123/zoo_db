@@ -131,12 +131,17 @@ class ZooBackend:
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
-                # 1. Insert SQL
+                
+                # 1. Generate ID
+                cur.execute(f"SELECT COALESCE(MAX(CAST(record_id AS INTEGER)), 0) + 1 FROM {TABLE_ANIMAL_STATE}")
+                new_id = str(cur.fetchone()[0])
+
+                # 2. Insert SQL
                 query = f"""
-                    INSERT INTO {TABLE_ANIMAL_STATE} (a_id, {COL_WEIGHT}, datetime, recorded_by, state_id)
-                    VALUES (%s, %s, NOW(), %s, %s)
+                    INSERT INTO {TABLE_ANIMAL_STATE} (record_id, a_id, {COL_WEIGHT}, datetime, recorded_by, state_id)
+                    VALUES (%s, %s, %s, NOW(), %s, %s)
                 """
-                cur.execute(query, (a_id, weight, user_id, state_id))
+                cur.execute(query, (new_id, a_id, weight, user_id, state_id))
                 conn.commit()
 
                 # 2. Check Anomaly (NoSQL)
