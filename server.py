@@ -135,8 +135,8 @@ class ClientHandler(threading.Thread):
         except Exception as e:
             print(f"[{self.addr}] Connection error: {e}")
         finally:
-            print(f"[DISCONNECTED] {self.addr}")
             self.conn.close()
+            print(f"[OFFLINE] {self.addr} 離線，目前上線人數: {threading.active_count() - 2}")
 
 
 def start_server():
@@ -154,10 +154,7 @@ def start_server():
             conn, addr = server.accept()
             thread = ClientHandler(conn, addr, db_backend)
             thread.start()
-            # 只在多個連線時顯示
-            active = threading.active_count() - 1
-            if active > 1:
-                print(f"[ACTIVE CONNECTIONS] {active}")
+            print(f"[ONLINE] 目前上線人數: {threading.active_count() - 1}")
     except KeyboardInterrupt:
         print("[STOPPING] Server is stopping...")
     finally:
