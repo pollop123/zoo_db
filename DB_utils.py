@@ -132,6 +132,12 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 
+                # 0.5 Get animal info for display
+                cur.execute(f"SELECT a_name, species FROM {TABLE_ANIMAL} WHERE a_id = %s", (a_id,))
+                animal_info = cur.fetchone()
+                animal_name = animal_info[0] if animal_info else a_id
+                animal_species = animal_info[1] if animal_info else "未知"
+                
                 # 1. Generate ID
                 cur.execute(f"SELECT COALESCE(MAX(CAST(record_id AS INTEGER)), 0) + 1 FROM {TABLE_ANIMAL_STATE}")
                 new_id = str(cur.fetchone()[0])
@@ -144,17 +150,10 @@ class ZooBackend:
                 cur.execute(query, (new_id, a_id, weight, user_id, state_id))
                 conn.commit()
 
-                # 2. Check Anomaly (NoSQL)
-                # Note: check_weight_anomaly will need its own connection or we pass cursor?
-                # Ideally check_weight_anomaly should also use get_db_connection.
-                # But if we call it here, it will try to get another connection.
-                # Since ThreadedConnectionPool allows multiple connections, this is fine.
-                # However, for atomicity, maybe we should pass the connection?
-                # The current implementation of check_weight_anomaly is standalone.
-                # Let's keep it simple for now and let it get its own connection.
+                # 3. Check Anomaly (NoSQL)
                 self.check_weight_anomaly(a_id)
                 
-                return True, "體重與狀態回報成功"
+                return True, f"已記錄 {animal_name} ({animal_species}) 體重 {weight}kg"
         except Exception as e:
             return False, f"回報失敗: {e}"
 
@@ -586,6 +585,12 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 
+                # 0.5 Get animal info for display
+                cur.execute(f"SELECT a_name, species FROM {TABLE_ANIMAL} WHERE a_id = %s", (a_id,))
+                animal_info = cur.fetchone()
+                animal_name = animal_info[0] if animal_info else a_id
+                animal_species = animal_info[1] if animal_info else "未知"
+                
                 # 1. Check and Lock Inventory
                 # This ensures only one transaction can modify inventory for this feed at a time
                 cur.execute(f"SELECT {COL_FEED_ID} FROM {TABLE_FEEDS} WHERE {COL_FEED_ID} = %s FOR UPDATE", (f_id,))
@@ -636,7 +641,7 @@ class ZooBackend:
 
                 # 4. Commit Transaction
                 conn.commit()
-                return True, "餵食紀錄新增成功，庫存已更新"
+                return True, f"已餵食 {animal_name} ({animal_species})，庫存已更新"
 
         except Exception as e:
             return False, f"新增餵食紀錄失敗: {e}"
