@@ -17,10 +17,40 @@ class NetworkClient:
     def __init__(self):
         self.host = HOST
         self.port = PORT
+        self.socket = None
+        self.connected = False
+
+    def connect(self):
+        """建立長連線"""
+        if self.connected:
+            return True
+        
+        try:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.connect((self.host, self.port))
+            self.connected = True
+            return True
+        except ConnectionRefusedError:
+            self.connected = False
+            return False
+        except Exception as e:
+            self.connected = False
+            return False
+
+    def disconnect(self):
+        """關閉連線"""
+        if self.socket:
+            try:
+                self.socket.close()
+            except:
+                pass
+        self.socket = None
+        self.connected = False
 
     def send_request(self, action, data=None):
         """
         Send a JSON request to the server and return the JSON response.
+        使用長連線，斷線時自動重連。
         """
         if data is None:
             data = {}
@@ -30,23 +60,40 @@ class NetworkClient:
             "data": data
         }
         
+        # 確保連線
+        if not self.connected:
+            if not self.connect():
+                return {"success": False, "message": "無法連線至伺服器，請確認 Server 是否已啟動。"}
+        
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((self.host, self.port))
-                s.sendall(json.dumps(request, default=str).encode('utf-8'))
-                
-                # Receive response (basic implementation, might need buffering for large data)
-                # For this project, 16KB buffer should be enough for most lists
-                response_data = s.recv(16384).decode('utf-8')
-                
-                if not response_data:
-                    return {"success": False, "message": "伺服器回傳空值"}
-                
-                return json.loads(response_data)
-        except ConnectionRefusedError:
-            return {"success": False, "message": "無法連線至伺服器，請確認 Server 是否已啟動。"}
+            # 發送請求
+            request_json = json.dumps(request, default=str) + "\n"  # 加換行符作為訊息結尾
+            self.socket.sendall(request_json.encode('utf-8'))
+            
+            # 接收回應
+            response_data = ""
+            while True:
+                chunk = self.socket.recv(16384).decode('utf-8')
+                if not chunk:
+                    # 連線被關閉
+                    self.connected = False
+                    return {"success": False, "message": "伺服器連線中斷"}
+                response_data += chunk
+                if response_data.endswith("\n"):
+                    break
+            
+            return json.loads(response_data.strip())
+            
+        except (ConnectionResetError, BrokenPipeError, ConnectionAbortedError):
+            # 連線中斷，嘗試重連一次
+            self.connected = False
+            if self.connect():
+                return self.send_request(action, data)  # 重試
+            return {"success": False, "message": "連線中斷，重連失敗"}
         except Exception as e:
+            self.connected = False
             return {"success": False, "message": f"網路錯誤: {e}"}
+
 
 console = Console()
 client = NetworkClient()
@@ -685,6 +732,7 @@ def main():
                 
         except KeyboardInterrupt:
             console.print("\n[bold]再見![/bold]")
+            client.disconnect()  # 優雅關閉連線
             sys.exit()
 
 if __name__ == "__main__":

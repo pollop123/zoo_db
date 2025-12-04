@@ -76,57 +76,68 @@ class ClientHandler(threading.Thread):
             return "-"
 
     def run(self):
-        print(f"[NEW CONNECTION] {self.addr} connected.")
+        print(f"[CONNECTED] {self.addr}")
+        buffer = ""
         try:
             while True:
                 # Receive data
-                data = self.conn.recv(4096).decode('utf-8')
-                if not data:
+                chunk = self.conn.recv(4096).decode('utf-8')
+                if not chunk:
                     break
                 
-                try:
-                    request = json.loads(data)
-                    action_name = request.get('action')
-                    params = request.get('data', {})
+                buffer += chunk
+                
+                # 處理所有完整的訊息（以換行符分隔）
+                while "\n" in buffer:
+                    message, buffer = buffer.split("\n", 1)
+                    if not message.strip():
+                        continue
                     
-                    # 取得操作者 ID
-                    user_id = params.get('user_id') or params.get('e_id') or '-'
-                    
-                    # 格式化參數摘要
-                    param_summary = self._format_params(action_name, params)
-                    
-                    if action_name in ACTION_MAP:
-                        action_cls = ACTION_MAP[action_name]
-                        action_instance = action_cls()
-                        response = action_instance.execute(self.db_backend, **params)
+                    try:
+                        request = json.loads(message)
+                        action_name = request.get('action')
+                        params = request.get('data', {})
                         
-                        # 格式化結果
-                        status = "成功" if response.get("success") else "失敗"
-                        msg = response.get("message", "")[:50]  # 截斷過長訊息
+                        # 取得操作者 ID
+                        user_id = params.get('user_id') or params.get('e_id') or '-'
                         
-                        print(f"[{user_id}] {action_name} -> {param_summary} -> {status}: {msg}")
-                    else:
-                        response = {"success": False, "message": f"Unknown action: {action_name}"}
-                        print(f"[{user_id}] {action_name} -> 未知操作")
-                    
-                    # Send response
-                    self.conn.sendall(json.dumps(response, default=str).encode('utf-8'))
-                    
-                except json.JSONDecodeError:
-                    print(f"[{self.addr}] Invalid JSON received.")
-                    error_resp = {"success": False, "message": "Invalid JSON format"}
-                    self.conn.sendall(json.dumps(error_resp).encode('utf-8'))
-                except Exception as e:
-                    print(f"[{self.addr}] Error processing request: {e}")
-                    traceback.print_exc()
-                    error_resp = {"success": False, "message": f"Server Error: {str(e)}"}
-                    self.conn.sendall(json.dumps(error_resp).encode('utf-8'))
+                        # 格式化參數摘要
+                        param_summary = self._format_params(action_name, params)
+                        
+                        if action_name in ACTION_MAP:
+                            action_cls = ACTION_MAP[action_name]
+                            action_instance = action_cls()
+                            response = action_instance.execute(self.db_backend, **params)
+                            
+                            # 格式化結果
+                            status = "成功" if response.get("success") else "失敗"
+                            msg = response.get("message", "")[:50]  # 截斷過長訊息
+                            
+                            print(f"[{user_id}] {action_name} -> {param_summary} -> {status}: {msg}")
+                        else:
+                            response = {"success": False, "message": f"Unknown action: {action_name}"}
+                            print(f"[{user_id}] {action_name} -> 未知操作")
+                        
+                        # Send response (加換行符作為訊息結尾)
+                        response_json = json.dumps(response, default=str) + "\n"
+                        self.conn.sendall(response_json.encode('utf-8'))
+                        
+                    except json.JSONDecodeError:
+                        print(f"[{self.addr}] Invalid JSON received.")
+                        error_resp = {"success": False, "message": "Invalid JSON format"}
+                        self.conn.sendall((json.dumps(error_resp) + "\n").encode('utf-8'))
+                    except Exception as e:
+                        print(f"[{self.addr}] Error processing request: {e}")
+                        traceback.print_exc()
+                        error_resp = {"success": False, "message": f"Server Error: {str(e)}"}
+                        self.conn.sendall((json.dumps(error_resp) + "\n").encode('utf-8'))
 
         except Exception as e:
             print(f"[{self.addr}] Connection error: {e}")
         finally:
-            print(f"[DISCONNECTED] {self.addr} disconnected.")
+            print(f"[DISCONNECTED] {self.addr}")
             self.conn.close()
+
 
 def start_server():
     print("[STARTING] Server is starting...")
