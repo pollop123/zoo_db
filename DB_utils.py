@@ -123,7 +123,16 @@ class ZooBackend:
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
 
-        # 0. Check Permission
+        # 0. Validate weight
+        try:
+            weight_val = float(weight)
+        except (TypeError, ValueError):
+            return False, "體重格式錯誤"
+        
+        if weight_val <= 0:
+            return False, "體重必須為正數"
+
+        # 0.1 Check Permission
         allowed, msg = self.check_shift_permission(user_id, a_id)
         if not allowed:
             return False, msg
@@ -266,6 +275,16 @@ class ZooBackend:
         """
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
+
+        # Validate numeric fields
+        numeric_fields = [COL_AMOUNT, COL_WEIGHT, 'feeding_amount_kg', 'weight_kg']
+        if col_name in numeric_fields:
+            try:
+                val = float(new_val)
+                if val < 0:
+                    return False, "數值不能為負數"
+            except (TypeError, ValueError):
+                return False, "數值格式錯誤"
 
         try:
             with self.get_db_connection() as conn:
