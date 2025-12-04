@@ -23,6 +23,10 @@ from action.skill import AddEmployeeSkillAction
 HOST = '127.0.0.1'
 PORT = 60000
 
+# 追蹤上線人數
+online_count = 0
+online_lock = threading.Lock()
+
 # Action Mapping
 ACTION_MAP = {
     "login": LoginAction,
@@ -47,7 +51,7 @@ ACTION_MAP = {
 
 class ClientHandler(threading.Thread):
     def __init__(self, conn, addr, db_backend):
-        super().__init__(daemon=True)  # 設為 daemon，主程式結束時自動終止
+        super().__init__(daemon=True)
         self.conn = conn
         self.addr = addr
         self.db_backend = db_backend
@@ -76,7 +80,11 @@ class ClientHandler(threading.Thread):
             return "-"
 
     def run(self):
-        print(f"[CONNECTED] {self.addr}")
+        global online_count
+        with online_lock:
+            online_count += 1
+            print(f"[ONLINE] {self.addr} 上線，目前上線人數: {online_count}")
+        
         buffer = ""
         try:
             while True:
@@ -136,7 +144,9 @@ class ClientHandler(threading.Thread):
             print(f"[{self.addr}] Connection error: {e}")
         finally:
             self.conn.close()
-            print(f"[OFFLINE] {self.addr} 離線，目前上線人數: {threading.active_count() - 2}")
+            with online_lock:
+                online_count -= 1
+                print(f"[OFFLINE] {self.addr} 離線，目前上線人數: {online_count}")
 
 
 def start_server():
@@ -155,7 +165,6 @@ def start_server():
             conn, addr = server.accept()
             thread = ClientHandler(conn, addr, db_backend)
             thread.start()
-            print(f"[ONLINE] 目前上線人數: {threading.active_count() - 1}")
     except KeyboardInterrupt:
         print("\n[STOPPING] Server is stopping...")
     finally:
