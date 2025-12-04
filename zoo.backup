@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict ETFSsvgsi7tJOzV1cJFNal9myy5taEObswEKnnH9llB4jw1S4ySwbfw13PeSE4q
+\restrict RJIdfrhEZKoF9CnkpvACOsmK12OK8tcz67gLJXVl4nWrri89lIQOcEclIxdKZaw
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -269,206 +269,206 @@ ALTER TABLE ONLY public.status_type ALTER COLUMN s_id SET DEFAULT nextval('publi
 --
 
 COPY public.animal (a_id, species, sex, life_status, required_skill, a_name) FROM stdin;
-A003	Penguin	M	Alive	Penguin	Penguin-003
-A020	Penguin	M	Deceased	Penguin	Penguin-020
-A023	Penguin	F	Alive	Penguin	Penguin-023
-A038	Penguin	F	Alive	Penguin	Penguin-038
-A047	Penguin	F	Alive	Penguin	Penguin-047
-A048	Penguin	M	Alive	Penguin	Penguin-048
-A049	Penguin	F	Alive	Penguin	Penguin-049
-A064	Penguin	F	Transferred	Penguin	Penguin-064
-A077	Penguin	F	Alive	Penguin	Penguin-077
-A081	Penguin	M	Alive	Penguin	Penguin-081
-A111	Penguin	F	Alive	Penguin	Penguin-111
-A112	Penguin	M	Alive	Penguin	Penguin-112
-A119	Penguin	M	Alive	Penguin	Penguin-119
-A130	Penguin	F	Alive	Penguin	Penguin-130
-A134	Penguin	F	Alive	Penguin	Penguin-134
-A010	Panda	M	Alive	Endangered	Panda-010
-A014	Panda	M	Deceased	Endangered	Panda-014
-A015	Panda	F	Alive	Endangered	Panda-015
-A028	Panda	F	Deceased	Endangered	Panda-028
-A029	Panda	F	Alive	Endangered	Panda-029
-A034	Panda	F	Deceased	Endangered	Panda-034
-A037	Panda	M	Alive	Endangered	Panda-037
-A053	Panda	F	Alive	Endangered	Panda-053
-A054	Panda	M	Deceased	Endangered	Panda-054
-A062	Panda	F	Deceased	Endangered	Panda-062
-A067	Panda	M	Alive	Endangered	Panda-067
-A070	Panda	M	Alive	Endangered	Panda-070
-A082	Panda	F	Alive	Endangered	Panda-082
-A098	Panda	M	Alive	Endangered	Panda-098
-A103	Panda	M	Alive	Endangered	Panda-103
-A005	Tiger	M	Alive	Carnivore	Tiger-005
-A008	Brown Bear	F	Alive	Carnivore	Brown Bear-008
-A004	Koala	M	Deceased	Endangered	Koala-004
-A016	Koala	F	Transferred	Endangered	Koala-016
-A017	Koala	M	Alive	Endangered	Koala-017
-A021	Koala	M	Alive	Endangered	Koala-021
-A050	Koala	M	Alive	Endangered	Koala-050
-A051	Koala	M	Alive	Endangered	Koala-051
-A056	Koala	M	Alive	Endangered	Koala-056
-A073	Koala	F	Alive	Endangered	Koala-073
-A093	Koala	F	Alive	Endangered	Koala-093
-A102	Koala	F	Alive	Endangered	Koala-102
-A109	Koala	M	Transferred	Endangered	Koala-109
-A110	Koala	M	Deceased	Endangered	Koala-110
-A117	Koala	F	Alive	Endangered	Koala-117
-A131	Koala	F	Alive	Endangered	Koala-131
-A133	Koala	F	Alive	Endangered	Koala-133
-A148	Koala	M	Transferred	Endangered	Koala-148
-A182	Panda	F	Alive	Endangered	Panda-182
-A199	Panda	F	Alive	Endangered	Panda-199
-A154	Brown Bear	M	Alive	Carnivore	Brown Bear-154
-A162	Brown Bear	F	Alive	Carnivore	Brown Bear-162
-A172	Brown Bear	F	Transferred	Carnivore	Brown Bear-172
-A173	Tiger	M	Alive	Carnivore	Tiger-173
-A176	Brown Bear	M	Deceased	Carnivore	Brown Bear-176
-A178	Tiger	M	Alive	Carnivore	Tiger-178
-A179	Brown Bear	M	Alive	Carnivore	Brown Bear-179
-A185	Brown Bear	F	Alive	Carnivore	Brown Bear-185
-A187	Brown Bear	F	Alive	Carnivore	Brown Bear-187
-A188	Tiger	M	Alive	Carnivore	Tiger-188
-A189	Brown Bear	M	Alive	Carnivore	Brown Bear-189
-A190	Lion	F	Deceased	Carnivore	Lion-190
-A191	Tiger	M	Alive	Carnivore	Tiger-191
-A195	Lion	F	Transferred	Carnivore	Lion-195
-A196	Tiger	M	Alive	Carnivore	Tiger-196
-A101	Tiger	M	Alive	Carnivore	Tiger-101
-A009	Brown Bear	M	Alive	Carnivore	Brown Bear-009
-A011	Tiger	M	Alive	Carnivore	Tiger-011
-A012	Lion	F	Alive	Carnivore	Lion-012
-A019	Tiger	F	Transferred	Carnivore	Tiger-019
-A025	Tiger	F	Alive	Carnivore	Tiger-025
-A027	Tiger	F	Alive	Carnivore	Tiger-027
-A031	Tiger	F	Alive	Carnivore	Tiger-031
-A032	Lion	F	Alive	Carnivore	Lion-032
-A035	Brown Bear	M	Alive	Carnivore	Brown Bear-035
-A042	Lion	M	Alive	Carnivore	Lion-042
-A043	Lion	F	Deceased	Carnivore	Lion-043
-A044	Tiger	F	Alive	Carnivore	Tiger-044
-A046	Tiger	F	Alive	Carnivore	Tiger-046
-A055	Tiger	M	Alive	Carnivore	Tiger-055
-A057	Brown Bear	M	Alive	Carnivore	Brown Bear-057
-A061	Tiger	F	Alive	Carnivore	Tiger-061
-A063	Brown Bear	F	Alive	Carnivore	Brown Bear-063
-A065	Tiger	F	Alive	Carnivore	Tiger-065
-A071	Tiger	F	Alive	Carnivore	Tiger-071
-A075	Lion	F	Transferred	Carnivore	Lion-075
-A079	Lion	M	Alive	Carnivore	Lion-079
-A083	Brown Bear	F	Alive	Carnivore	Brown Bear-083
-A087	Brown Bear	F	Alive	Carnivore	Brown Bear-087
-A088	Brown Bear	M	Alive	Carnivore	Brown Bear-088
-A089	Tiger	F	Alive	Carnivore	Tiger-089
-A091	Lion	M	Transferred	Carnivore	Lion-091
-A092	Tiger	F	Alive	Carnivore	Tiger-092
-A099	Lion	F	Alive	Carnivore	Lion-099
-A105	Brown Bear	F	Alive	Carnivore	Brown Bear-105
-A108	Tiger	F	Deceased	Carnivore	Tiger-108
-A115	Lion	M	Alive	Carnivore	Lion-115
-A118	Brown Bear	F	Alive	Carnivore	Brown Bear-118
-A123	Brown Bear	M	Alive	Carnivore	Brown Bear-123
-A124	Brown Bear	M	Alive	Carnivore	Brown Bear-124
-A125	Tiger	M	Alive	Carnivore	Tiger-125
-A132	Brown Bear	F	Transferred	Carnivore	Brown Bear-132
-A136	Tiger	F	Alive	Carnivore	Tiger-136
-A138	Tiger	M	Alive	Carnivore	Tiger-138
-A140	Lion	M	Alive	Carnivore	Lion-140
-A144	Lion	F	Alive	Carnivore	Lion-144
-A150	Lion	M	Transferred	Carnivore	Lion-150
-A151	Lion	F	Alive	Carnivore	Lion-151
-A041	African Elephant	M	Deceased	General	African Elephant-041
-A066	African Elephant	M	Alive	General	African Elephant-066
-A072	African Elephant	F	Alive	General	African Elephant-072
-A078	African Elephant	M	Alive	General	African Elephant-078
-A080	African Elephant	F	Alive	General	African Elephant-080
-A097	African Elephant	M	Alive	General	African Elephant-097
-A100	African Elephant	M	Alive	General	African Elephant-100
-A002	Lion	M	Alive	Carnivore	Lion-002
-A153	Penguin	M	Alive	Penguin	Penguin-153
-A156	Penguin	M	Alive	Penguin	Penguin-156
-A160	Penguin	M	Alive	Penguin	Penguin-160
-A180	Penguin	M	Alive	Penguin	Penguin-180
-A184	Penguin	F	Deceased	Penguin	Penguin-184
-A192	Penguin	M	Transferred	Penguin	Penguin-192
-A001	Penguin	F	Transferred	Penguin	Penguin-001
-A170	Koala	F	Alive	Endangered	Koala-170
-A171	Koala	F	Alive	Endangered	Koala-171
-A175	Koala	M	Alive	Endangered	Koala-175
-A183	Koala	F	Alive	Endangered	Koala-183
-A200	Koala	F	Transferred	Endangered	Koala-200
-A155	Panda	F	Alive	Endangered	Panda-155
-A158	Panda	F	Alive	Endangered	Panda-158
-A161	Panda	M	Alive	Endangered	Panda-161
-A164	Panda	M	Alive	Endangered	Panda-164
-A165	Panda	F	Deceased	Endangered	Panda-165
-A167	African Elephant	M	Alive	General	African Elephant-167
-A169	African Elephant	F	Alive	General	African Elephant-169
-A193	African Elephant	F	Alive	General	African Elephant-193
-A197	African Elephant	F	Alive	General	African Elephant-197
-A114	African Elephant	M	Alive	General	African Elephant-114
-A126	African Elephant	F	Alive	General	African Elephant-126
-A129	African Elephant	F	Alive	General	African Elephant-129
-A135	African Elephant	M	Alive	General	African Elephant-135
-A139	African Elephant	M	Transferred	General	African Elephant-139
-A116	Panda	F	Alive	Endangered	Panda-116
-A128	Panda	M	Alive	Endangered	Panda-128
-A142	Panda	F	Transferred	Endangered	Panda-142
-A145	Panda	M	Transferred	Endangered	Panda-145
-A007	Zebra	M	Alive	Endangered	Zebra-007
-A013	Giraffe	M	Alive	Endangered	Giraffe-013
-A022	Zebra	M	Alive	Endangered	Zebra-022
-A026	Giraffe	F	Alive	Endangered	Giraffe-026
-A033	Zebra	M	Alive	Endangered	Zebra-033
-A039	Giraffe	F	Alive	Endangered	Giraffe-039
-A040	Zebra	F	Alive	Endangered	Zebra-040
-A045	Zebra	F	Alive	Endangered	Zebra-045
-A052	Giraffe	F	Alive	Endangered	Giraffe-052
-A058	Zebra	M	Alive	Endangered	Zebra-058
-A060	Giraffe	M	Alive	Endangered	Giraffe-060
-A068	Zebra	M	Transferred	Endangered	Zebra-068
-A069	Zebra	F	Alive	Endangered	Zebra-069
-A074	Giraffe	M	Alive	Endangered	Giraffe-074
-A084	Zebra	M	Alive	Endangered	Zebra-084
-A085	Giraffe	F	Alive	Endangered	Giraffe-085
-A086	Giraffe	M	Alive	Endangered	Giraffe-086
-A090	Zebra	F	Transferred	Endangered	Zebra-090
-A094	Giraffe	M	Alive	Endangered	Giraffe-094
-A095	Zebra	M	Alive	Endangered	Zebra-095
-A096	Giraffe	F	Alive	Endangered	Giraffe-096
-A006	Hippopotamus	M	Alive	Endangered	Hippopotamus-006
-A018	Hippopotamus	F	Alive	Endangered	Hippopotamus-018
-A024	Hippopotamus	M	Alive	Endangered	Hippopotamus-024
-A030	Hippopotamus	M	Deceased	Endangered	Hippopotamus-030
-A036	Hippopotamus	M	Deceased	Endangered	Hippopotamus-036
-A059	Hippopotamus	M	Transferred	Endangered	Hippopotamus-059
-A076	Hippopotamus	F	Deceased	Endangered	Hippopotamus-076
-A120	Hippopotamus	M	Alive	Endangered	Hippopotamus-120
-A121	Hippopotamus	M	Deceased	Endangered	Hippopotamus-121
-A127	Hippopotamus	M	Alive	Endangered	Hippopotamus-127
-A143	Hippopotamus	M	Alive	Endangered	Hippopotamus-143
-A159	Hippopotamus	M	Alive	Endangered	Hippopotamus-159
-A166	Hippopotamus	M	Alive	Endangered	Hippopotamus-166
-A168	Hippopotamus	F	Alive	Endangered	Hippopotamus-168
-A174	Hippopotamus	F	Alive	Endangered	Hippopotamus-174
-A177	Hippopotamus	M	Transferred	Endangered	Hippopotamus-177
-A181	Hippopotamus	M	Alive	Endangered	Hippopotamus-181
-A186	Hippopotamus	F	Alive	Endangered	Hippopotamus-186
-A194	Hippopotamus	M	Deceased	Endangered	Hippopotamus-194
-A198	Hippopotamus	F	Deceased	Endangered	Hippopotamus-198
-A104	Giraffe	M	Deceased	Endangered	Giraffe-104
-A106	Giraffe	M	Alive	Endangered	Giraffe-106
-A107	Zebra	M	Alive	Endangered	Zebra-107
-A152	Zebra	F	Alive	Endangered	Zebra-152
-A157	Giraffe	F	Alive	Endangered	Giraffe-157
-A163	Giraffe	M	Alive	Endangered	Giraffe-163
-A113	Giraffe	F	Transferred	Endangered	Giraffe-113
-A122	Zebra	F	Alive	Endangered	Zebra-122
-A137	Giraffe	F	Alive	Endangered	Giraffe-137
-A146	Zebra	M	Alive	Endangered	Zebra-146
-A147	Giraffe	M	Deceased	Endangered	Giraffe-147
-A141	African Elephant	F	Alive	General	African Elephant-141
-A149	African Elephant	F	Transferred	General	African Elephant-149
+A189	Brown Bear	M	Alive	Carnivore	阿肥2號
+A008	Brown Bear	F	Alive	Carnivore	大熊
+A154	Brown Bear	M	Alive	Carnivore	山大王
+A162	Brown Bear	F	Alive	Carnivore	蜂蜜
+A172	Brown Bear	F	Transferred	Carnivore	肥熊
+A176	Brown Bear	M	Deceased	Carnivore	憨憨
+A179	Brown Bear	M	Alive	Carnivore	呆熊
+A185	Brown Bear	F	Alive	Carnivore	魯夫
+A187	Brown Bear	F	Alive	Carnivore	小山
+A004	Koala	M	Deceased	Endangered	尤加利
+A016	Koala	F	Transferred	Endangered	樹懶
+A017	Koala	M	Alive	Endangered	睡睡
+A021	Koala	M	Alive	Endangered	懶懶
+A050	Koala	M	Alive	Endangered	灰灰
+A051	Koala	M	Alive	Endangered	毛球
+A056	Koala	M	Alive	Endangered	抱抱
+A073	Koala	F	Alive	Endangered	阿樹
+A093	Koala	F	Alive	Endangered	無尾
+A102	Koala	F	Alive	Endangered	呆瓜
+A109	Koala	M	Transferred	Endangered	慢慢
+A110	Koala	M	Deceased	Endangered	夢夢
+A117	Koala	F	Alive	Endangered	困困
+A131	Koala	F	Alive	Endangered	眠眠
+A133	Koala	F	Alive	Endangered	安安
+A148	Koala	M	Transferred	Endangered	靜靜
+A190	Lion	F	Deceased	Carnivore	帥哥
+A195	Lion	F	Transferred	Carnivore	猛男
+A010	Panda	M	Alive	Endangered	圓仔
+A014	Panda	M	Deceased	Endangered	團團
+A015	Panda	F	Alive	Endangered	圓圓
+A028	Panda	F	Deceased	Endangered	黑眼圈
+A029	Panda	F	Alive	Endangered	阿胖
+A034	Panda	F	Deceased	Endangered	萌萌
+A037	Panda	M	Alive	Endangered	滾滾
+A053	Panda	F	Alive	Endangered	糯米
+A054	Panda	M	Deceased	Endangered	湯圓
+A062	Panda	F	Deceased	Endangered	麻糬
+A067	Panda	M	Alive	Endangered	竹子
+A070	Panda	M	Alive	Endangered	熊貓哥
+A082	Panda	F	Alive	Endangered	黑白配
+A098	Panda	M	Alive	Endangered	胖達
+A103	Panda	M	Alive	Endangered	小圓
+A182	Panda	F	Alive	Endangered	寶寶
+A046	Tiger	F	Alive	Carnivore	阿斑2號
+A009	Brown Bear	M	Alive	Carnivore	棕棕
+A035	Brown Bear	M	Alive	Carnivore	胖熊
+A057	Brown Bear	M	Alive	Carnivore	阿熊
+A063	Brown Bear	F	Alive	Carnivore	力力
+A111	Penguin	F	Alive	Penguin	圓圓2號
+A083	Brown Bear	F	Alive	Carnivore	壯壯
+A092	Tiger	F	Alive	Carnivore	條紋2號
+A087	Brown Bear	F	Alive	Carnivore	熊大
+A088	Brown Bear	M	Alive	Carnivore	熊二
+A105	Brown Bear	F	Alive	Carnivore	毛熊
+A112	Penguin	M	Alive	Penguin	滾滾2號
+A118	Brown Bear	F	Alive	Carnivore	肉球
+A123	Brown Bear	M	Alive	Carnivore	厚片
+A124	Brown Bear	M	Alive	Carnivore	巨熊
+A132	Brown Bear	F	Transferred	Carnivore	森林
+A012	Lion	F	Alive	Carnivore	威風
+A032	Lion	F	Alive	Carnivore	金毛
+A042	Lion	M	Alive	Carnivore	阿雄
+A043	Lion	F	Deceased	Carnivore	霸氣
+A075	Lion	F	Transferred	Carnivore	獅王
+A079	Lion	M	Alive	Carnivore	小獅
+A091	Lion	M	Transferred	Carnivore	毛毛
+A099	Lion	F	Alive	Carnivore	雷霆
+A115	Lion	M	Alive	Carnivore	旺財
+A140	Lion	M	Alive	Carnivore	虎威
+A144	Lion	F	Alive	Carnivore	大頭
+A150	Lion	M	Transferred	Carnivore	金剛
+A151	Lion	F	Alive	Carnivore	阿勇
+A199	Panda	F	Alive	Endangered	珍珠
+A003	Penguin	M	Alive	Penguin	搖搖
+A020	Penguin	M	Deceased	Penguin	滑滑
+A023	Penguin	F	Alive	Penguin	冰冰
+A038	Penguin	F	Alive	Penguin	雪球
+A047	Penguin	F	Alive	Penguin	企鵝仔
+A048	Penguin	M	Alive	Penguin	胖胖
+A049	Penguin	F	Alive	Penguin	阿呆
+A064	Penguin	F	Transferred	Penguin	酷酷
+A077	Penguin	F	Alive	Penguin	點點
+A081	Penguin	M	Alive	Penguin	小企
+A119	Penguin	M	Alive	Penguin	呆萌
+A130	Penguin	F	Alive	Penguin	冷冷
+A134	Penguin	F	Alive	Penguin	帥帥
+A005	Tiger	M	Alive	Carnivore	大虎
+A011	Tiger	M	Alive	Carnivore	花花
+A019	Tiger	F	Transferred	Carnivore	阿虎
+A025	Tiger	F	Alive	Carnivore	斑斑
+A027	Tiger	F	Alive	Carnivore	威威
+A031	Tiger	F	Alive	Carnivore	小白
+A044	Tiger	F	Alive	Carnivore	黑皮
+A055	Tiger	M	Alive	Carnivore	猛虎
+A061	Tiger	F	Alive	Carnivore	大貓
+A065	Tiger	F	Alive	Carnivore	咪咪
+A071	Tiger	F	Alive	Carnivore	虎哥
+A089	Tiger	F	Alive	Carnivore	橘子
+A101	Tiger	M	Alive	Carnivore	虎妞
+A108	Tiger	F	Deceased	Carnivore	大王
+A125	Tiger	M	Alive	Carnivore	阿橘
+A136	Tiger	F	Alive	Carnivore	皮皮
+A138	Tiger	M	Alive	Carnivore	胖虎
+A173	Tiger	M	Alive	Carnivore	跳跳
+A178	Tiger	M	Alive	Carnivore	悠悠
+A188	Tiger	M	Alive	Carnivore	奔奔
+A191	Tiger	M	Alive	Carnivore	阿猛
+A196	Tiger	M	Alive	Carnivore	虎仔
+A041	African Elephant	M	Deceased	General	大象
+A066	African Elephant	M	Alive	General	長鼻
+A072	African Elephant	F	Alive	General	象伯
+A078	African Elephant	M	Alive	General	阿象
+A080	African Elephant	F	Alive	General	噸位
+A097	African Elephant	M	Alive	General	巨象
+A114	African Elephant	M	Alive	General	大耳
+A126	African Elephant	F	Alive	General	穩重
+A129	African Elephant	F	Alive	General	象王
+A135	African Elephant	M	Alive	General	阿肥
+A139	African Elephant	M	Transferred	General	粗腿
+A169	African Elephant	F	Alive	General	噗噗
+A193	African Elephant	F	Alive	General	長牙
+A197	African Elephant	F	Alive	General	大個
+A013	Giraffe	M	Alive	Endangered	長頸
+A170	Koala	F	Alive	Endangered	乖寶
+A171	Koala	F	Alive	Endangered	小懶
+A175	Koala	M	Alive	Endangered	棉花
+A183	Koala	F	Alive	Endangered	軟糖
+A200	Koala	F	Transferred	Endangered	布丁
+A002	Lion	M	Alive	Carnivore	大壯
+A116	Panda	F	Alive	Endangered	大圓
+A128	Panda	M	Alive	Endangered	球球
+A142	Panda	F	Transferred	Endangered	肉肉
+A145	Panda	M	Transferred	Endangered	嘟嘟
+A155	Panda	F	Alive	Endangered	呆呆
+A158	Panda	F	Alive	Endangered	乖乖
+A161	Panda	M	Alive	Endangered	軟軟
+A164	Panda	M	Alive	Endangered	甜甜
+A165	Panda	F	Deceased	Endangered	蜜蜜
+A001	Penguin	F	Transferred	Penguin	小黑
+A153	Penguin	M	Alive	Penguin	晃晃
+A156	Penguin	M	Alive	Penguin	蹦蹦
+A180	Penguin	M	Alive	Penguin	肥肥
+A184	Penguin	F	Deceased	Penguin	叮叮
+A192	Penguin	M	Transferred	Penguin	噹噹
+A007	Zebra	M	Alive	Endangered	條紋
+A100	African Elephant	M	Alive	General	灰灰2號
+A160	Penguin	M	Alive	Penguin	黑白2號
+A167	African Elephant	M	Alive	General	阿胖2號
+A149	African Elephant	F	Transferred	General	踏踏
+A026	Giraffe	F	Alive	Endangered	高高
+A039	Giraffe	F	Alive	Endangered	斑點
+A052	Giraffe	F	Alive	Endangered	阿長
+A060	Giraffe	M	Alive	Endangered	天天
+A074	Giraffe	M	Alive	Endangered	雲端
+A085	Giraffe	F	Alive	Endangered	長腿
+A086	Giraffe	M	Alive	Endangered	小鹿
+A094	Giraffe	M	Alive	Endangered	優雅
+A096	Giraffe	F	Alive	Endangered	飄飄
+A104	Giraffe	M	Deceased	Endangered	阿高
+A106	Giraffe	M	Alive	Endangered	頂天
+A113	Giraffe	F	Transferred	Endangered	看遠
+A137	Giraffe	F	Alive	Endangered	修長
+A147	Giraffe	M	Deceased	Endangered	長長
+A163	Giraffe	M	Alive	Endangered	小高
+A006	Hippopotamus	M	Alive	Endangered	河馬哥
+A018	Hippopotamus	F	Alive	Endangered	大嘴
+A024	Hippopotamus	M	Alive	Endangered	胖河
+A030	Hippopotamus	M	Deceased	Endangered	水水
+A036	Hippopotamus	M	Deceased	Endangered	泡泡
+A059	Hippopotamus	M	Transferred	Endangered	潛水
+A076	Hippopotamus	F	Deceased	Endangered	阿河
+A120	Hippopotamus	M	Alive	Endangered	厚皮
+A121	Hippopotamus	M	Deceased	Endangered	大胖
+A127	Hippopotamus	M	Alive	Endangered	噸噸
+A143	Hippopotamus	M	Alive	Endangered	肥嘟
+A159	Hippopotamus	M	Alive	Endangered	阿噸
+A166	Hippopotamus	M	Alive	Endangered	河伯
+A168	Hippopotamus	F	Alive	Endangered	潮潮
+A174	Hippopotamus	F	Alive	Endangered	浮浮
+A177	Hippopotamus	M	Transferred	Endangered	沉沉
+A181	Hippopotamus	M	Alive	Endangered	水牛
+A186	Hippopotamus	F	Alive	Endangered	阿潛
+A198	Hippopotamus	F	Deceased	Endangered	大水
+A022	Zebra	M	Alive	Endangered	斑馬哥
+A033	Zebra	M	Alive	Endangered	黑白
+A040	Zebra	F	Alive	Endangered	阿斑
+A045	Zebra	F	Alive	Endangered	奔馳
+A058	Zebra	M	Alive	Endangered	飛毛
+A068	Zebra	M	Transferred	Endangered	快腿
+A069	Zebra	F	Alive	Endangered	小馬
+A084	Zebra	M	Alive	Endangered	條條
+A090	Zebra	F	Transferred	Endangered	阿條
+A095	Zebra	M	Alive	Endangered	賽跑
+A107	Zebra	M	Alive	Endangered	閃電
+A122	Zebra	F	Alive	Endangered	黑線
+A146	Zebra	M	Alive	Endangered	白線
+A152	Zebra	F	Alive	Endangered	小斑
+A157	Giraffe	F	Alive	Endangered	花花2號
+A141	African Elephant	F	Alive	General	厚皮2號
+A194	Hippopotamus	M	Deceased	Endangered	嘟嘟2號
 \.
 
 
@@ -15480,12 +15480,19 @@ COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, re
 15001	A030	2025-12-02 18:52:06.338948	1330.30	1	E003
 15006	A001	2025-12-02 19:57:14.03042	205.00	1	E003
 15007	A002	2025-12-04 19:39:06.993963	163.00	1	E003
+15011	A002	2025-12-04 20:18:57.765901	205.00	1	E003
 15002	A001	2025-12-02 19:53:39.560681	200.50	1	E003
 15008	A002	2025-12-04 19:53:24.863453	205.00	1	E003
 15003	A001	2025-12-02 19:53:39.582629	200.00	1	E003
 15004	A001	2025-12-02 19:53:39.588612	250.00	1	E003
 15009	A002	2025-12-04 19:56:20.943689	205.00	1	E003
 15005	A001	2025-12-02 19:56:24.059476	205.00	1	E003
+15010	A002	2025-12-04 20:05:31.134851	205.00	1	E003
+15012	A002	2025-12-04 20:19:04.056272	205.00	1	E003
+15013	A002	2025-12-04 20:21:34.584908	205.00	1	E003
+15014	A002	2025-12-04 20:36:39.533606	201.00	1	E003
+15015	A002	2025-12-04 20:42:32.37512	200.00	1	E003
+15016	A002	2025-12-04 20:42:39.345315	205.00	1	E003
 \.
 
 
@@ -15555,6 +15562,8 @@ COPY public.employee_shift (shift_id, e_id, t_id, shift_start, shift_end, a_id) 
 S0006	E045	T003	2025-11-16 14:00:00	2025-11-16 22:00:00	\N
 S0606	E003	T002	2025-12-06 10:00:24	2025-12-06 12:00:24	A005
 S0016	E003	T003	2025-11-03 14:00:00	2025-11-03 22:00:00	\N
+S0611	E003	T002	2025-12-06 10:00:34	2025-12-06 12:00:34	A005
+S0612	E003	T002	2025-12-06 10:00:39	2025-12-06 12:00:39	A005
 S0053	E031	T003	2025-09-28 22:00:00	2025-09-29 06:00:00	\N
 S0065	E043	T003	2025-10-11 14:00:00	2025-10-11 22:00:00	\N
 S0003	E030	T003	2025-11-15 14:00:00	2025-11-15 22:00:00	\N
@@ -15766,7 +15775,9 @@ S0202	E003	T006	2025-09-23 14:00:00	2025-09-23 22:00:00	A031
 S0207	E046	T006	2025-10-22 22:00:00	2025-10-23 06:00:00	A106
 S0210	E030	T006	2025-09-27 14:00:00	2025-09-27 22:00:00	A048
 S0212	E043	T006	2025-09-14 08:00:00	2025-09-14 16:00:00	A144
+S0608	E003	T002	2025-12-06 10:00:31	2025-12-06 12:00:31	A005
 S0407	E046	T003	2025-10-21 22:00:00	2025-10-22 06:00:00	\N
+S0609	E003	T002	2025-12-06 10:00:57	2025-12-06 12:00:57	A005
 S0412	E041	T003	2025-11-26 08:00:00	2025-11-26 16:00:00	\N
 S0413	E017	T003	2025-10-26 14:00:00	2025-10-26 22:00:00	\N
 S0414	E025	T003	2025-11-27 08:00:00	2025-11-27 16:00:00	\N
@@ -15845,6 +15856,7 @@ S0298	E018	T006	2025-09-12 14:00:00	2025-09-12 22:00:00	A085
 S0301	E033	T006	2025-11-05 22:00:00	2025-11-06 06:00:00	A072
 S0302	E023	T006	2025-09-22 22:00:00	2025-09-23 06:00:00	A186
 S0303	E018	T006	2025-09-09 08:00:00	2025-09-09 16:00:00	A079
+S0610	E003	T002	2025-12-06 10:00:04	2025-12-06 12:00:04	A005
 S0062	E030	T001	2025-10-25 08:00:00	2025-10-25 16:00:00	A060
 S0063	E037	T001	2025-10-01 22:00:00	2025-10-02 06:00:00	A070
 S0064	E034	T002	2025-09-11 22:00:00	2025-09-12 06:00:00	A114
@@ -16186,6 +16198,8 @@ COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 42	E020	Endangered	2025-12-04
 43	E025	Endangered	2025-12-04
 44	E030	Endangered	2025-12-04
+45	E003	Bird	2025-12-04
+46	E003	Bird	2025-12-04
 \.
 
 
@@ -18216,6 +18230,8 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2020	F020	\N	2025-12-02 18:42:04.184634	5000.000	purchase	\N
 2021	F010	\N	2025-12-02 18:50:41.725143	-27.800	feeding	2001
 2022	F001	\N	2025-12-02 19:49:38.712857	-1.000	feeding	2002
+2048	F001	\N	2025-12-04 20:20:37.945621	-3.000	feeding	2020
+2059	F001	\N	2025-12-04 20:21:34.656217	50.000	purchase	\N
 2023	F001	\N	2025-12-02 19:50:08.517437	-1.000	feeding	2003
 2024	F001	\N	2025-12-02 19:50:08.532364	-10.000	feeding	2004
 2025	F001	\N	2025-12-02 19:50:08.541614	-10.000	feeding	2006
@@ -18235,6 +18251,30 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2039	F001	\N	2025-12-04 19:53:24.954005	50.000	purchase	\N
 2040	F001	\N	2025-12-04 19:56:20.927147	-5.000	feeding	2016
 2041	F001	\N	2025-12-04 19:56:21.026464	50.000	purchase	\N
+2042	F001	\N	2025-12-04 20:05:31.118291	-5.000	feeding	2017
+2043	F001	\N	2025-12-04 20:05:31.219288	50.000	purchase	\N
+2044	F001	\N	2025-12-04 20:18:57.751082	-5.000	feeding	2018
+2045	F001	\N	2025-12-04 20:18:57.844737	50.000	purchase	\N
+2049	F001	\N	2025-12-04 20:20:37.945643	-3.000	feeding	2021
+2060	F001	\N	2025-12-04 20:36:54.966504	-3.000	feeding	2031
+2065	F001	\N	2025-12-04 20:42:32.367987	-3.000	feeding	2036
+2050	F001	\N	2025-12-04 20:20:37.946047	-3.000	feeding	2022
+2061	F001	\N	2025-12-04 20:36:54.966595	-3.000	feeding	2032
+2066	F001	\N	2025-12-04 20:42:39.329708	-5.000	feeding	2037
+2051	F001	\N	2025-12-04 20:20:37.946105	-3.000	feeding	2023
+2062	F001	\N	2025-12-04 20:36:54.966668	-3.000	feeding	2033
+2067	F001	\N	2025-12-04 20:42:39.438181	50.000	purchase	\N
+2052	F001	\N	2025-12-04 20:20:37.946295	-3.000	feeding	2024
+2063	F001	\N	2025-12-04 20:36:54.966698	-3.000	feeding	2034
+2053	F001	\N	2025-12-04 20:21:25.127562	-3.000	feeding	2025
+2064	F001	\N	2025-12-04 20:36:54.968729	-3.000	feeding	2035
+2054	F001	\N	2025-12-04 20:21:25.127608	-3.000	feeding	2026
+2055	F001	\N	2025-12-04 20:21:25.128343	-3.000	feeding	2027
+2056	F001	\N	2025-12-04 20:21:25.128759	-3.000	feeding	2028
+2057	F001	\N	2025-12-04 20:21:25.131119	-3.000	feeding	2029
+2058	F001	\N	2025-12-04 20:21:34.568568	-5.000	feeding	2030
+2046	F001	\N	2025-12-04 20:19:04.042845	-5.000	feeding	2019
+2047	F001	\N	2025-12-04 20:19:04.140855	50.000	purchase	\N
 \.
 
 
@@ -20245,9 +20285,13 @@ COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_
 2000	A199	F001	E038	2025-07-24 00:00:00	19.40
 2001	A030	F010	E003	2025-12-02 18:50:41.725143	27.80
 2002	A001	F001	E003	2025-12-02 19:49:38.712857	1.00
+2020	A002	F001	E003	2025-12-04 20:20:37.945621	3.00
+2030	A002	F001	E003	2025-12-04 20:21:34.568568	5.00
+2031	A002	F001	E003	2025-12-04 20:36:54.966504	3.00
 2003	A001	F001	E003	2025-12-02 19:50:08.517437	1.00
 2004	A001	F001	E003	2025-12-02 19:50:08.532364	10.00
 2005	A001	F001	E003	2025-12-02 19:50:08.532364	10.00
+2036	A002	F001	E003	2025-12-04 20:42:32.367987	3.00
 2006	A001	F001	E003	2025-12-02 19:50:08.541614	10.00
 2007	A001	F001	E003	2025-12-02 19:50:32.56224	1.00
 2008	A001	F001	E003	2025-12-02 19:50:32.587871	10.00
@@ -20258,7 +20302,24 @@ COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_
 2013	A001	F001	E003	2025-12-02 19:56:24.043404	7.00
 2016	A002	F001	E003	2025-12-04 19:56:20.927147	5.00
 2014	A001	F001	E003	2025-12-02 19:57:14.016742	7.00
+2017	A002	F001	E003	2025-12-04 20:05:31.118291	5.00
 2015	A002	F001	E003	2025-12-04 19:53:24.8455	5.00
+2018	A002	F001	E003	2025-12-04 20:18:57.751082	5.00
+2021	A002	F001	E003	2025-12-04 20:20:37.945643	3.00
+2032	A002	F001	E003	2025-12-04 20:36:54.966595	3.00
+2037	A002	F001	E003	2025-12-04 20:42:39.329708	5.00
+2022	A002	F001	E003	2025-12-04 20:20:37.946047	3.00
+2033	A002	F001	E003	2025-12-04 20:36:54.966668	3.00
+2023	A002	F001	E003	2025-12-04 20:20:37.946105	3.00
+2034	A002	F001	E003	2025-12-04 20:36:54.966698	3.00
+2024	A002	F001	E003	2025-12-04 20:20:37.946295	3.00
+2035	A002	F001	E003	2025-12-04 20:36:54.968729	3.00
+2025	A002	F001	E003	2025-12-04 20:21:25.127562	3.00
+2026	A002	F001	E003	2025-12-04 20:21:25.127608	3.00
+2027	A002	F001	E003	2025-12-04 20:21:25.128343	3.00
+2028	A002	F001	E003	2025-12-04 20:21:25.128759	3.00
+2029	A002	F001	E003	2025-12-04 20:21:25.131119	3.00
+2019	A002	F001	E003	2025-12-04 20:19:04.042845	5.00
 \.
 
 
@@ -20519,5 +20580,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ETFSsvgsi7tJOzV1cJFNal9myy5taEObswEKnnH9llB4jw1S4ySwbfw13PeSE4q
+\unrestrict RJIdfrhEZKoF9CnkpvACOsmK12OK8tcz67gLJXVl4nWrri89lIQOcEclIxdKZaw
 
