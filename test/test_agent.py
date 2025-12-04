@@ -198,7 +198,8 @@ class TestAgent:
     def test_admin_11_manage_skills(self):
         print("\n[Admin 11/11] Manage Skills...")
         backend = self.get_backend()
-        success, msg = backend.add_employee_skill("E003", "Bird")
+        # Use valid skill type: Carnivore, Penguin, or Endangered
+        success, msg = backend.add_employee_skill("E009", "Carnivore")
         if success or "duplicate" in msg:
             print(f"[PASS] Skill managed. Msg: {msg}")
         else:

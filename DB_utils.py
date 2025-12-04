@@ -174,10 +174,24 @@ class ZooBackend:
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
 
+        # Validate amount
+        try:
+            amount_val = float(amount)
+        except (TypeError, ValueError):
+            return False, "進貨數量格式錯誤"
+        
+        if amount_val <= 0:
+            return False, "進貨數量必須為正數"
+
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
-                # 1. Update Inventory
+                
+                # Check if feed exists
+                cur.execute(f"SELECT 1 FROM {TABLE_FEEDS} WHERE {COL_FEED_ID} = %s", (f_id,))
+                if not cur.fetchone():
+                    return False, "飼料不存在"
+                
                 # Generate ID
                 cur.execute(f"SELECT COALESCE(MAX(CAST({COL_STOCK_ID} AS INTEGER)), 0) + 1 FROM {TABLE_INVENTORY}")
                 new_sid = str(cur.fetchone()[0])
@@ -186,7 +200,7 @@ class ZooBackend:
                     INSERT INTO {TABLE_INVENTORY} ({COL_STOCK_ID}, f_id, quantity_delta_kg, datetime, reason)
                     VALUES (%s, %s, %s, NOW(), 'purchase')
                 """
-                cur.execute(query, (new_sid, f_id, amount))
+                cur.execute(query, (new_sid, f_id, amount_val))
                 conn.commit()
                 return True, "進貨成功，庫存已更新。"
         except Exception as e:
@@ -229,9 +243,30 @@ class ZooBackend:
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
 
+        # Validate time
+        from datetime import datetime
+        try:
+            start_dt = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+            end_dt = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+        except (ValueError, TypeError):
+            return False, "時間格式錯誤，請使用 YYYY-MM-DD HH:MM:SS"
+        
+        if end_dt <= start_dt:
+            return False, "結束時間必須晚於開始時間"
+
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
+                
+                # Check if task exists
+                cur.execute(f"SELECT 1 FROM {TABLE_TASK} WHERE t_id = %s", (t_id,))
+                if not cur.fetchone():
+                    return False, "工作項目不存在"
+                
+                # Check if employee exists
+                cur.execute(f"SELECT 1 FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s", (e_id,))
+                if not cur.fetchone():
+                    return False, "員工不存在"
                 
                 # 1. Skill Check (Warning)
                 if a_id:
@@ -568,9 +603,25 @@ class ZooBackend:
         """
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
+        
+        # Validate inputs
+        if not target_e_id or not skill_name:
+            return False, "員工 ID 和證照名稱不能為空"
+        
+        # Valid skill types
+        valid_skills = ['Carnivore', 'Penguin', 'Endangered']
+        if skill_name not in valid_skills:
+            return False, f"無效的證照類型，有效選項: {', '.join(valid_skills)}"
+        
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
+                
+                # Check if employee exists
+                cur.execute(f"SELECT 1 FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s", (target_e_id,))
+                if not cur.fetchone():
+                    return False, "員工不存在"
+                
                 cur.execute(f"INSERT INTO {TABLE_EMPLOYEE_SKILLS} (e_id, skill_name) VALUES (%s, %s)", (target_e_id, skill_name))
                 conn.commit()
                 return True, f"已授予 {target_e_id} '{skill_name}' 證照。"
