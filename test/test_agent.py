@@ -15,6 +15,10 @@ class TestAgent:
     def __init__(self):
         print("[Test Agent] Initialized. Starting Full Coverage Test (11 Admin + 6 User).")
 
+    def get_backend(self):
+        """Create and return a new ZooBackend instance."""
+        return ZooBackend()
+
     def test_user_01_add_feeding(self):
         print("\n[User 1/6] Add Feeding Record...")
         backend = self.get_backend()
@@ -158,6 +162,26 @@ class TestAgent:
             print(f"[PASS] Risk list fetched. Count: {len(risks)}")
         else:
             print(f"[FAIL] Failed.")
+        backend.close()
+
+    def test_admin_08_view_trends(self):
+        print("\n[Admin 8/11] View Animal Trends...")
+        backend = self.get_backend()
+        data = backend.get_animal_trends("A001")
+        if data:
+            print(f"[PASS] Trends fetched. Points: {len(data)}")
+        else:
+            print(f"[FAIL] No trend data.")
+        backend.close()
+
+    def test_admin_09_view_ref_data(self):
+        print("\n[Admin 9/11] View Reference Data...")
+        backend = self.get_backend()
+        data = backend.get_reference_data("animal")
+        if len(data) > 0:
+            print(f"[PASS] Reference data fetched. Count: {len(data)}")
+        else:
+            print(f"[FAIL] No data found.")
         backend.close()
 
     def test_admin_10_view_careless(self):
