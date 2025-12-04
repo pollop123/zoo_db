@@ -52,6 +52,29 @@ class ClientHandler(threading.Thread):
         self.addr = addr
         self.db_backend = db_backend
 
+    def _format_params(self, action_name, params):
+        """格式化參數摘要用於日誌"""
+        if action_name == "login":
+            return params.get("e_id", "-")
+        elif action_name == "add_feeding":
+            return f"{params.get('a_id')}, {params.get('f_id')}, {params.get('amount')}kg"
+        elif action_name == "add_animal_state":
+            return f"{params.get('a_id')}, {params.get('weight')}kg"
+        elif action_name == "add_inventory_stock":
+            return f"{params.get('f_id')}, +{params.get('amount')}kg"
+        elif action_name == "assign_task":
+            return f"{params.get('e_id')} -> {params.get('t_id')}, {params.get('a_id') or '無指定動物'}"
+        elif action_name == "correct_record":
+            return f"{params.get('table')}, ID:{params.get('record_id')}"
+        elif action_name == "add_employee_skill":
+            return f"{params.get('target_e_id')} <- {params.get('skill_name')}"
+        elif action_name == "get_animal_trends":
+            return params.get("a_id", "-")
+        elif action_name == "get_reference_data":
+            return params.get("table_name", "-")
+        else:
+            return "-"
+
     def run(self):
         print(f"[NEW CONNECTION] {self.addr} connected.")
         try:
@@ -66,21 +89,25 @@ class ClientHandler(threading.Thread):
                     action_name = request.get('action')
                     params = request.get('data', {})
                     
-                    print(f"[{self.addr}] Request Action: {action_name}")
+                    # 取得操作者 ID
+                    user_id = params.get('user_id') or params.get('e_id') or '-'
+                    
+                    # 格式化參數摘要
+                    param_summary = self._format_params(action_name, params)
                     
                     if action_name in ACTION_MAP:
                         action_cls = ACTION_MAP[action_name]
                         action_instance = action_cls()
-                        
-                        # Execute Action
-                        # Note: In a real app, we should check permissions here using Role
-                        # But for now, we trust the client or the action to handle it.
-                        # The DB_utils is shared, so we rely on its internal handling.
-                        # For strictly correct threading with transactions, we might need a lock
-                        # or separate DB instances. For this project, we'll share.
                         response = action_instance.execute(self.db_backend, **params)
+                        
+                        # 格式化結果
+                        status = "成功" if response.get("success") else "失敗"
+                        msg = response.get("message", "")[:50]  # 截斷過長訊息
+                        
+                        print(f"[{user_id}] {action_name} -> {param_summary} -> {status}: {msg}")
                     else:
                         response = {"success": False, "message": f"Unknown action: {action_name}"}
+                        print(f"[{user_id}] {action_name} -> 未知操作")
                     
                     # Send response
                     self.conn.sendall(json.dumps(response, default=str).encode('utf-8'))
