@@ -51,6 +51,29 @@ class NetworkClient:
 console = Console()
 client = NetworkClient()
 
+# 返回標記
+BACK = "__BACK__"
+
+def prompt_with_back(message, **kwargs):
+    """帶有返回功能的輸入提示，輸入 'b' 或 'back' 返回上一頁"""
+    hint = f"{message} [dim](輸入 b 返回)[/dim]"
+    value = Prompt.ask(hint, **kwargs)
+    if value.lower() in ['b', 'back', '返回']:
+        return BACK
+    return value
+
+def float_prompt_with_back(message):
+    """帶有返回功能的數字輸入"""
+    hint = f"{message} [dim](輸入 b 返回)[/dim]"
+    while True:
+        value = Prompt.ask(hint)
+        if value.lower() in ['b', 'back', '返回']:
+            return BACK
+        try:
+            return float(value)
+        except ValueError:
+            console.print("[red]請輸入有效數字[/red]")
+
 def login_screen():
     console.clear()
     console.print(Panel.fit("動物園管理系統 (Zoo Management System)", style="bold blue"))
@@ -144,20 +167,30 @@ def show_admin_menu(user_id, name):
 
 def manage_skills_ui():
     console.print("[bold]管理員工證照[/bold]")
-    target_e_id = Prompt.ask("請輸入員工 ID")
+    
+    target_e_id = prompt_with_back("請輸入員工 ID")
+    if target_e_id == BACK:
+        return
     
     console.print("\n[bold]可用證照列表:[/bold]")
     console.print("1. Carnivore (猛獸專家)")
     console.print("2. Penguin (企鵝專家)")
     console.print("3. Endangered (珍稀動物專家)")
     
-    choice = Prompt.ask("請選擇證照代號", choices=["1", "2", "3"])
+    choice = prompt_with_back("請選擇證照代號 (1-3)")
+    if choice == BACK:
+        return
     
     skill_map = {
         "1": "Carnivore",
         "2": "Penguin",
         "3": "Endangered"
     }
+    
+    if choice not in skill_map:
+        console.print("[red]無效的選擇[/red]")
+        return
+    
     skill_name = skill_map[choice]
     
     response = client.send_request("add_employee_skill", {
@@ -172,7 +205,10 @@ def manage_skills_ui():
 
 def add_feeding_ui(user_id):
     console.print("[bold]新增餵食紀錄[/bold]")
-    a_id = Prompt.ask("請輸入動物 ID")
+    
+    a_id = prompt_with_back("請輸入動物 ID")
+    if a_id == BACK:
+        return
     
     # [UX] Show recent records
     response = client.send_request("get_recent_records", {"table_name": TABLE_FEEDING, "filter_id": a_id})
@@ -186,13 +222,17 @@ def add_feeding_ui(user_id):
             r_table.add_row(str(r[1]), r[2], str(r[3]))
         console.print(r_table)
     
-    f_id = Prompt.ask("請輸入飼料 ID (例如: F001)")
+    f_id = prompt_with_back("請輸入飼料 ID (例如: F001)")
+    if f_id == BACK:
+        return
     
-    while True:
-        amount = FloatPrompt.ask("請輸入數量 (kg)")
-        if amount > 0:
-            break
+    amount = float_prompt_with_back("請輸入數量 (kg)")
+    if amount == BACK:
+        return
+    
+    if amount <= 0:
         console.print("[red]數量必須大於 0[/red]")
+        return
         
     response = client.send_request("add_feeding", {
         "a_id": a_id, "f_id": f_id, "amount": amount, "user_id": user_id
@@ -205,7 +245,10 @@ def add_feeding_ui(user_id):
 
 def add_body_info_ui(user_id):
     console.print("[bold]新增身體資訊[/bold]")
-    a_id = Prompt.ask("請輸入動物 ID")
+    
+    a_id = prompt_with_back("請輸入動物 ID")
+    if a_id == BACK:
+        return
     
     # [UX] Show recent records
     response = client.send_request("get_recent_records", {"table_name": TABLE_ANIMAL_STATE, "filter_id": a_id})
@@ -218,11 +261,13 @@ def add_body_info_ui(user_id):
             r_table.add_row(str(r[1]), str(r[2]))
         console.print(r_table)
     
-    while True:
-        weight = FloatPrompt.ask("請輸入體重 (kg)")
-        if weight > 0:
-            break
+    weight = float_prompt_with_back("請輸入體重 (kg)")
+    if weight == BACK:
+        return
+    
+    if weight <= 0:
         console.print("[red]體重必須大於 0[/red]")
+        return
         
     # [NEW] Select Status
     state_id = 1 # Default Normal
@@ -234,18 +279,14 @@ def add_body_info_ui(user_id):
             for s in statuses:
                 console.print(f"{s[0]}. {s[1]} ({s[2]})")
             
-            while True:
+            state_input = prompt_with_back("請輸入狀態 ID (預設 1)")
+            if state_input == BACK:
+                return
+            if state_input:
                 try:
-                    state_input = IntPrompt.ask("請輸入狀態 ID", default=1)
-                    # Validate input
-                    valid_ids = [s[0] for s in statuses]
-                    if state_input in valid_ids:
-                        state_id = state_input
-                        break
-                    else:
-                        console.print("[red]無效的 ID，請重新輸入[/red]")
-                except:
-                    console.print("[red]請輸入數字[/red]")
+                    state_id = int(state_input)
+                except ValueError:
+                    state_id = 1
 
     response = client.send_request("add_animal_state", {
         "a_id": a_id, "weight": weight, "user_id": user_id, "state_id": state_id
@@ -280,15 +321,29 @@ def view_schedule_ui(user_id):
 
 def assign_task_ui(user_id):
     console.print("[bold]指派工作 / 排班[/bold]")
-    target_e_id = Prompt.ask("請輸入目標員工 ID")
-    t_id = Prompt.ask("請輸入工作 ID")
     
-    start_time = Prompt.ask("請輸入開始時間 (YYYY-MM-DD HH:MM:SS)")
-    end_time = Prompt.ask("請輸入結束時間 (YYYY-MM-DD HH:MM:SS)")
+    target_e_id = prompt_with_back("請輸入目標員工 ID")
+    if target_e_id == BACK:
+        return
+    
+    t_id = prompt_with_back("請輸入工作 ID")
+    if t_id == BACK:
+        return
+    
+    start_time = prompt_with_back("請輸入開始時間 (YYYY-MM-DD HH:MM:SS)")
+    if start_time == BACK:
+        return
+    
+    end_time = prompt_with_back("請輸入結束時間 (YYYY-MM-DD HH:MM:SS)")
+    if end_time == BACK:
+        return
     
     # Optional a_id
-    a_id = Prompt.ask("請輸入負責動物 ID (選填, 若無請直接 Enter)", default="")
-    if a_id == "": a_id = None
+    a_id = prompt_with_back("請輸入負責動物 ID (選填, 若無請直接 Enter)")
+    if a_id == BACK:
+        return
+    if a_id == "": 
+        a_id = None
     
     response = client.send_request("assign_task", {
         "e_id": target_e_id, "t_id": t_id, "start_time": start_time, "end_time": end_time, "a_id": a_id
@@ -301,13 +356,18 @@ def assign_task_ui(user_id):
 
 def restock_inventory_ui(user_id):
     console.print("[bold]庫存進貨[/bold]")
-    f_id = Prompt.ask("請輸入飼料 ID")
     
-    while True:
-        amount = FloatPrompt.ask("請輸入數量 (kg)")
-        if 0 < amount < 100000:
-            break
+    f_id = prompt_with_back("請輸入飼料 ID")
+    if f_id == BACK:
+        return
+    
+    amount = float_prompt_with_back("請輸入數量 (kg)")
+    if amount == BACK:
+        return
+    
+    if amount <= 0 or amount >= 100000:
         console.print("[red]數量必須大於 0 且小於 100,000[/red]")
+        return
         
     response = client.send_request("add_inventory_stock", {
         "f_id": f_id, "amount": amount, "user_id": user_id
@@ -329,11 +389,18 @@ def correct_record_ui(user_id):
     console.print(f"1. {TABLE_FEEDING} (餵食紀錄)")
     console.print(f"2. {TABLE_ANIMAL_STATE} (動物狀態)")
     
-    t_choice = Prompt.ask("選擇", choices=["1", "2"])
+    t_choice = prompt_with_back("選擇 (1-2)")
+    if t_choice == BACK:
+        return
+    if t_choice not in table_map:
+        console.print("[red]無效的選擇[/red]")
+        return
     table = table_map[t_choice]
     
     # Step 1: Filter by Animal ID to find records
-    a_id = Prompt.ask("請輸入動物 ID 以搜尋紀錄")
+    a_id = prompt_with_back("請輸入動物 ID 以搜尋紀錄")
+    if a_id == BACK:
+        return
     
     response = client.send_request("get_recent_records", {
         "table_name": table, "filter_id": a_id
@@ -362,7 +429,9 @@ def correct_record_ui(user_id):
     console.print(r_table)
     
     # Step 2: Select Record ID
-    record_id = Prompt.ask("請輸入要修正的紀錄 ID (參考上表)")
+    record_id = prompt_with_back("請輸入要修正的紀錄 ID (參考上表)")
+    if record_id == BACK:
+        return
     
     col_choice = ""
     col_name = ""
@@ -370,15 +439,22 @@ def correct_record_ui(user_id):
     if table == TABLE_FEEDING:
         console.print("請選擇要修正的欄位:")
         console.print(f"1. {COL_AMOUNT} (餵食量)")
-        console.print("2. feed_date (時間 - 不建議手動修改)")
-        col_choice = Prompt.ask("選擇", choices=["1"])
-        if col_choice == "1": col_name = COL_AMOUNT
+        col_choice = prompt_with_back("選擇")
+        if col_choice == BACK:
+            return
+        if col_choice == "1": 
+            col_name = COL_AMOUNT
+        else:
+            console.print("[red]無效的選擇[/red]")
+            return
         
     elif table == TABLE_ANIMAL_STATE:
         # Only one choice, auto-select
         col_name = COL_WEIGHT
 
-    new_val = FloatPrompt.ask(f"請輸入 {col_name} 的正確數值")
+    new_val = float_prompt_with_back(f"請輸入 {col_name} 的正確數值")
+    if new_val == BACK:
+        return
     
     response = client.send_request("correct_record", {
         "user_id": user_id, "table": table, "record_id": record_id, 
@@ -492,7 +568,10 @@ def view_inventory_report_ui():
 
 def view_animal_trends_ui():
     console.print("[bold]查詢個別動物趨勢[/bold]")
-    a_id = Prompt.ask("請輸入動物 ID")
+    
+    a_id = prompt_with_back("請輸入動物 ID")
+    if a_id == BACK:
+        return
     
     response = client.send_request("get_animal_trends", {"a_id": a_id})
     weights = response.get("weights", [])
@@ -538,7 +617,12 @@ def view_reference_data_ui():
     console.print("3. 工作 (Tasks)")
     console.print("4. 員工 (Employees)")
     
-    choice = Prompt.ask("請選擇資料表", choices=["1", "2", "3", "4"])
+    choice = prompt_with_back("請選擇資料表 (1-4)")
+    if choice == BACK:
+        return
+    if choice not in ["1", "2", "3", "4"]:
+        console.print("[red]無效的選擇[/red]")
+        return
     
     table_name = ""
     title = ""
