@@ -407,17 +407,17 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 # Get all live animals
-                cur.execute(f"SELECT a_id, species FROM animal WHERE life_status = 'In_Zoo'")
+                cur.execute(f"SELECT a_id, a_name FROM animal WHERE life_status = 'In_Zoo'")
                 animals = cur.fetchall()
             
             # Connection is returned here.
             # Now iterate and call check_weight_anomaly which gets its own connection.
-            for a_id, species in animals:
+            for a_id, a_name in animals:
                 is_anomaly, msg, pct = self.check_weight_anomaly(a_id)
                 if is_anomaly:
                     anomalies_found.append({
                         "id": a_id,
-                        "name": species,
+                        "name": a_name,
                         "msg": msg,
                         "pct": pct
                     })
@@ -747,8 +747,7 @@ class ZooBackend:
                 query = ""
                 
                 if table_name == "animal":
-                    # Animal table has no name, use species twice or species + sex
-                    query = f"SELECT a_id, species, sex FROM {TABLE_ANIMAL} ORDER BY a_id"
+                    query = f"SELECT a_id, a_name, species FROM {TABLE_ANIMAL} ORDER BY a_id"
                 elif table_name == "feeds":
                     query = f"SELECT f_id, feed_name, category FROM {TABLE_FEEDS} ORDER BY f_id"
                 elif table_name == "task":
