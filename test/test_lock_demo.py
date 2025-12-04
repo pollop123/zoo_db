@@ -192,7 +192,43 @@ def demo_lock_timeout():
     
     print("\n[結論] 交易 B 必須等待交易 A 釋放 Lock 後才能繼續執行。")
 
+def restore_database():
+    """還原資料庫"""
+    import subprocess
+    
+    backup_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo.backup")
+    
+    print("\n[還原] 正在還原資料庫...")
+    
+    try:
+        env = os.environ.copy()
+        env['PGPASSWORD'] = PG_PASSWORD
+        
+        result = subprocess.run(
+            ['psql', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, '-d', PG_DB, '-f', backup_path],
+            capture_output=True,
+            text=True,
+            env=env
+        )
+        
+        if result.returncode == 0:
+            print("[還原] 資料庫已還原至初始狀態")
+        else:
+            print(f"[還原] 警告: {result.stderr[:100] if result.stderr else '未知錯誤'}")
+            
+    except FileNotFoundError:
+        print("[還原] 錯誤: 找不到 psql，請手動還原:")
+        print(f"  psql -U {PG_USER} -d {PG_DB} < zoo.backup")
+    except Exception as e:
+        print(f"[還原] 錯誤: {e}")
+
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Zoo DB Lock 機制展示')
+    parser.add_argument('--no-restore', action='store_true', help='展示後不還原資料庫')
+    args = parser.parse_args()
+    
     print("\n" + "#" * 60)
     print("# Zoo DB - 併發控制 (Lock) 機制展示")
     print("#" * 60)
@@ -205,4 +241,10 @@ if __name__ == "__main__":
     
     print("\n" + "#" * 60)
     print("# 展示結束")
-    print("#" * 60 + "\n")
+    print("#" * 60)
+    
+    # 自動還原
+    if not args.no_restore:
+        restore_database()
+    else:
+        print("\n[提示] 已跳過資料庫還原 (--no-restore)")
