@@ -253,9 +253,10 @@ def show_admin_menu(user_id, name):
         console.print("9. [查詢代碼表] View Reference Data")
         console.print("10. [冒失鬼名單] View Careless Employees")
         console.print("11. [管理員工證照] Manage Employee Skills")
+        console.print("12. [飲食管理] Manage Animal Diet")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "0"])
         
         if choice == "1":
             view_audit_logs_ui()
@@ -279,6 +280,8 @@ def show_admin_menu(user_id, name):
             view_careless_employees_ui()
         elif choice == "11":
             manage_skills_ui()
+        elif choice == "12":
+            manage_diet_ui()
         elif choice == "0":
             break
 
@@ -320,6 +323,164 @@ def manage_skills_ui():
     else:
         console.print(f"[red]{response.get('message')}[/red]")
 
+def manage_diet_ui():
+    """飲食管理 (Admin)"""
+    while True:
+        console.print("\n[bold]飲食管理[/bold]")
+        console.print("1. 查看所有飲食設定")
+        console.print("2. 查看特定物種飲食")
+        console.print("3. 新增可食用飼料")
+        console.print("4. 移除可食用飼料")
+        console.print("0. 返回")
+        
+        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "4", "0"])
+        
+        if choice == "1":
+            # 查看所有飲食設定
+            response = client.send_request("get_all_diet_settings", {})
+            data = response.get("data", [])
+            if not data:
+                console.print("[yellow]尚無飲食設定[/yellow]")
+                continue
+            
+            table = Table(title="所有物種飲食設定")
+            table.add_column("物種", style="cyan")
+            table.add_column("飼料 ID", style="yellow")
+            table.add_column("飼料名稱", style="green")
+            table.add_column("類別", style="dim")
+            
+            for species, f_id, feed_name, category in data:
+                table.add_row(species, f_id, feed_name, category)
+            console.print(table)
+            
+        elif choice == "2":
+            # 查看特定物種
+            species = prompt_with_back("請輸入物種名稱 (例如: Lion)")
+            if species == BACK:
+                continue
+            
+            response = client.send_request("get_animal_diet", {"species": species})
+            feeds = response.get("data", [])
+            
+            if not feeds:
+                console.print(f"[yellow]{species} 尚無飲食設定[/yellow]")
+                continue
+            
+            table = Table(title=f"{species} 可食用飼料")
+            table.add_column("飼料 ID", style="cyan")
+            table.add_column("飼料名稱", style="green")
+            table.add_column("類別", style="yellow")
+            
+            for f_id, feed_name, category in feeds:
+                table.add_row(f_id, feed_name, category)
+            console.print(table)
+            
+        elif choice == "3":
+            # 新增飼料
+            # 先顯示物種列表
+            response = client.send_request("get_all_species", {})
+            species_list = response.get("data", [])
+            console.print("\n[bold]可用物種:[/bold]")
+            for i, s in enumerate(species_list, 1):
+                console.print(f"  {i}. {s}")
+            
+            species = prompt_with_back("請輸入物種名稱")
+            if species == BACK:
+                continue
+            
+            # 顯示所有飼料
+            response = client.send_request("get_all_feeds", {})
+            feeds = response.get("data", [])
+            console.print("\n[bold]可用飼料:[/bold]")
+            table = Table()
+            table.add_column("ID", style="cyan")
+            table.add_column("名稱", style="green")
+            table.add_column("類別", style="yellow")
+            for f_id, name, cat in feeds:
+                table.add_row(f_id, name, cat)
+            console.print(table)
+            
+            f_id = prompt_with_back("請輸入飼料 ID")
+            if f_id == BACK:
+                continue
+            
+            response = client.send_request("add_diet", {"species": species, "f_id": f_id})
+            if response.get("success"):
+                console.print(f"[green]{response.get('message')}[/green]")
+            else:
+                console.print(f"[red]{response.get('message')}[/red]")
+            
+        elif choice == "4":
+            # 移除飼料
+            species = prompt_with_back("請輸入物種名稱")
+            if species == BACK:
+                continue
+            
+            # 顯示目前該物種的飼料
+            response = client.send_request("get_animal_diet", {"species": species})
+            feeds = response.get("data", [])
+            
+            if not feeds:
+                console.print(f"[yellow]{species} 尚無飲食設定[/yellow]")
+                continue
+            
+            console.print(f"\n[bold]{species} 目前可食用:[/bold]")
+            for f_id, name, cat in feeds:
+                console.print(f"  {f_id} - {name} ({cat})")
+            
+            f_id = prompt_with_back("請輸入要移除的飼料 ID")
+            if f_id == BACK:
+                continue
+            
+            response = client.send_request("remove_diet", {"species": species, "f_id": f_id})
+            if response.get("success"):
+                console.print(f"[green]{response.get('message')}[/green]")
+            else:
+                console.print(f"[red]{response.get('message')}[/red]")
+            
+        elif choice == "0":
+            break
+
+def select_feed_for_animal(species):
+    """選擇該物種可食用的飼料，回傳 f_id 或 BACK"""
+    response = client.send_request("get_animal_diet", {"species": species})
+    feeds = response.get("data", [])
+    
+    if not feeds:
+        console.print(f"[yellow]{species} 尚未設定可食用飼料，請聯繫管理員[/yellow]")
+        return BACK
+    
+    console.print(f"\n[bold cyan]{species} 可食用的飼料：[/bold cyan]")
+    table = Table(show_header=True, header_style="bold")
+    table.add_column("#", style="dim", width=4)
+    table.add_column("ID", style="cyan")
+    table.add_column("飼料名稱", style="green")
+    table.add_column("類別", style="yellow")
+    
+    for i, (f_id, feed_name, category) in enumerate(feeds, 1):
+        table.add_row(str(i), f_id, feed_name, category)
+    
+    console.print(table)
+    
+    choice = prompt_with_back("請選擇飼料 (輸入編號)")
+    if choice == BACK:
+        return BACK
+    
+    try:
+        idx = int(choice) - 1
+        if 0 <= idx < len(feeds):
+            return feeds[idx][0]  # f_id
+        else:
+            console.print("[red]無效的選擇[/red]")
+            return BACK
+    except ValueError:
+        # 允許直接輸入 f_id
+        for feed in feeds:
+            if feed[0].upper() == choice.upper():
+                return feed[0]
+        console.print("[red]無效的選擇[/red]")
+        return BACK
+
 def add_feeding_ui(user_id):
     console.print("[bold]新增餵食紀錄[/bold]")
     
@@ -342,7 +503,8 @@ def add_feeding_ui(user_id):
             r_table.add_row(str(r[1]), r[2], str(r[3]))
         console.print(r_table)
     
-    f_id = prompt_with_back("請輸入飼料 ID (例如: F001)")
+    # 選擇該動物可食用的飼料
+    f_id = select_feed_for_animal(species)
     if f_id == BACK:
         return
     
@@ -362,6 +524,7 @@ def add_feeding_ui(user_id):
         console.print(f"[green]{response.get('message')}[/green]")
     else:
         console.print(f"[red]{response.get('message')}[/red]")
+
 
 def add_body_info_ui(user_id):
     console.print("[bold]新增身體資訊[/bold]")

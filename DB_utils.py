@@ -302,6 +302,118 @@ class ZooBackend:
             print(f"Error fetching my animals: {e}")
             return []
 
+    # ===== 飲食管理 =====
+    
+    def get_animal_diet(self, species):
+        """查詢某物種可食用的飼料"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    SELECT d.f_id, f.feed_name, f.category
+                    FROM animal_diet d
+                    JOIN feeds f ON d.f_id = f.f_id
+                    WHERE d.species = %s
+                    ORDER BY f.category, f.f_id
+                """, (species,))
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching animal diet: {e}")
+            return []
+
+    def get_all_diet_settings(self):
+        """查詢所有物種的飲食設定"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("""
+                    SELECT d.species, d.f_id, f.feed_name, f.category
+                    FROM animal_diet d
+                    JOIN feeds f ON d.f_id = f.f_id
+                    ORDER BY d.species, f.category, f.f_id
+                """)
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching diet settings: {e}")
+            return []
+
+    def add_diet(self, species, f_id):
+        """新增某物種可食用的飼料"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                # 檢查物種是否存在
+                cur.execute("SELECT DISTINCT species FROM animal WHERE species = %s", (species,))
+                if not cur.fetchone():
+                    return False, f"物種 {species} 不存在"
+                
+                # 檢查飼料是否存在
+                cur.execute("SELECT feed_name FROM feeds WHERE f_id = %s", (f_id,))
+                feed = cur.fetchone()
+                if not feed:
+                    return False, f"飼料 {f_id} 不存在"
+                
+                cur.execute("INSERT INTO animal_diet (species, f_id) VALUES (%s, %s)", (species, f_id))
+                conn.commit()
+                return True, f"已新增 {species} 可食用 {feed[0]}"
+        except psycopg2.errors.UniqueViolation:
+            return False, "此飲食設定已存在"
+        except Exception as e:
+            return False, f"新增失敗: {e}"
+
+    def remove_diet(self, species, f_id):
+        """移除某物種可食用的飼料"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("DELETE FROM animal_diet WHERE species = %s AND f_id = %s", (species, f_id))
+                if cur.rowcount == 0:
+                    return False, "找不到此飲食設定"
+                conn.commit()
+                return True, f"已移除 {species} 的飼料 {f_id}"
+        except Exception as e:
+            return False, f"移除失敗: {e}"
+
+    def get_all_species(self):
+        """取得所有物種列表"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("SELECT DISTINCT species FROM animal ORDER BY species")
+                return [r[0] for r in cur.fetchall()]
+        except Exception as e:
+            print(f"Error fetching species: {e}")
+            return []
+
+    def get_all_feeds(self):
+        """取得所有飼料列表"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("SELECT f_id, feed_name, category FROM feeds ORDER BY category, f_id")
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching feeds: {e}")
+            return []
+
     def assign_task(self, e_id, t_id, start_time, end_time, a_id=None):
         """
         [NEW] 指派工作/排班 (Admin)

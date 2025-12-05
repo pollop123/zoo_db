@@ -18,6 +18,11 @@ from action.analysis import (
 from action.reference import GetReferenceDataAction
 from action.body_info import AddAnimalStateAction
 from action.skill import AddEmployeeSkillAction
+from action.diet import (
+    GetAnimalDietAction, GetAllDietSettingsAction, 
+    AddDietAction, RemoveDietAction,
+    GetAllSpeciesAction, GetAllFeedsAction
+)
 
 # Configuration
 HOST = '127.0.0.1'
@@ -48,7 +53,13 @@ ACTION_MAP = {
     "get_careless_employees": GetCarelessEmployeesAction,
     "get_reference_data": GetReferenceDataAction,
     "add_animal_state": AddAnimalStateAction,
-    "add_employee_skill": AddEmployeeSkillAction
+    "add_employee_skill": AddEmployeeSkillAction,
+    "get_animal_diet": GetAnimalDietAction,
+    "get_all_diet_settings": GetAllDietSettingsAction,
+    "add_diet": AddDietAction,
+    "remove_diet": RemoveDietAction,
+    "get_all_species": GetAllSpeciesAction,
+    "get_all_feeds": GetAllFeedsAction,
 }
 
 class ClientHandler(threading.Thread):
