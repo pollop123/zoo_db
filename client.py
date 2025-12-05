@@ -167,16 +167,40 @@ def select_my_animal(user_id):
         console.print("[red]無效的選擇[/red]")
         return BACK
 
+def forgot_password_screen():
+    """忘記密碼功能"""
+    console.print("\n[bold yellow]忘記密碼[/bold yellow]")
+    e_id = Prompt.ask("請輸入員工 ID 以查詢密碼")
+    
+    response = client.send_request("forgot_password", {"e_id": e_id})
+    
+    if response.get("success"):
+        name = response.get("name")
+        password = response.get("password")
+        console.print("─" * 30)
+        console.print(f"員工: [cyan]{name}[/cyan] ({e_id})")
+        console.print(f"密碼: [green]{password}[/green]")
+        console.print("─" * 30)
+    else:
+        console.print(f"[red]{response.get('message')}[/red]")
+
 def login_screen():
     console.clear()
     console.print(Panel.fit("動物園管理系統 (Zoo Management System)", style="bold blue"))
     
     while True:
-        e_id = Prompt.ask("請輸入員工 ID (或輸入 'q' 離開)")
+        e_id = Prompt.ask("請輸入員工 ID [dim](q: 離開, f: 忘記密碼)[/dim]")
+        
         if e_id.lower() in ['q', 'quit', 'exit']:
             sys.exit()
+        
+        if e_id.lower() == 'f':
+            forgot_password_screen()
+            continue
             
-        response = client.send_request("login", {"e_id": e_id})
+        password = Prompt.ask("請輸入密碼", password=True)
+        
+        response = client.send_request("login", {"e_id": e_id, "password": password})
         
         if response.get("success"):
             name = response.get("name")

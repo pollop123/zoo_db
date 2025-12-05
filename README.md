@@ -111,6 +111,10 @@ python server.py
 python client.py
 ```
 
+### 登入資訊
+- **預設密碼**: `zoo123` (所有帳號)
+- **忘記密碼**: 在登入畫面輸入 `f` 可查詢
+
 ### 執行自動化測試
 ```bash
 python test/test_agent.py

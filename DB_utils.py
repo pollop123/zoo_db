@@ -58,11 +58,12 @@ class ZooBackend:
         finally:
             self.pg_pool.putconn(conn)
 
-    def login(self, e_id):
+    def login(self, e_id, password=None):
         """
         A. 身份驗證與基礎 (Auth)
         1. 查詢 SQL 確認狀態為 active。
-        2. [NoSQL] 寫入登入 Log。
+        2. 驗證密碼 (SHA256)。
+        3. [NoSQL] 寫入登入 Log。
         """
         if not self.pg_pool:
             return False, None, None, "資料庫連線池未初始化"
@@ -71,12 +72,12 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 # 1. Check SQL (Query without status filter first)
-                query = f"SELECT {COL_NAME}, {COL_ROLE}, {COL_STATUS} FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s"
+                query = f"SELECT {COL_NAME}, {COL_ROLE}, {COL_STATUS}, password_hash FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s"
                 cur.execute(query, (e_id,))
                 result = cur.fetchone()
 
                 if result:
-                    name, role, status = result
+                    name, role, status, password_hash = result
                     
                     if status != 'active':
                         # Log failed attempt (Inactive)
@@ -89,7 +90,21 @@ class ZooBackend:
                         self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
                         return False, None, None, f"登入失敗: 帳號狀態異常 ({status})"
 
-                    # 2. [NoSQL] Log login (Success)
+                    # 2. 驗證密碼
+                    if password:
+                        import hashlib
+                        input_hash = hashlib.sha256(password.encode()).hexdigest()
+                        if input_hash != password_hash:
+                            log_entry = {
+                                "event_type": "LOGIN",
+                                "employee_id": e_id,
+                                "timestamp": datetime.now().isoformat(),
+                                "status": "FAILED (Wrong Password)"
+                            }
+                            self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
+                            return False, None, None, "登入失敗: 密碼錯誤"
+
+                    # 3. [NoSQL] Log login (Success)
                     log_entry = {
                         "event_type": "LOGIN",
                         "employee_id": e_id,
@@ -112,6 +127,28 @@ class ZooBackend:
         except Exception as e:
             print(f"Login error: {e}")
             return False, None, None, f"登入失敗: {e}"
+
+    def get_employee_password(self, e_id):
+        """查詢員工密碼（忘記密碼功能，僅供展示）"""
+        if not self.pg_pool:
+            return None, None, "資料庫連線池未初始化"
+
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                # 我們存的是 hash，所以回傳預設密碼
+                query = f"SELECT {COL_NAME}, password_hash FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s"
+                cur.execute(query, (e_id,))
+                result = cur.fetchone()
+                
+                if result:
+                    name = result[0]
+                    # 預設密碼是 zoo123
+                    return name, "zoo123", None
+                else:
+                    return None, None, "查無此員工 ID"
+        except Exception as e:
+            return None, None, f"查詢失敗: {e}"
 
 
 

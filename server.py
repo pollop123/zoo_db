@@ -5,7 +5,7 @@ import traceback
 from DB_utils import ZooBackend
 
 # Import Actions
-from action.auth import LoginAction, LogoutAction
+from action.auth import LoginAction, LogoutAction, ForgotPasswordAction
 from action.feeding import AddFeedingAction
 from action.inventory import AddInventoryStockAction, GetInventoryReportAction
 from action.schedule import GetEmployeeScheduleAction, GetMyAnimalsAction, AssignTaskAction
@@ -31,6 +31,7 @@ online_lock = threading.Lock()
 ACTION_MAP = {
     "login": LoginAction,
     "logout": LogoutAction,
+    "forgot_password": ForgotPasswordAction,
     "add_feeding": AddFeedingAction,
     "add_inventory_stock": AddInventoryStockAction,
     "get_inventory_report": GetInventoryReportAction,
