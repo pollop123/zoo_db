@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict UOFLE8bib1UHA59jkHocoa0Ew4r592MxkOrDEQgbyrLU53KeSovv0iTXz7DIbb1
+\restrict DqAkqWoB3YsQk7aCQklBbkcjfHt8DUz6HXYh2F5ERfQDWhp9vNjQv9NjrC3vWgx
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -24,7 +24,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: animal; Type: TABLE; Schema: public; Owner: -
+-- Name: animal; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.animal (
@@ -39,8 +39,10 @@ CREATE TABLE public.animal (
 );
 
 
+ALTER TABLE public.animal OWNER TO postgres;
+
 --
--- Name: animal_diet; Type: TABLE; Schema: public; Owner: -
+-- Name: animal_diet; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.animal_diet (
@@ -49,8 +51,10 @@ CREATE TABLE public.animal_diet (
 );
 
 
+ALTER TABLE public.animal_diet OWNER TO postgres;
+
 --
--- Name: animal_state_record; Type: TABLE; Schema: public; Owner: -
+-- Name: animal_state_record; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.animal_state_record (
@@ -63,8 +67,10 @@ CREATE TABLE public.animal_state_record (
 );
 
 
+ALTER TABLE public.animal_state_record OWNER TO postgres;
+
 --
--- Name: animal_state_record_state_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: animal_state_record_state_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.animal_state_record_state_id_seq
@@ -75,15 +81,17 @@ CREATE SEQUENCE public.animal_state_record_state_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.animal_state_record_state_id_seq OWNER TO postgres;
+
 --
--- Name: animal_state_record_state_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: animal_state_record_state_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.animal_state_record_state_id_seq OWNED BY public.animal_state_record.state_id;
 
 
 --
--- Name: employee; Type: TABLE; Schema: public; Owner: -
+-- Name: employee; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.employee (
@@ -100,8 +108,10 @@ CREATE TABLE public.employee (
 );
 
 
+ALTER TABLE public.employee OWNER TO postgres;
+
 --
--- Name: employee_shift; Type: TABLE; Schema: public; Owner: -
+-- Name: employee_shift; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.employee_shift (
@@ -114,8 +124,10 @@ CREATE TABLE public.employee_shift (
 );
 
 
+ALTER TABLE public.employee_shift OWNER TO postgres;
+
 --
--- Name: employee_skills; Type: TABLE; Schema: public; Owner: -
+-- Name: employee_skills; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.employee_skills (
@@ -126,8 +138,10 @@ CREATE TABLE public.employee_skills (
 );
 
 
+ALTER TABLE public.employee_skills OWNER TO postgres;
+
 --
--- Name: employee_skills_skill_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: employee_skills_skill_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.employee_skills_skill_id_seq
@@ -139,15 +153,17 @@ CREATE SEQUENCE public.employee_skills_skill_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.employee_skills_skill_id_seq OWNER TO postgres;
+
 --
--- Name: employee_skills_skill_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: employee_skills_skill_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.employee_skills_skill_id_seq OWNED BY public.employee_skills.skill_id;
 
 
 --
--- Name: feeding_inventory; Type: TABLE; Schema: public; Owner: -
+-- Name: feeding_inventory; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.feeding_inventory (
@@ -162,8 +178,10 @@ CREATE TABLE public.feeding_inventory (
 );
 
 
+ALTER TABLE public.feeding_inventory OWNER TO postgres;
+
 --
--- Name: feeding_records; Type: TABLE; Schema: public; Owner: -
+-- Name: feeding_records; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.feeding_records (
@@ -176,8 +194,10 @@ CREATE TABLE public.feeding_records (
 );
 
 
+ALTER TABLE public.feeding_records OWNER TO postgres;
+
 --
--- Name: feeds; Type: TABLE; Schema: public; Owner: -
+-- Name: feeds; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.feeds (
@@ -188,8 +208,10 @@ CREATE TABLE public.feeds (
 );
 
 
+ALTER TABLE public.feeds OWNER TO postgres;
+
 --
--- Name: status_type; Type: TABLE; Schema: public; Owner: -
+-- Name: status_type; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.status_type (
@@ -199,8 +221,10 @@ CREATE TABLE public.status_type (
 );
 
 
+ALTER TABLE public.status_type OWNER TO postgres;
+
 --
--- Name: status_type_s_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: status_type_s_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE public.status_type_s_id_seq
@@ -211,15 +235,17 @@ CREATE SEQUENCE public.status_type_s_id_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.status_type_s_id_seq OWNER TO postgres;
+
 --
--- Name: status_type_s_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: status_type_s_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE public.status_type_s_id_seq OWNED BY public.status_type.s_id;
 
 
 --
--- Name: task; Type: TABLE; Schema: public; Owner: -
+-- Name: task; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.task (
@@ -228,29 +254,31 @@ CREATE TABLE public.task (
 );
 
 
+ALTER TABLE public.task OWNER TO postgres;
+
 --
--- Name: animal_state_record state_id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: animal_state_record state_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_state_record ALTER COLUMN state_id SET DEFAULT nextval('public.animal_state_record_state_id_seq'::regclass);
 
 
 --
--- Name: employee_skills skill_id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: employee_skills skill_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_skills ALTER COLUMN skill_id SET DEFAULT nextval('public.employee_skills_skill_id_seq'::regclass);
 
 
 --
--- Name: status_type s_id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: status_type s_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.status_type ALTER COLUMN s_id SET DEFAULT nextval('public.status_type_s_id_seq'::regclass);
 
 
 --
--- Data for Name: animal; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: animal; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.animal (a_id, species, sex, life_status, required_skill, a_name) FROM stdin;
@@ -458,7 +486,7 @@ A194	Hippopotamus	M	Deceased	Endangered	嘟嘟2號
 
 
 --
--- Data for Name: animal_diet; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: animal_diet; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.animal_diet (species, f_id) FROM stdin;
@@ -488,15 +516,24 @@ African Elephant	F009
 African Elephant	F010
 Hippopotamus	F009
 Hippopotamus	F010
+African Elephant	F001
 \.
 
 
 --
--- Data for Name: animal_state_record; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: animal_state_record; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, recorded_by) FROM stdin;
+15007	A002	2025-12-05 15:23:06.66114	205.00	1	E003
 15	A072	2024-12-27 11:52:49	5592.20	1	E011
+15008	A002	2025-12-05 15:25:14.910041	205.00	1	E003
+15009	A002	2025-12-05 15:32:16.172793	200.00	1	E003
+15010	A002	2025-12-05 15:32:40.705107	200.00	1	E003
+15011	A002	2025-12-05 15:33:15.573527	200.00	1	E003
+15012	A002	2025-12-05 15:33:38.910654	200.00	1	E003
+15013	A002	2025-12-05 15:37:12.829938	200.00	1	E003
+15014	A002	2025-12-05 15:37:49.984899	200.00	1	E003
 11651	A166	2025-03-25 01:36:34	2613.90	5	E037
 11670	A177	2025-07-10 00:04:31	3160.60	4	E023
 11679	A194	2025-10-31 06:55:18	2196.40	5	E037
@@ -15506,12 +15543,10 @@ COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, re
 
 
 --
--- Data for Name: employee; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: employee; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.employee (e_id, e_name, sex, phone, start_time, status, role, password_hash) FROM stdin;
-E002	廖文龍	M	0976-372619	2021-08-02 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
-E003	李建宏	M	(09) 87347440	2022-06-30 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E004	江俊豪	M	09-7590773	2022-07-09 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E005	黃慧玲	Unknown	06-63921451	2024-02-19 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E006	王志豪	M	(06) 97836921	2025-11-01 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
@@ -15537,6 +15572,7 @@ E025	任淑華	F	00 8370474	2025-03-10 00:00:00	leave	User	7bb4825e0ec98e03b99da
 E026	劉慧玲	Unknown	(01) 76157065	2025-10-02 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E027	施承翰	M	(02) 71282914	2025-02-19 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E028	江美珍	Unknown	0950-609062	2025-05-16 00:00:00	inactive	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
+E002	廖文龍	M	0976-372619	2021-08-02 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E029	周鈺婷	Unknown	06 9348775	2025-04-21 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E030	李明輝	M	02-3496812	2021-04-09 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E031	吳淑華	Unknown	09-8805138	2023-01-10 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
@@ -15560,11 +15596,12 @@ E048	王碧珠	F	02-77915604	2021-09-19 00:00:00	leave	User	7bb4825e0ec98e03b99d
 E049	黃玉蘭	Unknown	0999625132	2022-11-27 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E050	陳美珠	F	033 86227838	2021-12-07 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E001	郭雅惠	F	06-8403339	2025-07-20 00:00:00	active	Admin	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
+E003	李建宏	M	(09) 87347440	2022-06-30 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 \.
 
 
 --
--- Data for Name: employee_shift; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: employee_shift; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.employee_shift (shift_id, e_id, t_id, shift_start, shift_end, a_id) FROM stdin;
@@ -15801,6 +15838,7 @@ S0608	E003	T002	2025-12-06 10:00:31	2025-12-06 12:00:31	A005
 S0626	E003	T002	2025-12-07 10:00:21	2025-12-07 12:00:21	A005
 S0407	E046	T003	2025-10-21 22:00:00	2025-10-22 06:00:00	\N
 S0609	E003	T002	2025-12-06 10:00:57	2025-12-06 12:00:57	A005
+S0627	E003	T002	2025-12-07 10:00:06	2025-12-07 12:00:06	A005
 S0412	E041	T003	2025-11-26 08:00:00	2025-11-26 16:00:00	\N
 S0413	E017	T003	2025-10-26 14:00:00	2025-10-26 22:00:00	\N
 S0414	E025	T003	2025-11-27 08:00:00	2025-11-27 16:00:00	\N
@@ -15880,6 +15918,7 @@ S0301	E033	T006	2025-11-05 22:00:00	2025-11-06 06:00:00	A072
 S0302	E023	T006	2025-09-22 22:00:00	2025-09-23 06:00:00	A186
 S0303	E018	T006	2025-09-09 08:00:00	2025-09-09 16:00:00	A079
 S0610	E003	T002	2025-12-06 10:00:04	2025-12-06 12:00:04	A005
+S0628	E003	T002	2025-12-07 10:00:15	2025-12-07 12:00:15	A005
 S0062	E030	T001	2025-10-25 08:00:00	2025-10-25 16:00:00	A060
 S0063	E037	T001	2025-10-01 22:00:00	2025-10-02 06:00:00	A070
 S0064	E034	T002	2025-09-11 22:00:00	2025-09-12 06:00:00	A114
@@ -16198,12 +16237,14 @@ S0605	E005	T006	2026-01-05 00:00:00	2026-01-05 23:59:59	A004
 
 
 --
--- Data for Name: employee_skills; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: employee_skills; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 1	E001	Carnivore	2025-12-02
 45	E003	Bird	2025-12-04
+50	E009	Carnivore	2025-12-05
+51	E009	Carnivore	2025-12-05
 23	E003	Carnivore	2025-12-02
 24	E004	Carnivore	2025-12-02
 25	E006	Carnivore	2025-12-03
@@ -16224,11 +16265,13 @@ COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 43	E025	Endangered	2025-12-04
 44	E030	Endangered	2025-12-04
 47	E009	Carnivore	2025-12-05
+48	E009	Carnivore	2025-12-05
+49	E009	Carnivore	2025-12-05
 \.
 
 
 --
--- Data for Name: feeding_inventory; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: feeding_inventory; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quantity_delta_kg, reason, feeding_id) FROM stdin;
@@ -18254,6 +18297,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2020	F020	\N	2025-12-02 18:42:04.184634	5000.000	purchase	\N
 2021	F010	\N	2025-12-02 18:50:41.725143	-27.800	feeding	2001
 2022	F001	\N	2025-12-02 19:49:38.712857	-1.000	feeding	2002
+2113	F001	\N	2025-12-05 15:37:50.056734	10.000	purchase	\N
 2059	F001	\N	2025-12-04 20:21:34.656217	50.000	purchase	\N
 2023	F001	\N	2025-12-02 19:50:08.517437	-1.000	feeding	2003
 2024	F001	\N	2025-12-02 19:50:08.532364	-10.000	feeding	2004
@@ -18295,6 +18339,8 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2089	F001	\N	2025-12-05 13:37:49.233866	-5.000	feeding	\N
 2091	F001	\N	2025-12-05 13:53:57.194231	-5.000	feeding	\N
 2049	F001	\N	2025-12-04 20:20:37.945643	-3.000	feeding	\N
+2100	F001	\N	2025-12-05 15:25:14.894595	-5.000	feeding	2016
+2102	F001	\N	2025-12-05 15:32:16.160069	-5.000	feeding	2017
 2080	F001	\N	2025-12-04 23:10:58.026377	50.000	purchase	\N
 2082	F001	\N	2025-12-04 23:11:35.660582	50.000	purchase	\N
 2084	F001	\N	2025-12-04 23:18:05.009254	50.000	purchase	\N
@@ -18307,36 +18353,57 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2069	F001	\N	2025-12-04 20:49:10.330295	-5.000	feeding	\N
 2072	F001	\N	2025-12-04 20:57:42.870852	-5.000	feeding	\N
 2050	F001	\N	2025-12-04 20:20:37.946047	-3.000	feeding	\N
+2101	F001	\N	2025-12-05 15:25:14.9997	50.000	purchase	\N
+2103	F001	\N	2025-12-05 15:32:16.237738	10.000	purchase	\N
 2067	F001	\N	2025-12-04 20:42:39.438181	50.000	purchase	\N
 2070	F001	\N	2025-12-04 20:49:10.422082	50.000	purchase	\N
 2073	F001	\N	2025-12-04 20:57:42.994747	50.000	purchase	\N
 2093	F001	\N	2025-12-05 13:57:20.519397	-5.000	feeding	\N
 2062	F001	\N	2025-12-04 20:36:54.966668	-3.000	feeding	\N
 2051	F001	\N	2025-12-04 20:20:37.946105	-3.000	feeding	\N
+2104	F001	\N	2025-12-05 15:32:40.688931	-5.000	feeding	2018
 2094	F001	\N	2025-12-05 13:57:20.628393	50.000	purchase	\N
 2063	F001	\N	2025-12-04 20:36:54.966698	-3.000	feeding	\N
 2052	F001	\N	2025-12-04 20:20:37.946295	-3.000	feeding	\N
+2105	F001	\N	2025-12-05 15:32:40.760973	10.000	purchase	\N
 2095	F001	\N	2025-12-05 14:01:21.281756	-5.000	feeding	\N
 2064	F001	\N	2025-12-04 20:36:54.968729	-3.000	feeding	\N
 2053	F001	\N	2025-12-04 20:21:25.127562	-3.000	feeding	\N
+2106	F001	\N	2025-12-05 15:33:15.561118	-5.000	feeding	2019
 2096	F001	\N	2025-12-05 14:01:21.402113	50.000	purchase	\N
 2054	F001	\N	2025-12-04 20:21:25.127608	-3.000	feeding	\N
+2107	F001	\N	2025-12-05 15:33:15.628102	10.000	purchase	\N
 2097	F003	\N	2025-12-05 14:05:09.362881	-7.000	feeding	\N
 2055	F001	\N	2025-12-04 20:21:25.128343	-3.000	feeding	\N
+2108	F001	\N	2025-12-05 15:33:38.896495	-5.000	feeding	2020
 2048	F001	\N	2025-12-04 20:20:37.945621	-3.000	feeding	\N
 2056	F001	\N	2025-12-04 20:21:25.128759	-3.000	feeding	\N
+2109	F001	\N	2025-12-05 15:33:38.975405	10.000	purchase	\N
 2057	F001	\N	2025-12-04 20:21:25.131119	-3.000	feeding	\N
+2098	F001	\N	2025-12-05 15:23:06.641934	-5.000	feeding	2015
+2110	F001	\N	2025-12-05 15:37:12.815388	-5.000	feeding	2021
 2058	F001	\N	2025-12-04 20:21:34.568568	-5.000	feeding	\N
 2046	F001	\N	2025-12-04 20:19:04.042845	-5.000	feeding	\N
+2099	F001	\N	2025-12-05 15:23:06.747706	50.000	purchase	\N
+2111	F001	\N	2025-12-05 15:37:12.905997	10.000	purchase	\N
 2047	F001	\N	2025-12-04 20:19:04.140855	50.000	purchase	\N
+2112	F001	\N	2025-12-05 15:37:49.970651	-5.000	feeding	2022
 \.
 
 
 --
--- Data for Name: feeding_records; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: feeding_records; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_amount_kg) FROM stdin;
+2015	A002	F001	E003	2025-12-05 15:23:06.641934	5.00
+2017	A002	F001	E003	2025-12-05 15:32:16.160069	5.00
+2016	A002	F001	E003	2025-12-05 15:25:14.894595	5.00
+2018	A002	F001	E003	2025-12-05 15:32:40.688931	5.00
+2019	A002	F001	E003	2025-12-05 15:33:15.561118	5.00
+2020	A002	F001	E003	2025-12-05 15:33:38.896495	5.00
+2021	A002	F001	E003	2025-12-05 15:37:12.815388	5.00
+2022	A002	F001	E003	2025-12-05 15:37:49.970651	5.00
 1932	A100	F002	E042	2025-06-20 00:00:00	56.50
 1953	A193	F010	E029	2025-09-11 00:00:00	58.43
 1969	A135	F005	E045	2025-11-28 00:00:00	77.15
@@ -20350,12 +20417,12 @@ COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_
 2011	A001	F001	E003	2025-12-02 19:50:32.589155	1.05
 2012	A001	F001	E003	2025-12-02 19:50:32.58998	1.35
 2013	A001	F001	E003	2025-12-02 19:56:24.043404	1.06
-2014	A001	F001	E003	2025-12-02 19:57:14.016742	1.43
+2014	A001	F001	E003	2025-12-02 19:57:14.016742	7.50
 \.
 
 
 --
--- Data for Name: feeds; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: feeds; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.feeds (f_id, feed_name, category) FROM stdin;
@@ -20383,7 +20450,7 @@ F020	Mineral Salt Block	other
 
 
 --
--- Data for Name: status_type; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: status_type; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.status_type (s_id, s_name, description) FROM stdin;
@@ -20397,7 +20464,7 @@ COPY public.status_type (s_id, s_name, description) FROM stdin;
 
 
 --
--- Data for Name: task; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: task; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.task (t_id, t_name) FROM stdin;
@@ -20411,28 +20478,28 @@ T006	日常照護
 
 
 --
--- Name: animal_state_record_state_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: animal_state_record_state_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.animal_state_record_state_id_seq', 1, false);
 
 
 --
--- Name: employee_skills_skill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: employee_skills_skill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.employee_skills_skill_id_seq', 47, true);
 
 
 --
--- Name: status_type_s_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: status_type_s_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.status_type_s_id_seq', 6, true);
 
 
 --
--- Name: animal_diet animal_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: animal_diet animal_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_diet
@@ -20440,7 +20507,7 @@ ALTER TABLE ONLY public.animal_diet
 
 
 --
--- Name: animal animal_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: animal animal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal
@@ -20448,7 +20515,7 @@ ALTER TABLE ONLY public.animal
 
 
 --
--- Name: animal_state_record animal_state_record_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: animal_state_record animal_state_record_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_state_record
@@ -20456,7 +20523,7 @@ ALTER TABLE ONLY public.animal_state_record
 
 
 --
--- Name: employee employee_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: employee employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee
@@ -20464,7 +20531,7 @@ ALTER TABLE ONLY public.employee
 
 
 --
--- Name: employee_shift employee_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_shift employee_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_shift
@@ -20472,7 +20539,7 @@ ALTER TABLE ONLY public.employee_shift
 
 
 --
--- Name: employee_skills employee_skills_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_skills employee_skills_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_skills
@@ -20480,7 +20547,7 @@ ALTER TABLE ONLY public.employee_skills
 
 
 --
--- Name: feeding_inventory feeding_inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_inventory feeding_inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_inventory
@@ -20488,7 +20555,7 @@ ALTER TABLE ONLY public.feeding_inventory
 
 
 --
--- Name: feeding_records feeding_records_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_records feeding_records_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_records
@@ -20496,7 +20563,7 @@ ALTER TABLE ONLY public.feeding_records
 
 
 --
--- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeds
@@ -20504,7 +20571,7 @@ ALTER TABLE ONLY public.feeds
 
 
 --
--- Name: status_type status_type_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: status_type status_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.status_type
@@ -20512,7 +20579,7 @@ ALTER TABLE ONLY public.status_type
 
 
 --
--- Name: status_type status_type_s_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: status_type status_type_s_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.status_type
@@ -20520,7 +20587,7 @@ ALTER TABLE ONLY public.status_type
 
 
 --
--- Name: task task_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: task task_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.task
@@ -20528,7 +20595,7 @@ ALTER TABLE ONLY public.task
 
 
 --
--- Name: animal_diet animal_diet_f_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: animal_diet animal_diet_f_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_diet
@@ -20536,7 +20603,7 @@ ALTER TABLE ONLY public.animal_diet
 
 
 --
--- Name: employee_skills employee_skills_e_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_skills employee_skills_e_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_skills
@@ -20544,7 +20611,7 @@ ALTER TABLE ONLY public.employee_skills
 
 
 --
--- Name: feeding_records fk_feeding_animal; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_records fk_feeding_animal; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_records
@@ -20552,7 +20619,7 @@ ALTER TABLE ONLY public.feeding_records
 
 
 --
--- Name: feeding_records fk_feeding_employee; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_records fk_feeding_employee; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_records
@@ -20560,7 +20627,7 @@ ALTER TABLE ONLY public.feeding_records
 
 
 --
--- Name: feeding_records fk_feeding_feed; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_records fk_feeding_feed; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_records
@@ -20568,7 +20635,7 @@ ALTER TABLE ONLY public.feeding_records
 
 
 --
--- Name: feeding_inventory fk_inventory_feed; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_inventory fk_inventory_feed; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_inventory
@@ -20576,7 +20643,7 @@ ALTER TABLE ONLY public.feeding_inventory
 
 
 --
--- Name: feeding_inventory fk_inventory_feeding; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: feeding_inventory fk_inventory_feeding; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.feeding_inventory
@@ -20584,7 +20651,7 @@ ALTER TABLE ONLY public.feeding_inventory
 
 
 --
--- Name: employee_shift fk_shift_animal; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_shift fk_shift_animal; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_shift
@@ -20592,7 +20659,7 @@ ALTER TABLE ONLY public.employee_shift
 
 
 --
--- Name: employee_shift fk_shift_employee; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_shift fk_shift_employee; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_shift
@@ -20600,7 +20667,7 @@ ALTER TABLE ONLY public.employee_shift
 
 
 --
--- Name: employee_shift fk_shift_task; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: employee_shift fk_shift_task; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.employee_shift
@@ -20608,7 +20675,7 @@ ALTER TABLE ONLY public.employee_shift
 
 
 --
--- Name: animal_state_record fk_state_record_animal; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: animal_state_record fk_state_record_animal; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_state_record
@@ -20616,7 +20683,7 @@ ALTER TABLE ONLY public.animal_state_record
 
 
 --
--- Name: animal_state_record fk_state_record_employee; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: animal_state_record fk_state_record_employee; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.animal_state_record
@@ -20627,5 +20694,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UOFLE8bib1UHA59jkHocoa0Ew4r592MxkOrDEQgbyrLU53KeSovv0iTXz7DIbb1
+\unrestrict DqAkqWoB3YsQk7aCQklBbkcjfHt8DUz6HXYh2F5ERfQDWhp9vNjQv9NjrC3vWgx
 
