@@ -726,7 +726,7 @@ def add_feeding_ui(user_id):
     
     # [即時警告] 檢查食量是否異常
     if records:
-        recent_amounts = [r[3] for r in records[:5] if r[3] is not None]
+        recent_amounts = [Decimal(str(r[3])) for r in records[:5] if r[3] is not None]
         if recent_amounts:
             avg_amount = sum(recent_amounts) / len(recent_amounts)
             if avg_amount > 0:
@@ -784,7 +784,7 @@ def add_body_info_ui(user_id):
     
     # [即時警告] 檢查體重是否異常
     if records:
-        recent_weights = [r[2] for r in records[:5] if r[2] is not None]
+        recent_weights = [Decimal(str(r[2])) for r in records[:5] if r[2] is not None]
         if recent_weights:
             last_weight = recent_weights[0]  # 最近一筆
             if last_weight > 0:
