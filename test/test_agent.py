@@ -234,30 +234,56 @@ class TestAgent:
         """Restore PostgreSQL database from backup."""
         import subprocess
         
-        backup_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo.backup")
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sql_backup = os.path.join(base_dir, "zoo_backup.sql")
+        custom_backup = os.path.join(base_dir, "zoo.backup")
         
-        print("\n[Restore] Restoring database from zoo.backup...")
+        # 優先使用純文字備份，較新且相容性好
+        if os.path.exists(sql_backup):
+            backup_path = sql_backup
+            use_pg_restore = False
+            print("\n[Restore] Restoring database from zoo_backup.sql...")
+        elif os.path.exists(custom_backup):
+            backup_path = custom_backup
+            use_pg_restore = True
+            print("\n[Restore] Restoring database from zoo.backup...")
+        else:
+            print("[Restore] Error: No backup file found.")
+            return
         
         try:
-            # Use psql to restore (zoo.backup is plain SQL format)
             env = os.environ.copy()
             env['PGPASSWORD'] = PG_PASSWORD
             
-            result = subprocess.run(
-                ['psql', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, '-d', PG_DB, '-f', backup_path],
-                capture_output=True,
-                text=True,
-                env=env
-            )
+            if use_pg_restore:
+                # 自訂格式用 pg_restore
+                result = subprocess.run(
+                    ['pg_restore', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, 
+                     '-d', PG_DB, '--clean', '--if-exists', backup_path],
+                    capture_output=True,
+                    text=True,
+                    env=env
+                )
+            else:
+                # 純文字格式用 psql
+                result = subprocess.run(
+                    ['psql', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, '-d', PG_DB, '-f', backup_path],
+                    capture_output=True,
+                    text=True,
+                    env=env
+                )
             
             if result.returncode == 0:
                 print("[Restore] Database restored successfully.")
             else:
-                print(f"[Restore] Warning: {result.stderr[:200] if result.stderr else 'Unknown error'}")
+                # psql 還原時常有 NOTICE 訊息，不算錯誤
+                if "ERROR" in (result.stderr or ""):
+                    print(f"[Restore] Warning: {result.stderr[:200]}")
+                else:
+                    print("[Restore] Database restored successfully.")
                 
         except FileNotFoundError:
-            print("[Restore] Error: psql not found. Please restore manually:")
-            print(f"  psql -U {PG_USER} -d {PG_DB} < zoo.backup")
+            print("[Restore] Error: psql/pg_restore not found. Please restore manually.")
         except Exception as e:
             print(f"[Restore] Error: {e}")
 
