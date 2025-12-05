@@ -249,10 +249,9 @@ def show_admin_menu(user_id, name):
         console.print("6. [冒失鬼名單] View Careless Employees")
         console.print("7. [員工管理] Manage Employees")
         console.print("8. [飲食管理] Manage Animal Diet")
-        console.print("9. [查詢動物趨勢] View Animal Trends")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "0"])
         
         if choice == "1":
             view_audit_logs_ui()
@@ -270,8 +269,6 @@ def show_admin_menu(user_id, name):
             manage_employees_ui()
         elif choice == "8":
             manage_diet_ui()
-        elif choice == "9":
-            view_animal_trends_ui()
         elif choice == "0":
             break
 
