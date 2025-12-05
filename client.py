@@ -457,7 +457,11 @@ def manage_employees_ui():
             table.add_column("角色", style="yellow")
             table.add_column("狀態", style="dim")
             
-            for e_id, name, role, status in data:
+            for emp in data:
+                e_id = emp.get("e_id", "")
+                name = emp.get("e_name", "")
+                role = emp.get("role", "")
+                status = emp.get("e_status", "")
                 status_style = "green" if status == "active" else "red"
                 table.add_row(e_id, name, role, f"[{status_style}]{status}[/{status_style}]")
             console.print(table)
