@@ -23,6 +23,10 @@ from action.diet import (
     AddDietAction, RemoveDietAction,
     GetAllSpeciesAction, GetAllFeedsAction
 )
+from action.employee import (
+    ChangePasswordAction, GetAllEmployeesAction,
+    AddEmployeeAction, UpdateEmployeeStatusAction, UpdateEmployeeRoleAction
+)
 
 # Configuration
 HOST = '127.0.0.1'
@@ -60,6 +64,11 @@ ACTION_MAP = {
     "remove_diet": RemoveDietAction,
     "get_all_species": GetAllSpeciesAction,
     "get_all_feeds": GetAllFeedsAction,
+    "change_password": ChangePasswordAction,
+    "get_all_employees": GetAllEmployeesAction,
+    "add_employee": AddEmployeeAction,
+    "update_employee_status": UpdateEmployeeStatusAction,
+    "update_employee_role": UpdateEmployeeRoleAction,
 }
 
 class ClientHandler(threading.Thread):

@@ -150,6 +150,114 @@ class ZooBackend:
         except Exception as e:
             return None, None, f"查詢失敗: {e}"
 
+    # ===== 員工管理 =====
+    
+    def change_password(self, e_id, old_password, new_password):
+        """修改密碼"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        import hashlib
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                # 驗證舊密碼
+                cur.execute(f"SELECT password_hash FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s", (e_id,))
+                result = cur.fetchone()
+                if not result:
+                    return False, "查無此員工"
+                
+                old_hash = hashlib.sha256(old_password.encode()).hexdigest()
+                if old_hash != result[0]:
+                    return False, "舊密碼錯誤"
+                
+                # 更新新密碼
+                new_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                cur.execute(f"UPDATE {TABLE_EMPLOYEES} SET password_hash = %s WHERE {COL_EMPLOYEE_ID} = %s", (new_hash, e_id))
+                conn.commit()
+                return True, "密碼修改成功"
+        except Exception as e:
+            return False, f"修改失敗: {e}"
+
+    def get_all_employees(self):
+        """取得所有員工列表"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"""
+                    SELECT {COL_EMPLOYEE_ID}, {COL_NAME}, {COL_ROLE}, {COL_STATUS}
+                    FROM {TABLE_EMPLOYEES}
+                    ORDER BY {COL_EMPLOYEE_ID}
+                """)
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching employees: {e}")
+            return []
+
+    def add_employee(self, e_id, name, role='User'):
+        """新增員工"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        import hashlib
+        default_password = hashlib.sha256("zoo123".encode()).hexdigest()
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"""
+                    INSERT INTO {TABLE_EMPLOYEES} ({COL_EMPLOYEE_ID}, {COL_NAME}, {COL_ROLE}, {COL_STATUS}, password_hash)
+                    VALUES (%s, %s, %s, 'active', %s)
+                """, (e_id, name, role, default_password))
+                conn.commit()
+                return True, f"已新增員工 {name} ({e_id})，預設密碼: zoo123"
+        except psycopg2.errors.UniqueViolation:
+            return False, f"員工 ID {e_id} 已存在"
+        except Exception as e:
+            return False, f"新增失敗: {e}"
+
+    def update_employee_status(self, e_id, status):
+        """更新員工狀態 (active/inactive)"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        if status not in ['active', 'inactive']:
+            return False, "狀態必須是 active 或 inactive"
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"UPDATE {TABLE_EMPLOYEES} SET {COL_STATUS} = %s WHERE {COL_EMPLOYEE_ID} = %s", (status, e_id))
+                if cur.rowcount == 0:
+                    return False, "查無此員工"
+                conn.commit()
+                return True, f"已將員工狀態更新為 {status}"
+        except Exception as e:
+            return False, f"更新失敗: {e}"
+
+    def update_employee_role(self, e_id, role):
+        """更新員工角色"""
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化"
+        
+        if role not in ['Admin', 'User']:
+            return False, "角色必須是 Admin 或 User"
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"UPDATE {TABLE_EMPLOYEES} SET {COL_ROLE} = %s WHERE {COL_EMPLOYEE_ID} = %s", (role, e_id))
+                if cur.rowcount == 0:
+                    return False, "查無此員工"
+                conn.commit()
+                return True, f"已將員工角色更新為 {role}"
+        except Exception as e:
+            return False, f"更新失敗: {e}"
+
 
 
     def add_animal_state(self, a_id, weight, user_id, state_id=1):

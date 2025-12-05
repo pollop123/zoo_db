@@ -218,11 +218,11 @@ def show_user_menu(user_id, name):
         console.print("3. [查詢班表] View Schedule")
         console.print("4. [查詢代碼表] View Reference Data")
         console.print("5. [修正自己紀錄] Correct My Record")
-
         console.print("6. [查詢個別動物趨勢] View Animal Trends")
+        console.print("7. [修改密碼] Change Password")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "0"])
         
         if choice == "1":
             add_feeding_ui(user_id)
@@ -236,6 +236,8 @@ def show_user_menu(user_id, name):
             correct_record_ui(user_id)
         elif choice == "6":
             view_animal_trends_ui()
+        elif choice == "7":
+            change_password_ui(user_id)
         elif choice == "0":
             break
 
@@ -254,9 +256,10 @@ def show_admin_menu(user_id, name):
         console.print("10. [冒失鬼名單] View Careless Employees")
         console.print("11. [管理員工證照] Manage Employee Skills")
         console.print("12. [飲食管理] Manage Animal Diet")
+        console.print("13. [員工管理] Manage Employees")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "0"])
         
         if choice == "1":
             view_audit_logs_ui()
@@ -282,6 +285,8 @@ def show_admin_menu(user_id, name):
             manage_skills_ui()
         elif choice == "12":
             manage_diet_ui()
+        elif choice == "13":
+            manage_employees_ui()
         elif choice == "0":
             break
 
@@ -322,6 +327,119 @@ def manage_skills_ui():
         console.print(f"[green]{response.get('message')}[/green]")
     else:
         console.print(f"[red]{response.get('message')}[/red]")
+
+def change_password_ui(user_id):
+    """修改密碼 (User)"""
+    console.print("[bold]修改密碼[/bold]")
+    
+    old_password = Prompt.ask("請輸入舊密碼", password=True)
+    new_password = Prompt.ask("請輸入新密碼", password=True)
+    confirm_password = Prompt.ask("請再次輸入新密碼", password=True)
+    
+    if new_password != confirm_password:
+        console.print("[red]兩次輸入的新密碼不一致[/red]")
+        return
+    
+    if len(new_password) < 4:
+        console.print("[red]密碼長度至少 4 個字元[/red]")
+        return
+    
+    response = client.send_request("change_password", {
+        "e_id": user_id,
+        "old_password": old_password,
+        "new_password": new_password
+    })
+    
+    if response.get("success"):
+        console.print(f"[green]{response.get('message')}[/green]")
+    else:
+        console.print(f"[red]{response.get('message')}[/red]")
+
+def manage_employees_ui():
+    """員工管理 (Admin)"""
+    while True:
+        console.print("\n[bold]員工管理[/bold]")
+        console.print("1. 查看所有員工")
+        console.print("2. 新增員工")
+        console.print("3. 停用/啟用員工")
+        console.print("4. 變更員工角色")
+        console.print("0. 返回")
+        
+        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "4", "0"])
+        
+        if choice == "1":
+            # 查看所有員工
+            response = client.send_request("get_all_employees", {})
+            data = response.get("data", [])
+            if not data:
+                console.print("[yellow]無員工資料[/yellow]")
+                continue
+            
+            table = Table(title="所有員工")
+            table.add_column("員工 ID", style="cyan")
+            table.add_column("姓名", style="green")
+            table.add_column("角色", style="yellow")
+            table.add_column("狀態", style="dim")
+            
+            for e_id, name, role, status in data:
+                status_style = "green" if status == "active" else "red"
+                table.add_row(e_id, name, role, f"[{status_style}]{status}[/{status_style}]")
+            console.print(table)
+            
+        elif choice == "2":
+            # 新增員工
+            e_id = prompt_with_back("請輸入員工 ID (例如: E999)")
+            if e_id == BACK:
+                continue
+            
+            name = prompt_with_back("請輸入姓名")
+            if name == BACK:
+                continue
+            
+            console.print("角色: 1. User  2. Admin")
+            role_choice = Prompt.ask("請選擇角色", choices=["1", "2"], default="1")
+            role = "Admin" if role_choice == "2" else "User"
+            
+            response = client.send_request("add_employee", {"e_id": e_id, "name": name, "role": role})
+            if response.get("success"):
+                console.print(f"[green]{response.get('message')}[/green]")
+            else:
+                console.print(f"[red]{response.get('message')}[/red]")
+            
+        elif choice == "3":
+            # 停用/啟用員工
+            e_id = prompt_with_back("請輸入員工 ID")
+            if e_id == BACK:
+                continue
+            
+            console.print("狀態: 1. active (啟用)  2. inactive (停用)")
+            status_choice = Prompt.ask("請選擇狀態", choices=["1", "2"])
+            status = "active" if status_choice == "1" else "inactive"
+            
+            response = client.send_request("update_employee_status", {"e_id": e_id, "status": status})
+            if response.get("success"):
+                console.print(f"[green]{response.get('message')}[/green]")
+            else:
+                console.print(f"[red]{response.get('message')}[/red]")
+            
+        elif choice == "4":
+            # 變更角色
+            e_id = prompt_with_back("請輸入員工 ID")
+            if e_id == BACK:
+                continue
+            
+            console.print("角色: 1. User  2. Admin")
+            role_choice = Prompt.ask("請選擇新角色", choices=["1", "2"])
+            role = "Admin" if role_choice == "2" else "User"
+            
+            response = client.send_request("update_employee_role", {"e_id": e_id, "role": role})
+            if response.get("success"):
+                console.print(f"[green]{response.get('message')}[/green]")
+            else:
+                console.print(f"[red]{response.get('message')}[/red]")
+            
+        elif choice == "0":
+            break
 
 def manage_diet_ui():
     """飲食管理 (Admin)"""
