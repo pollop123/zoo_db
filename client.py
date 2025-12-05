@@ -913,16 +913,21 @@ def assign_task_ui(user_id):
     
     # 3. 輸入時間
     from datetime import datetime, timedelta
-    today = datetime.now().strftime("%Y-%m-%d")
-    console.print(f"\n[dim]提示: 今天是 {today}[/dim]")
+    now = datetime.now()
+    default_start = now.strftime("%Y-%m-%d %H:%M:%S")
+    default_end = (now + timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
     
-    start_time = prompt_with_back("請輸入開始時間 (YYYY-MM-DD HH:MM:SS)")
-    if start_time == BACK:
-        return
+    console.print(f"\n[dim]提示: 按 Enter 使用預設值[/dim]")
     
-    end_time = prompt_with_back("請輸入結束時間 (YYYY-MM-DD HH:MM:SS)")
-    if end_time == BACK:
+    start_input = Prompt.ask(f"開始時間", default=default_start)
+    if start_input.lower() in ['b', 'back', '返回']:
         return
+    start_time = start_input
+    
+    end_input = Prompt.ask(f"結束時間", default=default_end)
+    if end_input.lower() in ['b', 'back', '返回']:
+        return
+    end_time = end_input
     
     # 4. 選擇動物 (選填)
     response = client.send_request("get_all_animals", {})
