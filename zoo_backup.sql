@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict lDeqgrxjekcrKv6RM3aCOzfhD1oRADlLTgsxm9ZggIJmzfSmmZfKsbUtFrGS16g
+\restrict yNBhtGNr8YK7QdFl964tKTz4UNYktEucBOmxMMRFfRXfFUSeOcjnkoKXrPZ7J5C
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -283,22 +283,22 @@ ALTER TABLE ONLY public.status_type ALTER COLUMN s_id SET DEFAULT nextval('publi
 
 COPY public.animal (a_id, species, sex, life_status, required_skill, a_name) FROM stdin;
 A189	Brown Bear	M	Alive	Carnivore	阿肥2號
-A004	Koala	M	Deceased	\N	尤加利
-A016	Koala	F	Transferred	\N	樹懶
-A017	Koala	M	Alive	\N	睡睡
-A021	Koala	M	Alive	\N	懶懶
-A050	Koala	M	Alive	\N	灰灰
-A051	Koala	M	Alive	\N	毛球
-A056	Koala	M	Alive	\N	抱抱
-A073	Koala	F	Alive	\N	阿樹
-A093	Koala	F	Alive	\N	無尾
-A102	Koala	F	Alive	\N	呆瓜
-A109	Koala	M	Transferred	\N	慢慢
-A110	Koala	M	Deceased	\N	夢夢
-A117	Koala	F	Alive	\N	困困
-A131	Koala	F	Alive	\N	眠眠
-A133	Koala	F	Alive	\N	安安
-A148	Koala	M	Transferred	\N	靜靜
+A004	Koala	M	Deceased	Endangered	尤加利
+A016	Koala	F	Transferred	Endangered	樹懶
+A017	Koala	M	Alive	Endangered	睡睡
+A021	Koala	M	Alive	Endangered	懶懶
+A050	Koala	M	Alive	Endangered	灰灰
+A051	Koala	M	Alive	Endangered	毛球
+A056	Koala	M	Alive	Endangered	抱抱
+A073	Koala	F	Alive	Endangered	阿樹
+A093	Koala	F	Alive	Endangered	無尾
+A102	Koala	F	Alive	Endangered	呆瓜
+A109	Koala	M	Transferred	Endangered	慢慢
+A110	Koala	M	Deceased	Endangered	夢夢
+A117	Koala	F	Alive	Endangered	困困
+A131	Koala	F	Alive	Endangered	眠眠
+A133	Koala	F	Alive	Endangered	安安
+A148	Koala	M	Transferred	Endangered	靜靜
 A008	Brown Bear	F	Alive	Carnivore	大熊
 A154	Brown Bear	M	Alive	Carnivore	山大王
 A162	Brown Bear	F	Alive	Carnivore	蜂蜜
@@ -390,8 +390,12 @@ A178	Tiger	M	Alive	Carnivore	悠悠
 A188	Tiger	M	Alive	Carnivore	奔奔
 A191	Tiger	M	Alive	Carnivore	阿猛
 A196	Tiger	M	Alive	Carnivore	虎仔
+A170	Koala	F	Alive	Endangered	乖寶
+A171	Koala	F	Alive	Endangered	小懶
+A175	Koala	M	Alive	Endangered	棉花
+A183	Koala	F	Alive	Endangered	軟糖
+A200	Koala	F	Transferred	Endangered	布丁
 A013	Giraffe	M	Alive	\N	長頸
-A170	Koala	F	Alive	\N	乖寶
 A002	Lion	M	Alive	Carnivore	大壯
 A116	Panda	F	Alive	Endangered	大圓
 A128	Panda	M	Alive	Endangered	球球
@@ -405,14 +409,10 @@ A165	Panda	F	Deceased	Endangered	蜜蜜
 A001	Penguin	F	Transferred	Penguin	小黑
 A153	Penguin	M	Alive	Penguin	晃晃
 A156	Penguin	M	Alive	Penguin	蹦蹦
-A171	Koala	F	Alive	\N	小懶
 A180	Penguin	M	Alive	Penguin	肥肥
 A184	Penguin	F	Deceased	Penguin	叮叮
 A192	Penguin	M	Transferred	Penguin	噹噹
 A160	Penguin	M	Alive	Penguin	黑白2號
-A175	Koala	M	Alive	\N	棉花
-A183	Koala	F	Alive	\N	軟糖
-A200	Koala	F	Transferred	\N	布丁
 A007	Zebra	M	Alive	\N	條紋
 A041	African Elephant	M	Deceased	\N	大象
 A066	African Elephant	M	Alive	\N	長鼻
@@ -20698,5 +20698,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict lDeqgrxjekcrKv6RM3aCOzfhD1oRADlLTgsxm9ZggIJmzfSmmZfKsbUtFrGS16g
+\unrestrict yNBhtGNr8YK7QdFl964tKTz4UNYktEucBOmxMMRFfRXfFUSeOcjnkoKXrPZ7J5C
 
