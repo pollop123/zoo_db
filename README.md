@@ -176,18 +176,23 @@ python test/test_agent.py
 
 ```
 zoo_db/
-├── server.py          # 後端伺服器主程式
-├── client.py          # 前端 CLI 主程式
-├── DB_utils.py        # 核心資料庫邏輯與商業規則
-├── config.py          # 系統設定與連線參數
-├── action/            # 業務功能模組 (Command Pattern)
-├── role/              # 角色定義與權限
-├── test/              # 自動化測試套件
-├── zoo.backup         # PostgreSQL 資料庫備份
-├── mongo_*.json       # MongoDB 資料備份
-├── DEMO_GUIDE.md      # 展示指南
-├── CHANGELOG.md       # 變更紀錄
-└── README.md          # 本文件
+├── server.py           # 後端伺服器主程式
+├── client.py           # 前端 CLI 主程式
+├── DB_utils.py         # 核心資料庫邏輯與商業規則
+├── config.py           # 系統設定與連線參數
+├── action/             # 業務功能模組 (Command Pattern)
+├── role/               # 角色定義與權限
+├── test/               # 自動化測試套件
+│   └── test_agent.py   # 自動化測試代理人
+├── zoo_backup.sql      # PostgreSQL 資料庫備份 (SQL 格式)
+├── zoo_backup.backup   # PostgreSQL 資料庫備份 (二進位格式)
+├── mongo_backup.json   # MongoDB 資料備份
+├── requirements.txt    # Python 相依套件
+├── DEMO_GUIDE.md       # 功能展示指南與測試帳號
+├── OPERATION_MANUAL.md # 操作手冊
+├── ANOMALY_DETECTION.md# 異常檢測邏輯說明
+├── CHANGELOG.md        # 變更紀錄
+└── README.md           # 本文件
 ```
 
 ---
