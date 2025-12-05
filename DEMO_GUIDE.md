@@ -118,9 +118,10 @@ Server 終端機會顯示：
 ```
 
 ### 4. Lock 機制展示 (選用)
-```bash
-# 執行 Lock 展示腳本 (需開兩個終端機)
-python3 demo_lock.py
+```
+開兩個終端機同時執行 client.py，
+用同一員工同時對同一動物進行餵食操作，
+觀察併發控制機制如何防止競態條件。
 ```
 
 ---
@@ -191,4 +192,4 @@ python3 demo_lock.py
 - MongoDB 資料庫名稱：`zoo_nosql`
 - 若展示日期值班資料過期，需更新 `employee_shift` 表
 - 重置資料庫：`psql zoo_db < zoo.backup`
-- 重置 MongoDB：執行 `reset_nosql_data.py`
+- 重置 MongoDB：使用 `mongo_backup.json` 重新匯入
