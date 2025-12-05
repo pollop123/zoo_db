@@ -134,25 +134,34 @@ WHERE ABS(l.amount - r.avg_amount) / r.avg_amount > 0.30;
 
 ## 冒失鬼員工檢測
 
-### 演算法：修正頻率統計
+### 演算法：輸入警告 + 修正頻率統計
 
-**原理**：統計員工修正自己紀錄的次數，頻繁修正可能代表作業不夠謹慎。
+**原理**：追蹤員工的輸入品質：
+1. **取消輸入次數** - 輸入時觸發異常警告後取消（代表輸入錯誤）
+2. **被修正次數** - 紀錄被管理員修正的次數
 
 **判定標準**：
-- 修正次數 >= 5 次：列入冒失鬼名單
-- 修正率 > 10%（修正次數/總紀錄數）：額外標註
+- 取消輸入 + 被修正總次數 >= 3 次：列入冒失鬼名單
+
+### 輸入警告記錄分流
+
+| 使用者行為 | 記錄位置 | 用途 |
+|------------|----------|------|
+| 觸發警告後**確認儲存** | health_alerts | 可能是真實健康問題，需追蹤 |
+| 觸發警告後**取消輸入** | audit_logs | 冒失鬼統計用 |
 
 **資料來源**：MongoDB audit_logs collection
 
 ```javascript
+// 統計冒失鬼
 db.audit_logs.aggregate([
-    { $match: { action: "correction" } },
+    { $match: { event_type: "INPUT_WARNING" } },
     { $group: { 
         _id: "$employee_id", 
-        correction_count: { $sum: 1 } 
+        warning_count: { $sum: 1 } 
     }},
-    { $match: { correction_count: { $gte: 5 } } },
-    { $sort: { correction_count: -1 } }
+    { $match: { warning_count: { $gte: 3 } } },
+    { $sort: { warning_count: -1 } }
 ])
 ```
 

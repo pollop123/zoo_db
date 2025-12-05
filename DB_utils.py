@@ -887,7 +887,8 @@ class ZooBackend:
     def log_input_warning(self, user_id, animal_id, warning_type, input_value, expected_value, confirmed):
         """
         [NEW] 記錄輸入警告事件到 MongoDB
-        用於追蹤哪些員工經常觸發異常輸入警告
+        - confirmed=True (忽略警告繼續儲存) → 記錄到 health_alerts (可能是真實健康問題)
+        - confirmed=False (取消輸入) → 記錄到 audit_logs (冒失鬼統計用)
         """
         if self.mongo_client is None:
             return False
@@ -900,10 +901,24 @@ class ZooBackend:
                 "warning_type": warning_type,  # "WEIGHT" or "FEEDING"
                 "input_value": float(input_value),
                 "expected_value": float(expected_value),
-                "confirmed": confirmed,  # True = 使用者確認儲存, False = 取消
+                "confirmed": confirmed,
                 "timestamp": datetime.now()
             }
-            self.mongo_db[COLLECTION_AUDIT_LOGS].insert_one(log_entry)
+            
+            if confirmed:
+                # 忽略警告 → 可能是真實健康問題，記錄到 health_alerts
+                health_alert = {
+                    "animal_id": animal_id,
+                    "alert_type": f"CONFIRMED_{warning_type}_ANOMALY",
+                    "description": f"員工 {user_id} 確認異常數值: 輸入 {input_value}, 預期 {expected_value:.2f}",
+                    "confirmed_by": user_id,
+                    "timestamp": datetime.now()
+                }
+                self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(health_alert)
+            else:
+                # 取消輸入 → 冒失鬼統計用
+                self.mongo_db[COLLECTION_AUDIT_LOGS].insert_one(log_entry)
+            
             return True
         except Exception as e:
             print(f"Error logging input warning: {e}")
@@ -958,9 +973,9 @@ class ZooBackend:
             ]
             correction_results = {r['_id']: r['correction_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(correction_pipeline)}
             
-            # 統計輸入警告次數 (確認儲存的才算)
+            # 統計輸入警告次數 (取消輸入的才算冒失鬼，confirmed=False)
             warning_pipeline = [
-                {"$match": {"event_type": "INPUT_WARNING", "confirmed": True}},
+                {"$match": {"event_type": "INPUT_WARNING"}},
                 {"$group": {"_id": "$employee_id", "warning_count": {"$sum": 1}}}
             ]
             warning_results = {r['_id']: r['warning_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(warning_pipeline)}
