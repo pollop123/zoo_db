@@ -121,6 +121,52 @@ def float_prompt_with_back(message):
         except ValueError:
             console.print("[red]請輸入有效數字[/red]")
 
+def select_my_animal(user_id):
+    """選擇目前值班負責的動物，回傳 (a_id, a_name, species) 或 BACK"""
+    response = client.send_request("get_my_animals", {"e_id": user_id})
+    animals = response.get("data", [])
+    
+    if not animals:
+        console.print("[yellow]你目前沒有負責任何動物[/yellow]")
+        console.print("[dim]請確認班表或聯繫管理員[/dim]")
+        return BACK
+    
+    # 顯示動物清單
+    console.print("\n[bold cyan]你目前負責的動物：[/bold cyan]")
+    table = Table(show_header=True, header_style="bold")
+    table.add_column("#", style="dim", width=4)
+    table.add_column("ID", style="cyan")
+    table.add_column("名稱", style="green")
+    table.add_column("物種", style="yellow")
+    
+    for i, (a_id, a_name, species) in enumerate(animals, 1):
+        table.add_row(str(i), a_id, a_name or "-", species)
+    
+    console.print(table)
+    
+    # 選擇
+    choice = prompt_with_back("請選擇動物 (輸入編號)")
+    if choice == BACK:
+        return BACK
+    
+    try:
+        idx = int(choice) - 1
+        if 0 <= idx < len(animals):
+            selected = animals[idx]
+            console.print(f"[green]已選擇: {selected[1]} ({selected[2]})[/green]")
+            return selected  # (a_id, a_name, species)
+        else:
+            console.print("[red]無效的選擇[/red]")
+            return BACK
+    except ValueError:
+        # 允許直接輸入 ID
+        for animal in animals:
+            if animal[0].upper() == choice.upper():
+                console.print(f"[green]已選擇: {animal[1]} ({animal[2]})[/green]")
+                return animal
+        console.print("[red]無效的選擇[/red]")
+        return BACK
+
 def login_screen():
     console.clear()
     console.print(Panel.fit("動物園管理系統 (Zoo Management System)", style="bold blue"))
@@ -253,15 +299,18 @@ def manage_skills_ui():
 def add_feeding_ui(user_id):
     console.print("[bold]新增餵食紀錄[/bold]")
     
-    a_id = prompt_with_back("請輸入動物 ID")
-    if a_id == BACK:
+    # 選擇負責的動物
+    animal = select_my_animal(user_id)
+    if animal == BACK:
         return
+    
+    a_id, a_name, species = animal
     
     # [UX] Show recent records
     response = client.send_request("get_recent_records", {"table_name": TABLE_FEEDING, "filter_id": a_id})
     records = response.get("data", [])
     if records:
-        r_table = Table(title=f"動物 {a_id} 的最近餵食紀錄")
+        r_table = Table(title=f"{a_name} ({species}) 的最近餵食紀錄")
         r_table.add_column("日期", style="cyan")
         r_table.add_column("飼料", style="yellow")
         r_table.add_column("數量 (kg)", style="green")
@@ -293,15 +342,18 @@ def add_feeding_ui(user_id):
 def add_body_info_ui(user_id):
     console.print("[bold]新增身體資訊[/bold]")
     
-    a_id = prompt_with_back("請輸入動物 ID")
-    if a_id == BACK:
+    # 選擇負責的動物
+    animal = select_my_animal(user_id)
+    if animal == BACK:
         return
+    
+    a_id, a_name, species = animal
     
     # [UX] Show recent records
     response = client.send_request("get_recent_records", {"table_name": TABLE_ANIMAL_STATE, "filter_id": a_id})
     records = response.get("data", [])
     if records:
-        r_table = Table(title=f"動物 {a_id} 的最近體重紀錄")
+        r_table = Table(title=f"{a_name} ({species}) 的最近體重紀錄")
         r_table.add_column("日期", style="cyan")
         r_table.add_column("體重 (kg)", style="green")
         for r in records[:3]: # Show top 3

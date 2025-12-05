@@ -235,6 +235,36 @@ class ZooBackend:
             print(f"Error fetching schedule: {e}")
             return []
 
+    def get_my_animals(self, e_id):
+        """
+        [NEW] 查詢員工目前值班負責的動物
+        只回傳今天有排班且時間範圍內的動物
+        """
+        if not self.pg_pool:
+            return []
+
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                query = f"""
+                    SELECT DISTINCT 
+                        a.a_id,
+                        a.a_name,
+                        a.species
+                    FROM {TABLE_EMPLOYEE_SHIFT} s
+                    JOIN {TABLE_ANIMAL} a ON s.a_id = a.a_id
+                    WHERE s.e_id = %s
+                      AND s.a_id IS NOT NULL
+                      AND s.shift_start <= NOW()
+                      AND s.shift_end >= NOW()
+                    ORDER BY a.a_id
+                """
+                cur.execute(query, (e_id,))
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching my animals: {e}")
+            return []
+
     def assign_task(self, e_id, t_id, start_time, end_time, a_id=None):
         """
         [NEW] 指派工作/排班 (Admin)

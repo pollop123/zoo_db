@@ -6,6 +6,12 @@ class GetEmployeeScheduleAction(Action):
         data = db_utils.get_employee_schedule(e_id)
         return {"success": True, "data": data}
 
+class GetMyAnimalsAction(Action):
+    def execute(self, db_utils, **kwargs):
+        e_id = kwargs.get('e_id')
+        data = db_utils.get_my_animals(e_id)
+        return {"success": True, "data": data}
+
 class AssignTaskAction(Action):
     def execute(self, db_utils, **kwargs):
         e_id = kwargs.get('e_id')

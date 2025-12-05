@@ -8,7 +8,7 @@ from DB_utils import ZooBackend
 from action.auth import LoginAction, LogoutAction
 from action.feeding import AddFeedingAction
 from action.inventory import AddInventoryStockAction, GetInventoryReportAction
-from action.schedule import GetEmployeeScheduleAction, AssignTaskAction
+from action.schedule import GetEmployeeScheduleAction, GetMyAnimalsAction, AssignTaskAction
 from action.record import CorrectRecordAction, GetRecentRecordsAction
 from action.analysis import (
     CheckWeightAnomalyAction, BatchCheckAnomaliesAction, 
@@ -35,6 +35,7 @@ ACTION_MAP = {
     "add_inventory_stock": AddInventoryStockAction,
     "get_inventory_report": GetInventoryReportAction,
     "get_employee_schedule": GetEmployeeScheduleAction,
+    "get_my_animals": GetMyAnimalsAction,
     "assign_task": AssignTaskAction,
     "correct_record": CorrectRecordAction,
     "get_recent_records": GetRecentRecordsAction,
