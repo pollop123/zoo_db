@@ -1335,11 +1335,21 @@ def view_inventory_report_ui():
         return
 
     table = Table(title="庫存報表")
+    table.add_column("飼料 ID", style="dim")
     table.add_column("飼料名稱", style="cyan")
-    table.add_column("目前庫存 (kg)", style="green")
+    table.add_column("目前庫存", style="green")
+    table.add_column("狀態", style="white")
 
-    for row in data:
-        table.add_row(row[0], str(row[1]))
+    for item in data:
+        stock = item.get("current_stock", 0)
+        unit = item.get("unit", "kg")
+        status = "[red]低庫存[/red]" if stock < 50 else "[green]正常[/green]"
+        table.add_row(
+            item.get("f_id", ""),
+            item.get("f_name", ""),
+            f"{stock} {unit}",
+            status
+        )
     
     console.print(table)
 

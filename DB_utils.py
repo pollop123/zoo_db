@@ -1355,15 +1355,25 @@ class ZooBackend:
                 # Aggregate inventory changes by food_id
                 query = f"""
                     SELECT 
+                        f.f_id,
                         f.feed_name, 
-                        SUM(i.quantity_delta_kg) as current_stock
-                    FROM {TABLE_INVENTORY} i
-                    JOIN {TABLE_FEEDS} f ON i.f_id = f.f_id
-                    GROUP BY f.feed_name
+                        f.unit,
+                        COALESCE(SUM(i.quantity_delta_kg), 0) as current_stock
+                    FROM {TABLE_FEEDS} f
+                    LEFT JOIN {TABLE_INVENTORY} i ON i.f_id = f.f_id
+                    GROUP BY f.f_id, f.feed_name, f.unit
                     ORDER BY current_stock ASC
                 """
                 cur.execute(query)
-                return cur.fetchall()
+                results = []
+                for row in cur.fetchall():
+                    results.append({
+                        "f_id": row[0],
+                        "f_name": row[1],
+                        "unit": row[2] or "kg",
+                        "current_stock": float(row[3]) if row[3] else 0
+                    })
+                return results
         except Exception as e:
             print(f"Error fetching inventory report: {e}")
             return []
