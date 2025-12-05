@@ -18,7 +18,8 @@ class AddEmployeeAction(Action):
         e_id = kwargs.get('e_id')
         name = kwargs.get('name')
         role = kwargs.get('role', 'User')
-        success, msg = db_utils.add_employee(e_id, name, role)
+        sex = kwargs.get('sex', 'M')
+        success, msg = db_utils.add_employee(e_id, name, role, sex)
         return {"success": success, "message": msg}
 
 class UpdateEmployeeStatusAction(Action):

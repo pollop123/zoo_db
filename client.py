@@ -472,11 +472,15 @@ def manage_employees_ui():
             if name == BACK:
                 continue
             
+            console.print("性別: 1. 男 (M)  2. 女 (F)")
+            sex_choice = Prompt.ask("請選擇性別", choices=["1", "2"], default="1")
+            sex = "M" if sex_choice == "1" else "F"
+            
             console.print("角色: 1. User  2. Admin")
             role_choice = Prompt.ask("請選擇角色", choices=["1", "2"], default="1")
             role = "Admin" if role_choice == "2" else "User"
             
-            response = client.send_request("add_employee", {"e_id": e_id, "name": name, "role": role})
+            response = client.send_request("add_employee", {"e_id": e_id, "name": name, "role": role, "sex": sex})
             if response.get("success"):
                 console.print(f"[green]{response.get('message')}[/green]")
             else:

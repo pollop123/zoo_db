@@ -199,7 +199,7 @@ class ZooBackend:
             print(f"Error fetching employees: {e}")
             return []
 
-    def add_employee(self, e_id, name, role='User'):
+    def add_employee(self, e_id, name, role='User', sex='M'):
         """新增員工"""
         if not self.pg_pool:
             return False, "資料庫連線池未初始化"
@@ -211,9 +211,9 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 cur.execute(f"""
-                    INSERT INTO {TABLE_EMPLOYEES} ({COL_EMPLOYEE_ID}, {COL_NAME}, {COL_ROLE}, {COL_STATUS}, password_hash)
-                    VALUES (%s, %s, %s, 'active', %s)
-                """, (e_id, name, role, default_password))
+                    INSERT INTO {TABLE_EMPLOYEES} ({COL_EMPLOYEE_ID}, {COL_NAME}, {COL_ROLE}, {COL_STATUS}, password_hash, sex)
+                    VALUES (%s, %s, %s, 'active', %s, %s)
+                """, (e_id, name, role, default_password, sex))
                 conn.commit()
                 return True, f"已新增員工 {name} ({e_id})，預設密碼: zoo123"
         except psycopg2.errors.UniqueViolation:
