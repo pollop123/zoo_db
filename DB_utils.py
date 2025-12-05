@@ -420,12 +420,12 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 cur.execute(f"""
-                    SELECT t_id, t_name, description
+                    SELECT t_id, t_name
                     FROM {TABLE_TASK}
                     ORDER BY t_id
                 """)
                 rows = cur.fetchall()
-                return [{"t_id": r[0], "t_name": r[1], "description": r[2]} for r in rows]
+                return [{"t_id": r[0], "t_name": r[1]} for r in rows]
         except Exception as e:
             print(f"Error fetching tasks: {e}")
             return []
