@@ -1016,7 +1016,7 @@ def view_audit_logs_ui():
 
 
 def batch_check_anomalies_ui():
-    console.print("[bold]批量異常掃描[/bold]")
+    console.print("[bold]批量異常掃描 (體重 + 食量)[/bold]")
     console.print("正在掃描全園區動物... 請稍候。")
     
     response = client.send_request("batch_check_anomalies")
@@ -1031,11 +1031,13 @@ def batch_check_anomalies_ui():
     table = Table(title="偵測到的異常")
     table.add_column("動物 ID", style="cyan")
     table.add_column("名字", style="yellow")
+    table.add_column("類型", style="magenta")
     table.add_column("變化率 %", style="red")
     table.add_column("訊息", style="white")
     
     for a in anomalies:
-        table.add_row(str(a['id']), a['name'], f"{a['pct']:.1f}%", a['msg'])
+        anomaly_type = a.get('type', '體重')
+        table.add_row(str(a['id']), a['name'], anomaly_type, f"{a['pct']:.1f}%", a['msg'])
         
     console.print(table)
     console.print("[bold red]所有警示已寫入 NoSQL。[/bold red]")

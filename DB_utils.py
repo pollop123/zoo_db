@@ -771,9 +771,65 @@ class ZooBackend:
         except Exception as e:
             return False, f"分析失敗: {e}", 0.0
 
+    def check_feeding_anomaly(self, a_id):
+        """
+        檢查動物食量異常
+        比較最近一次餵食量與該動物平均餵食量的差異
+        若差異超過 30%，視為異常
+        """
+        if not self.pg_pool:
+            return False, "資料庫連線池未初始化", 0.0
+
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+
+                # 使用 Window Function 計算平均值與最新值
+                query = f"""
+                    WITH FeedingStats AS (
+                        SELECT 
+                            {COL_AMOUNT},
+                            AVG({COL_AMOUNT}) OVER () as avg_amount,
+                            ROW_NUMBER() OVER (ORDER BY feed_date DESC) as rn
+                        FROM {TABLE_FEEDING}
+                        WHERE a_id = %s
+                    )
+                    SELECT {COL_AMOUNT}, avg_amount FROM FeedingStats WHERE rn = 1
+                """
+                cur.execute(query, (a_id,))
+                result = cur.fetchone()
+
+                if not result or result[1] is None:
+                    return False, "食量資料不足，無法分析", 0.0
+
+                latest_amount = float(result[0])
+                avg_amount = float(result[1])
+                
+                if avg_amount == 0:
+                    return False, "平均食量為0，無法計算變化率", 0.0
+
+                change_pct = ((latest_amount - avg_amount) / avg_amount) * 100
+
+                # 食量變化超過 30% 視為異常
+                if abs(change_pct) > 30:
+                    alert = {
+                        "level": "MEDIUM",
+                        "animal_id": a_id,
+                        "message": f"食量異常 {change_pct:.1f}% (平均 {avg_amount:.1f}kg, 最近 {latest_amount:.1f}kg)",
+                        "created_at": datetime.now().isoformat(),
+                        "status": "UNREAD"
+                    }
+                    self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(alert)
+                    return True, f"偵測到異常: 食量變化 {change_pct:.1f}%", change_pct
+                
+                return False, f"食量變化正常: {change_pct:.1f}%", change_pct
+
+        except Exception as e:
+            return False, f"分析失敗: {e}", 0.0
+
     def batch_check_anomalies(self):
         """
-        [NEW] 批量檢查所有動物的體重異常
+        批量檢查所有動物的體重和食量異常
         """
         if not self.pg_pool:
             return []
@@ -787,15 +843,28 @@ class ZooBackend:
                 animals = cur.fetchall()
             
             # Connection is returned here.
-            # Now iterate and call check_weight_anomaly which gets its own connection.
+            # Now iterate and check both weight and feeding anomalies.
             for a_id, a_name in animals:
-                is_anomaly, msg, pct = self.check_weight_anomaly(a_id)
-                if is_anomaly:
+                # 檢查體重異常
+                is_weight_anomaly, weight_msg, weight_pct = self.check_weight_anomaly(a_id)
+                if is_weight_anomaly:
                     anomalies_found.append({
                         "id": a_id,
                         "name": a_name,
-                        "msg": msg,
-                        "pct": pct
+                        "type": "體重",
+                        "msg": weight_msg,
+                        "pct": weight_pct
+                    })
+                
+                # 檢查食量異常
+                is_feeding_anomaly, feeding_msg, feeding_pct = self.check_feeding_anomaly(a_id)
+                if is_feeding_anomaly:
+                    anomalies_found.append({
+                        "id": a_id,
+                        "name": a_name,
+                        "type": "食量",
+                        "msg": feeding_msg,
+                        "pct": feeding_pct
                     })
             
             return anomalies_found
