@@ -192,20 +192,37 @@ class ZooBackend:
             return False, f"修改失敗: {e}"
 
     def get_all_employees(self):
-        """取得所有員工列表"""
+        """取得所有員工列表 (含證照)"""
         if not self.pg_pool:
             return []
         
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
+                # 取得員工基本資料
                 cur.execute(f"""
                     SELECT {COL_EMPLOYEE_ID}, {COL_NAME}, {COL_ROLE}, {COL_STATUS}
                     FROM {TABLE_EMPLOYEES}
                     ORDER BY {COL_EMPLOYEE_ID}
                 """)
                 rows = cur.fetchall()
-                return [{"e_id": r[0], "e_name": r[1], "role": r[2], "e_status": r[3]} for r in rows]
+                
+                # 取得每位員工的證照
+                employees = []
+                for r in rows:
+                    e_id = r[0]
+                    cur.execute(f"""
+                        SELECT skill_name FROM employee_skills WHERE e_id = %s
+                    """, (e_id,))
+                    skills = [s[0] for s in cur.fetchall()]
+                    employees.append({
+                        "e_id": e_id, 
+                        "e_name": r[1], 
+                        "role": r[2], 
+                        "e_status": r[3],
+                        "skills": skills
+                    })
+                return employees
         except Exception as e:
             print(f"Error fetching employees: {e}")
             return []

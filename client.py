@@ -316,16 +316,44 @@ def inventory_management_ui(user_id):
 def manage_skills_ui():
     console.print("[bold]管理員工證照[/bold]")
     
-    target_e_id = prompt_with_back("請輸入員工 ID")
-    if target_e_id == BACK:
+    # 取得員工清單
+    response = client.send_request("get_all_employees", {})
+    employees = response.get("data", [])
+    if not employees:
+        console.print("[yellow]無員工資料[/yellow]")
         return
+    
+    # 顯示員工清單及其證照
+    console.print("\n[cyan]員工列表:[/cyan]")
+    for i, emp in enumerate(employees, 1):
+        skills = emp.get("skills", [])
+        skills_str = ", ".join(skills) if skills else "[dim]無證照[/dim]"
+        console.print(f"  {i}. {emp['e_id']} - {emp['e_name']} | 證照: {skills_str}")
+    
+    emp_choice = prompt_with_back(f"請選擇員工 (1-{len(employees)})")
+    if emp_choice == BACK:
+        return
+    
+    try:
+        emp_idx = int(emp_choice) - 1
+        if emp_idx < 0 or emp_idx >= len(employees):
+            raise ValueError
+        target_emp = employees[emp_idx]
+        target_e_id = target_emp["e_id"]
+    except ValueError:
+        console.print("[red]無效選擇[/red]")
+        return
+    
+    # 顯示該員工現有證照
+    current_skills = target_emp.get("skills", [])
+    console.print(f"\n[cyan]{target_emp['e_name']} 目前的證照:[/cyan] {', '.join(current_skills) if current_skills else '無'}")
     
     console.print("\n[bold]可用證照列表:[/bold]")
     console.print("1. Carnivore (猛獸專家)")
     console.print("2. Penguin (企鵝專家)")
     console.print("3. Endangered (珍稀動物專家)")
     
-    choice = prompt_with_back("請選擇證照代號 (1-3)")
+    choice = prompt_with_back("請選擇要新增的證照代號 (1-3)")
     if choice == BACK:
         return
     
@@ -340,6 +368,10 @@ def manage_skills_ui():
         return
     
     skill_name = skill_map[choice]
+    
+    if skill_name in current_skills:
+        console.print(f"[yellow]{target_emp['e_name']} 已擁有 {skill_name} 證照[/yellow]")
+        return
     
     response = client.send_request("add_employee_skill", {
         "target_e_id": target_e_id,
