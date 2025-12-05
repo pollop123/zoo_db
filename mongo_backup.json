@@ -1,6 +1,625 @@
 {
-  "audit_logs": [],
-  "login_logs": [],
-  "health_alerts": [],
-  "careless_logs": []
+  "health_alerts": [
+    {
+      "animal_id": "A002",
+      "alert_type": "weight_anomaly",
+      "description": "食量下降超過20%",
+      "detected_value": 128.28,
+      "expected_range": "58-138",
+      "recorded_by": "E003",
+      "status": "pending",
+      "created_at": "2025-12-02 13:56:44.049000",
+      "animal_name": "阿金"
+    },
+    {
+      "animal_id": "A006",
+      "alert_type": "weight_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 134.73,
+      "expected_range": "78-156",
+      "recorded_by": "E004",
+      "status": "confirmed",
+      "created_at": "2025-11-21 10:56:44.049000",
+      "animal_name": "大白"
+    },
+    {
+      "animal_id": "A001",
+      "alert_type": "food_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 171.13,
+      "expected_range": "71-131",
+      "recorded_by": "E009",
+      "status": "pending",
+      "created_at": "2025-12-02 09:56:44.049000",
+      "animal_name": "小花"
+    },
+    {
+      "animal_id": "A003",
+      "alert_type": "weight_anomaly",
+      "description": "體重下降超過10%",
+      "detected_value": 75.68,
+      "expected_range": "70-121",
+      "recorded_by": "E002",
+      "status": "confirmed",
+      "created_at": "2025-12-05 13:56:44.049000",
+      "animal_name": "胖達"
+    },
+    {
+      "animal_id": "A004",
+      "alert_type": "weight_anomaly",
+      "description": "體重波動異常",
+      "detected_value": 165.28,
+      "expected_range": "84-125",
+      "recorded_by": "E009",
+      "status": "pending",
+      "created_at": "2025-11-30 08:56:44.049000",
+      "animal_name": "黑皮"
+    },
+    {
+      "animal_id": "A003",
+      "alert_type": "food_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 53.13,
+      "expected_range": "84-151",
+      "recorded_by": "E002",
+      "status": "confirmed",
+      "created_at": "2025-12-01 04:56:44.049000",
+      "animal_name": "胖達"
+    },
+    {
+      "animal_id": "A007",
+      "alert_type": "weight_anomaly",
+      "description": "食量下降超過20%",
+      "detected_value": 181.61,
+      "expected_range": "91-135",
+      "recorded_by": "E004",
+      "status": "pending",
+      "created_at": "2025-11-25 05:56:44.049000",
+      "animal_name": "小黑"
+    },
+    {
+      "animal_id": "A008",
+      "alert_type": "food_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 77.95,
+      "expected_range": "84-156",
+      "recorded_by": "E009",
+      "status": "confirmed",
+      "created_at": "2025-11-24 13:56:44.049000",
+      "animal_name": "點點"
+    },
+    {
+      "animal_id": "A006",
+      "alert_type": "food_anomaly",
+      "description": "體重波動異常",
+      "detected_value": 44.27,
+      "expected_range": "96-166",
+      "recorded_by": "E003",
+      "status": "confirmed",
+      "created_at": "2025-11-30 10:56:44.049000",
+      "animal_name": "大白"
+    },
+    {
+      "animal_id": "A005",
+      "alert_type": "food_anomaly",
+      "description": "連續3天食量偏低",
+      "detected_value": 113.11,
+      "expected_range": "74-167",
+      "recorded_by": "E008",
+      "status": "pending",
+      "created_at": "2025-12-05 13:56:44.049000",
+      "animal_name": "雪球"
+    },
+    {
+      "animal_id": "A006",
+      "alert_type": "weight_anomaly",
+      "description": "連續3天食量偏低",
+      "detected_value": 66.58,
+      "expected_range": "99-142",
+      "recorded_by": "E003",
+      "status": "pending",
+      "created_at": "2025-12-03 06:56:44.049000",
+      "animal_name": "大白"
+    },
+    {
+      "animal_id": "A006",
+      "alert_type": "weight_anomaly",
+      "description": "食量下降超過20%",
+      "detected_value": 165.72,
+      "expected_range": "72-134",
+      "recorded_by": "E005",
+      "status": "confirmed",
+      "created_at": "2025-12-02 07:56:44.049000",
+      "animal_name": "大白"
+    },
+    {
+      "animal_id": "A007",
+      "alert_type": "weight_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 137.04,
+      "expected_range": "76-172",
+      "recorded_by": "E005",
+      "status": "confirmed",
+      "created_at": "2025-11-24 06:56:44.049000",
+      "animal_name": "小黑"
+    },
+    {
+      "animal_id": "A004",
+      "alert_type": "food_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 65.94,
+      "expected_range": "52-155",
+      "recorded_by": "E008",
+      "status": "pending",
+      "created_at": "2025-11-27 13:56:44.049000",
+      "animal_name": "黑皮"
+    },
+    {
+      "animal_id": "A007",
+      "alert_type": "food_anomaly",
+      "description": "體重上升超過15%",
+      "detected_value": 165.81,
+      "expected_range": "99-131",
+      "recorded_by": "E009",
+      "status": "pending",
+      "created_at": "2025-12-03 06:56:44.049000",
+      "animal_name": "小黑"
+    }
+  ],
+  "careless_logs": [
+    {
+      "employee_id": "E003",
+      "animal_id": "A001",
+      "record_type": "feeding",
+      "original_value": 108.8,
+      "corrected_value": 110.94,
+      "corrected_by": "E001",
+      "reason": "輸入錯誤，小數點位置錯誤",
+      "created_at": "2025-11-13 20:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A002",
+      "record_type": "feeding",
+      "original_value": 88.16,
+      "corrected_value": 92.2,
+      "corrected_by": "E001",
+      "reason": "輸入錯誤，小數點位置錯誤",
+      "created_at": "2025-11-07 12:56:44.050000"
+    },
+    {
+      "employee_id": "E007",
+      "animal_id": "A005",
+      "record_type": "feeding",
+      "original_value": 116.7,
+      "corrected_value": 118.63,
+      "corrected_by": "E001",
+      "reason": "輸入錯誤，小數點位置錯誤",
+      "created_at": "2025-11-25 21:56:44.050000"
+    },
+    {
+      "employee_id": "E008",
+      "animal_id": "A005",
+      "record_type": "feeding",
+      "original_value": 66.69,
+      "corrected_value": 57.47,
+      "corrected_by": "E001",
+      "reason": "重複輸入後刪除",
+      "created_at": "2025-11-27 09:56:44.050000"
+    },
+    {
+      "employee_id": "E005",
+      "animal_id": "A003",
+      "record_type": "feeding",
+      "original_value": 80.06,
+      "corrected_value": 68.37,
+      "corrected_by": "E001",
+      "reason": "數字輸入顛倒",
+      "created_at": "2025-12-03 02:56:44.050000"
+    },
+    {
+      "employee_id": "E005",
+      "animal_id": "A005",
+      "record_type": "weighing",
+      "original_value": 87.09,
+      "corrected_value": 100.09,
+      "corrected_by": "E001",
+      "reason": "重複輸入後刪除",
+      "created_at": "2025-11-13 14:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A008",
+      "record_type": "weighing",
+      "original_value": 53.95,
+      "corrected_value": 62.22,
+      "corrected_by": "E001",
+      "reason": "誤選動物ID後修正",
+      "created_at": "2025-11-25 15:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A006",
+      "record_type": "weighing",
+      "original_value": 88.75,
+      "corrected_value": 100.73,
+      "corrected_by": "E001",
+      "reason": "單位換算錯誤",
+      "created_at": "2025-11-14 19:56:44.050000"
+    },
+    {
+      "employee_id": "E006",
+      "animal_id": "A007",
+      "record_type": "feeding",
+      "original_value": 52.62,
+      "corrected_value": 66.27,
+      "corrected_by": "E001",
+      "reason": "重複輸入後刪除",
+      "created_at": "2025-11-12 08:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A007",
+      "record_type": "feeding",
+      "original_value": 53.09,
+      "corrected_value": 64.95,
+      "corrected_by": "E001",
+      "reason": "數字輸入顛倒",
+      "created_at": "2025-11-12 21:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A004",
+      "record_type": "weighing",
+      "original_value": 101.74,
+      "corrected_value": 112.41,
+      "corrected_by": "E001",
+      "reason": "輸入錯誤，小數點位置錯誤",
+      "created_at": "2025-11-14 04:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A009",
+      "record_type": "feeding",
+      "original_value": 86.11,
+      "corrected_value": 67.85,
+      "corrected_by": "E001",
+      "reason": "輸入錯誤，小數點位置錯誤",
+      "created_at": "2025-11-20 18:56:44.050000"
+    },
+    {
+      "employee_id": "E004",
+      "animal_id": "A006",
+      "record_type": "feeding",
+      "original_value": 108.99,
+      "corrected_value": 100.55,
+      "corrected_by": "E001",
+      "reason": "單位換算錯誤",
+      "created_at": "2025-11-07 15:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A007",
+      "record_type": "feeding",
+      "original_value": 144.03,
+      "corrected_value": 124.39,
+      "corrected_by": "E001",
+      "reason": "數字輸入顛倒",
+      "created_at": "2025-11-12 03:56:44.050000"
+    },
+    {
+      "employee_id": "E006",
+      "animal_id": "A001",
+      "record_type": "weighing",
+      "original_value": 79.0,
+      "corrected_value": 92.35,
+      "corrected_by": "E001",
+      "reason": "誤選動物ID後修正",
+      "created_at": "2025-11-14 06:56:44.050000"
+    },
+    {
+      "employee_id": "E007",
+      "animal_id": "A006",
+      "record_type": "feeding",
+      "original_value": 137.3,
+      "corrected_value": 140.71,
+      "corrected_by": "E001",
+      "reason": "數字輸入顛倒",
+      "created_at": "2025-11-22 19:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A006",
+      "record_type": "weighing",
+      "original_value": 52.91,
+      "corrected_value": 59.47,
+      "corrected_by": "E001",
+      "reason": "單位換算錯誤",
+      "created_at": "2025-11-21 10:56:44.050000"
+    },
+    {
+      "employee_id": "E008",
+      "animal_id": "A004",
+      "record_type": "feeding",
+      "original_value": 71.14,
+      "corrected_value": 72.16,
+      "corrected_by": "E001",
+      "reason": "誤選動物ID後修正",
+      "created_at": "2025-11-17 12:56:44.050000"
+    },
+    {
+      "employee_id": "E005",
+      "animal_id": "A010",
+      "record_type": "weighing",
+      "original_value": 117.46,
+      "corrected_value": 107.04,
+      "corrected_by": "E001",
+      "reason": "誤選動物ID後修正",
+      "created_at": "2025-11-09 02:56:44.050000"
+    },
+    {
+      "employee_id": "E003",
+      "animal_id": "A004",
+      "record_type": "feeding",
+      "original_value": 62.92,
+      "corrected_value": 53.29,
+      "corrected_by": "E001",
+      "reason": "重複輸入後刪除",
+      "created_at": "2025-11-26 16:56:44.050000"
+    }
+  ],
+  "audit_logs": [
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正體重紀錄",
+      "target_id": "A002",
+      "old_value": "86.68",
+      "new_value": "121.14",
+      "created_at": "2025-11-21 09:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "confirm_health_alert",
+      "description": "確認健康警示",
+      "target_id": "A001",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-24 23:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正餵食紀錄",
+      "target_id": "A003",
+      "old_value": "58.15",
+      "new_value": "138.85",
+      "created_at": "2025-11-15 18:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正體重紀錄",
+      "target_id": "E003",
+      "old_value": "74.08",
+      "new_value": "144.41",
+      "created_at": "2025-11-15 18:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "update_employee",
+      "description": "更新員工資料",
+      "target_id": "E006",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-26 04:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "dismiss_health_alert",
+      "description": "標記為輸入錯誤",
+      "target_id": "A002",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-11 05:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "E008",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-06 18:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "add_employee",
+      "description": "新增員工",
+      "target_id": "E009",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-26 04:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "confirm_health_alert",
+      "description": "確認健康警示",
+      "target_id": "A010",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-14 08:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "dismiss_health_alert",
+      "description": "標記為輸入錯誤",
+      "target_id": "E007",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-12-03 17:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "confirm_health_alert",
+      "description": "確認健康警示",
+      "target_id": "A002",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-05 23:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "confirm_health_alert",
+      "description": "確認健康警示",
+      "target_id": "E005",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-25 13:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正餵食紀錄",
+      "target_id": "A001",
+      "old_value": "66.41",
+      "new_value": "97.42",
+      "created_at": "2025-11-05 12:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "E005",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-28 21:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "E002",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-25 16:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "dismiss_health_alert",
+      "description": "標記為輸入錯誤",
+      "target_id": "A008",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-18 18:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "update_employee",
+      "description": "更新員工資料",
+      "target_id": "A008",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-07 09:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "A004",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-12 14:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正餵食紀錄",
+      "target_id": "A003",
+      "old_value": "78.48",
+      "new_value": "102.94",
+      "created_at": "2025-11-12 10:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "E004",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-17 16:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "assign_shift",
+      "description": "指派班表",
+      "target_id": "A004",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-21 06:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "add_employee",
+      "description": "新增員工",
+      "target_id": "A005",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-12-02 12:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正餵食紀錄",
+      "target_id": "A009",
+      "old_value": "68.84",
+      "new_value": "77.52",
+      "created_at": "2025-12-03 12:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "correct_record",
+      "description": "修正餵食紀錄",
+      "target_id": "A007",
+      "old_value": "60.68",
+      "new_value": "90.22",
+      "created_at": "2025-11-05 06:56:44.050000"
+    },
+    {
+      "admin_id": "E001",
+      "action": "confirm_health_alert",
+      "description": "確認健康警示",
+      "target_id": "E004",
+      "old_value": null,
+      "new_value": null,
+      "created_at": "2025-11-22 18:56:44.050000"
+    }
+  ],
+  "login_logs": [
+    {
+      "employee_id": "E001",
+      "employee_name": "郭雅惠",
+      "action": "login",
+      "status": "success",
+      "ip": "127.0.0.1",
+      "timestamp": "2025-12-05 13:53:30.104000"
+    },
+    {
+      "employee_id": "E003",
+      "employee_name": "林俊宏",
+      "action": "login",
+      "status": "success",
+      "ip": "127.0.0.1",
+      "timestamp": "2025-12-05 12:53:30.104000"
+    },
+    {
+      "employee_id": "E099",
+      "employee_name": null,
+      "action": "login",
+      "status": "failed",
+      "reason": "員工不存在",
+      "ip": "127.0.0.1",
+      "timestamp": "2025-12-04 14:53:30.104000"
+    }
+  ]
 }

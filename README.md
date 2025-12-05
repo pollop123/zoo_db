@@ -16,7 +16,7 @@
 | 資料庫 | 用途 | 原因 |
 |--------|------|------|
 | PostgreSQL | 核心業務資料 (員工、動物、庫存、班表) | 資料關聯性強，需要 ACID 強一致性保證 |
-| MongoDB | 稽核日誌、健康警報 | 異質性 JSON 資料，避免稀疏欄位問題 |
+| MongoDB | 稽核日誌、健康警報、冒失鬼紀錄、登入紀錄 | 異質性 JSON 資料，避免稀疏欄位問題 |
 
 ### 2. 三層權限驗證系統
 - **班表驗證**: 員工僅能在排定的值班時間內執行操作
@@ -77,10 +77,20 @@ createdb -U postgres zoo_db
 # 還原資料
 psql -U postgres -d zoo_db < zoo.backup
 
-# 匯入 MongoDB 資料
-mongoimport --db zoo_nosql --collection login_logs --file mongo_login_logs.json --jsonArray
-mongoimport --db zoo_nosql --collection audit_logs --file mongo_audit_logs.json --jsonArray
-mongoimport --db zoo_nosql --collection health_alerts --file mongo_health_alerts.json --jsonArray
+# 匯入 MongoDB 資料 (使用整合備份檔)
+python3 -c "
+import json
+from pymongo import MongoClient
+client = MongoClient('mongodb://localhost:27017/')
+db = client['zoo_logs']
+with open('mongo_backup.json', 'r') as f:
+    data = json.load(f)
+for collection, docs in data.items():
+    if docs:
+        db[collection].drop()
+        db[collection].insert_many(docs)
+        print(f'{collection}: {len(docs)} 筆')
+"
 ```
 
 ### 步驟 4: 設定連線參數
@@ -95,7 +105,7 @@ PG_USER = "postgres"
 PG_PASSWORD = "your_password"  # 修改為您的密碼
 
 MONGO_URI = "mongodb://localhost:27017/"
-MONGO_DB = "zoo_nosql"
+MONGO_DB = "zoo_logs"
 ```
 
 ---
