@@ -1096,13 +1096,33 @@ def view_audit_logs_ui():
 
     table = Table(title="稽核日誌 (Audit Logs - NoSQL)")
     table.add_column("時間", style="cyan")
-    table.add_column("操作者 ID", style="magenta")
-    table.add_column("資料表", style="green")
+    table.add_column("操作者", style="magenta")
+    table.add_column("操作類型", style="green")
+    table.add_column("對象", style="yellow")
     table.add_column("變更內容", style="white")
 
     for log in logs:
-        change_str = f"{log['change']['field']}: {log['change']['old_value']} -> {log['change']['new_value']}"
-        table.add_row(log['timestamp'], str(log['operator_id']), log['target_table'], change_str)
+        # 處理新格式 (DATA_CORRECTION)
+        if 'change' in log and isinstance(log['change'], dict):
+            action_type = log.get('event_type', 'DATA_CORRECTION')
+            target = log.get('target_table', '') + ' / ' + str(log.get('record_id', ''))
+            change_str = f"{log['change'].get('field', '')}: {log['change'].get('old_value', '')} -> {log['change'].get('new_value', '')}"
+        # 處理舊格式 (action based)
+        elif 'action' in log:
+            action_type = log.get('description', log.get('action', ''))
+            target = log.get('target_id', '')
+            if log.get('old_value') and log.get('new_value'):
+                change_str = f"{log['old_value']} -> {log['new_value']}"
+            else:
+                change_str = "-"
+        else:
+            action_type = log.get('event_type', 'N/A')
+            target = log.get('target_id', 'N/A')
+            change_str = str(log.get('details', '-'))
+        
+        timestamp = log.get('timestamp', log.get('created_at', 'N/A'))
+        operator = str(log.get('operator_id', log.get('admin_id', 'N/A')))
+        table.add_row(timestamp, operator, action_type, target, change_str)
     
     console.print(table)
 
