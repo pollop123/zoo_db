@@ -74,8 +74,11 @@ brew services start mongodb/brew/mongodb-community
 # 建立 PostgreSQL 資料庫
 createdb -U postgres zoo_db
 
-# 還原資料
-psql -U postgres -d zoo_db < zoo.backup
+# 還原資料 (使用 SQL 格式)
+psql -U postgres -d zoo_db -f zoo.sql
+
+# 或使用二進位格式
+pg_restore -U postgres -d zoo_db zoo.backup
 
 # 匯入 MongoDB 資料 (使用整合備份檔)
 python3 -c "
@@ -184,8 +187,8 @@ zoo_db/
 ├── role/               # 角色定義與權限
 ├── test/               # 自動化測試套件
 │   └── test_agent.py   # 自動化測試代理人
-├── zoo_backup.sql      # PostgreSQL 資料庫備份 (SQL 格式)
-├── zoo_backup.backup   # PostgreSQL 資料庫備份 (二進位格式)
+├── zoo.sql             # PostgreSQL 資料庫備份 (SQL 格式)
+├── zoo.backup          # PostgreSQL 資料庫備份 (二進位格式)
 ├── mongo_backup.json   # MongoDB 資料備份
 ├── requirements.txt    # Python 相依套件
 ├── DEMO_GUIDE.md       # 功能展示指南與測試帳號
