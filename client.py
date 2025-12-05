@@ -1065,15 +1065,44 @@ def correct_record_ui(user_id):
     
     col_choice = ""
     col_name = ""
+    new_val = None
     
     if table == TABLE_FEEDING:
         console.print("請選擇要修正的欄位:")
         console.print(f"1. {COL_AMOUNT} (餵食量)")
+        console.print("2. f_id (飼料種類)")
         col_choice = prompt_with_back("選擇")
         if col_choice == BACK:
             return
         if col_choice == "1": 
             col_name = COL_AMOUNT
+            new_val = float_prompt_with_back(f"請輸入 {col_name} 的正確數值")
+            if new_val == BACK:
+                return
+        elif col_choice == "2":
+            col_name = "f_id"
+            # 顯示可選飼料
+            response = client.send_request("get_all_feeds", {})
+            feeds = response.get("data", [])
+            if not feeds:
+                console.print("[red]無法取得飼料清單[/red]")
+                return
+            console.print("\n可選飼料:")
+            for i, f in enumerate(feeds, 1):
+                console.print(f"  {i}. {f.get('f_id')} - {f.get('feed_name')}")
+            feed_choice = prompt_with_back("請選擇飼料編號")
+            if feed_choice == BACK:
+                return
+            try:
+                idx = int(feed_choice) - 1
+                if 0 <= idx < len(feeds):
+                    new_val = feeds[idx].get('f_id')
+                else:
+                    console.print("[red]無效的選擇[/red]")
+                    return
+            except ValueError:
+                console.print("[red]請輸入數字[/red]")
+                return
         else:
             console.print("[red]無效的選擇[/red]")
             return
@@ -1081,10 +1110,9 @@ def correct_record_ui(user_id):
     elif table == TABLE_ANIMAL_STATE:
         # Only one choice, auto-select
         col_name = COL_WEIGHT
-
-    new_val = float_prompt_with_back(f"請輸入 {col_name} 的正確數值")
-    if new_val == BACK:
-        return
+        new_val = float_prompt_with_back(f"請輸入 {col_name} 的正確數值")
+        if new_val == BACK:
+            return
     
     response = client.send_request("correct_record", {
         "user_id": user_id, "table": table, "record_id": record_id, 
