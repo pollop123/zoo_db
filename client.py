@@ -1,6 +1,7 @@
 import sys
 import socket
 import json
+from decimal import Decimal
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt, FloatPrompt, IntPrompt
@@ -729,7 +730,7 @@ def add_feeding_ui(user_id):
         if recent_amounts:
             avg_amount = sum(recent_amounts) / len(recent_amounts)
             if avg_amount > 0:
-                deviation = abs(amount - avg_amount) / avg_amount * 100
+                deviation = abs(Decimal(str(amount)) - avg_amount) / avg_amount * 100
                 if deviation > 50:  # 偏差超過 50%
                     console.print(f"\n[bold yellow]⚠ 警告：您輸入的食量 {amount} kg 與近期平均 {avg_amount:.2f} kg 差異 {deviation:.0f}%[/bold yellow]")
                     confirm = Prompt.ask("確定要儲存嗎？", choices=["y", "n"], default="n")
@@ -787,7 +788,7 @@ def add_body_info_ui(user_id):
         if recent_weights:
             last_weight = recent_weights[0]  # 最近一筆
             if last_weight > 0:
-                change_pct = abs(weight - last_weight) / last_weight * 100
+                change_pct = abs(Decimal(str(weight)) - last_weight) / last_weight * 100
                 if change_pct > 20:  # 單次變化超過 20%
                     console.print(f"\n[bold yellow]⚠ 警告：您輸入的體重 {weight} kg 與上次 {last_weight:.2f} kg 變化 {change_pct:.0f}%[/bold yellow]")
                     confirm = Prompt.ask("確定要儲存嗎？", choices=["y", "n"], default="n")
