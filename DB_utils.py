@@ -1044,8 +1044,8 @@ class ZooBackend:
         
         try:
             alerts = list(self.mongo_db[COLLECTION_HEALTH_ALERTS].find({
-                "status": {"$in": ["PENDING", "UNREAD"]}
-            }).sort("timestamp", -1).limit(50))
+                "status": {"$in": ["PENDING", "UNREAD", "pending", "unread"]}
+            }).sort("created_at", -1).limit(50))
             
             # 用動物名稱豐富資料
             with self.get_db_connection() as conn:

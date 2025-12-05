@@ -1201,14 +1201,18 @@ def view_pending_health_alerts_ui():
         table.add_column("時間", style="dim")
         
         for i, alert in enumerate(alerts, 1):
+            # 支援兩種欄位名稱 (新舊格式相容)
+            detected_val = alert.get("detected_value") or alert.get("input_value", "")
+            recorded_by = alert.get("recorded_by") or alert.get("input_by", "")
+            created_at = alert.get("created_at") or alert.get("timestamp", "")
             table.add_row(
                 str(i),
                 alert.get("animal_id", ""),
                 alert.get("animal_name", ""),
                 alert.get("alert_type", ""),
-                str(alert.get("input_value", "")),
-                alert.get("input_by", ""),
-                alert.get("timestamp", "")[:19] if alert.get("timestamp") else ""
+                str(detected_val),
+                recorded_by,
+                created_at[:19] if created_at else ""
             )
         
         console.print(table)
@@ -1216,8 +1220,8 @@ def view_pending_health_alerts_ui():
         console.print("輸入編號 → 處理該筆警示")
         console.print("0 → 返回")
         
-        choice = prompt_with_back("請選擇")
-        if choice == BACK or choice == "0":
+        choice = Prompt.ask("請選擇")
+        if choice == "0":
             break
         
         try:
@@ -1237,11 +1241,16 @@ def view_pending_health_alerts_ui():
 
 def handle_health_alert(alert):
     """處理單一健康警示"""
+    # 支援兩種欄位名稱 (新舊格式相容)
+    detected_val = alert.get("detected_value") or alert.get("input_value", "")
+    recorded_by = alert.get("recorded_by") or alert.get("input_by", "")
+    created_at = alert.get("created_at") or alert.get("timestamp", "")
+    
     console.print(f"\n[bold]處理警示: {alert.get('animal_id')} - {alert.get('animal_name', '')}[/bold]")
     console.print(f"警示類型: {alert.get('alert_type')}")
-    console.print(f"輸入值: {alert.get('input_value')}")
-    console.print(f"輸入者: {alert.get('input_by')}")
-    console.print(f"時間: {alert.get('timestamp', '')[:19] if alert.get('timestamp') else ''}")
+    console.print(f"輸入值: {detected_val}")
+    console.print(f"輸入者: {recorded_by}")
+    console.print(f"時間: {created_at[:19] if created_at else ''}")
     
     console.print("\n[bold]請選擇處理方式:[/bold]")
     console.print("1. 確認為真實健康問題 (保留警示)")
