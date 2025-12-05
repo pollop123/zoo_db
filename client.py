@@ -1201,18 +1201,29 @@ def view_pending_health_alerts_ui():
         table.add_column("時間", style="dim")
         
         for i, alert in enumerate(alerts, 1):
-            # 支援兩種欄位名稱 (新舊格式相容)
-            detected_val = alert.get("detected_value") or alert.get("input_value", "")
-            recorded_by = alert.get("recorded_by") or alert.get("input_by", "")
-            created_at = alert.get("created_at") or alert.get("timestamp", "")
+            # 支援多種欄位名稱格式 (相容不同來源的警示)
+            detected_val = alert.get("detected_value") or alert.get("input_value") or ""
+            recorded_by = alert.get("recorded_by") or alert.get("input_by") or ""
+            created_at = alert.get("created_at") or alert.get("timestamp") or ""
+            # alert_type 可能是 None，也可能在 message 欄位
+            alert_type = alert.get("alert_type") or ""
+            if not alert_type and alert.get("message"):
+                # 從 message 提取類型 (如 "體重異常" -> WEIGHT)
+                msg = alert.get("message", "")
+                if "體重" in msg:
+                    alert_type = "WEIGHT_ANOMALY"
+                elif "食量" in msg:
+                    alert_type = "FEEDING_ANOMALY"
+            # 時間格式處理
+            time_str = str(created_at)[:19].replace("T", " ") if created_at else ""
             table.add_row(
                 str(i),
                 alert.get("animal_id", ""),
                 alert.get("animal_name", ""),
-                alert.get("alert_type", ""),
+                alert_type,
                 str(detected_val),
                 recorded_by,
-                created_at[:19] if created_at else ""
+                time_str
             )
         
         console.print(table)
@@ -1241,16 +1252,28 @@ def view_pending_health_alerts_ui():
 
 def handle_health_alert(alert):
     """處理單一健康警示"""
-    # 支援兩種欄位名稱 (新舊格式相容)
-    detected_val = alert.get("detected_value") or alert.get("input_value", "")
-    recorded_by = alert.get("recorded_by") or alert.get("input_by", "")
-    created_at = alert.get("created_at") or alert.get("timestamp", "")
+    # 支援多種欄位名稱格式
+    detected_val = alert.get("detected_value") or alert.get("input_value") or ""
+    recorded_by = alert.get("recorded_by") or alert.get("input_by") or ""
+    created_at = alert.get("created_at") or alert.get("timestamp") or ""
+    alert_type = alert.get("alert_type") or ""
+    description = alert.get("description") or alert.get("message") or ""
+    
+    if not alert_type and alert.get("message"):
+        msg = alert.get("message", "")
+        if "體重" in msg:
+            alert_type = "WEIGHT_ANOMALY"
+        elif "食量" in msg:
+            alert_type = "FEEDING_ANOMALY"
+    
+    time_str = str(created_at)[:19].replace("T", " ") if created_at else ""
     
     console.print(f"\n[bold]處理警示: {alert.get('animal_id')} - {alert.get('animal_name', '')}[/bold]")
-    console.print(f"警示類型: {alert.get('alert_type')}")
+    console.print(f"警示類型: {alert_type}")
+    console.print(f"描述: {description}")
     console.print(f"輸入值: {detected_val}")
     console.print(f"輸入者: {recorded_by}")
-    console.print(f"時間: {created_at[:19] if created_at else ''}")
+    console.print(f"時間: {time_str}")
     
     console.print("\n[bold]請選擇處理方式:[/bold]")
     console.print("1. 確認為真實健康問題 (保留警示)")
