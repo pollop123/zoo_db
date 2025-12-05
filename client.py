@@ -657,6 +657,25 @@ def add_feeding_ui(user_id):
     if amount <= 0:
         console.print("[red]數量必須大於 0[/red]")
         return
+    
+    # [即時警告] 檢查食量是否異常
+    if records:
+        recent_amounts = [r[3] for r in records[:5] if r[3] is not None]
+        if recent_amounts:
+            avg_amount = sum(recent_amounts) / len(recent_amounts)
+            if avg_amount > 0:
+                deviation = abs(amount - avg_amount) / avg_amount * 100
+                if deviation > 50:  # 偏差超過 50%
+                    console.print(f"\n[bold yellow]⚠ 警告：您輸入的食量 {amount} kg 與近期平均 {avg_amount:.2f} kg 差異 {deviation:.0f}%[/bold yellow]")
+                    confirm = Prompt.ask("確定要儲存嗎？", choices=["y", "n"], default="n")
+                    # 記錄警告事件
+                    client.send_request("log_input_warning", {
+                        "user_id": user_id, "animal_id": a_id, "warning_type": "FEEDING",
+                        "input_value": amount, "expected_value": avg_amount, "confirmed": confirm.lower() == "y"
+                    })
+                    if confirm.lower() != "y":
+                        console.print("[yellow]已取消輸入。[/yellow]")
+                        return
         
     response = client.send_request("add_feeding", {
         "a_id": a_id, "f_id": f_id, "amount": amount, "user_id": user_id
@@ -696,6 +715,25 @@ def add_body_info_ui(user_id):
     if weight <= 0:
         console.print("[red]體重必須大於 0[/red]")
         return
+    
+    # [即時警告] 檢查體重是否異常
+    if records:
+        recent_weights = [r[2] for r in records[:5] if r[2] is not None]
+        if recent_weights:
+            last_weight = recent_weights[0]  # 最近一筆
+            if last_weight > 0:
+                change_pct = abs(weight - last_weight) / last_weight * 100
+                if change_pct > 20:  # 單次變化超過 20%
+                    console.print(f"\n[bold yellow]⚠ 警告：您輸入的體重 {weight} kg 與上次 {last_weight:.2f} kg 變化 {change_pct:.0f}%[/bold yellow]")
+                    confirm = Prompt.ask("確定要儲存嗎？", choices=["y", "n"], default="n")
+                    # 記錄警告事件
+                    client.send_request("log_input_warning", {
+                        "user_id": user_id, "animal_id": a_id, "warning_type": "WEIGHT",
+                        "input_value": weight, "expected_value": last_weight, "confirmed": confirm.lower() == "y"
+                    })
+                    if confirm.lower() != "y":
+                        console.print("[yellow]已取消輸入。[/yellow]")
+                        return
         
     # [NEW] Select Status
     state_id = 1 # Default Normal
@@ -1064,16 +1102,24 @@ def view_careless_employees_ui():
     results = response.get("data", [])
     
     if not results:
-        console.print("[green]未發現冒失鬼 (修正次數 < 5)。[/green]")
+        console.print("[green]未發現冒失鬼 (總次數 < 3)。[/green]")
         return
 
-    table = Table(title="冒失鬼名單 (修正次數 >= 5)")
+    table = Table(title="冒失鬼名單 (被修正 + 輸入警告 >= 3)")
     table.add_column("員工 ID", style="red")
     table.add_column("姓名", style="yellow")
-    table.add_column("修正次數", style="white")
+    table.add_column("被修正次數", style="white")
+    table.add_column("輸入警告次數", style="white")
+    table.add_column("總計", style="bold red")
 
     for res in results:
-        table.add_row(str(res['id']), res['name'], str(res['count']))
+        table.add_row(
+            str(res['id']), 
+            res['name'], 
+            str(res.get('corrections', 0)),
+            str(res.get('warnings', 0)),
+            str(res.get('total', 0))
+        )
     
     console.print(table)
 

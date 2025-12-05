@@ -9,7 +9,7 @@ from action.auth import LoginAction, LogoutAction, ForgotPasswordAction
 from action.feeding import AddFeedingAction
 from action.inventory import AddInventoryStockAction, GetInventoryReportAction
 from action.schedule import GetEmployeeScheduleAction, GetMyAnimalsAction, AssignTaskAction, GetAllTasksAction, GetAllAnimalsAction
-from action.record import CorrectRecordAction, GetRecentRecordsAction
+from action.record import CorrectRecordAction, GetRecentRecordsAction, LogInputWarningAction
 from action.analysis import (
     CheckWeightAnomalyAction, BatchCheckAnomaliesAction, 
     GetHighRiskAnimalsAction, GetAnimalTrendsAction, GetAuditLogsAction,
@@ -49,6 +49,7 @@ ACTION_MAP = {
     "assign_task": AssignTaskAction,
     "correct_record": CorrectRecordAction,
     "get_recent_records": GetRecentRecordsAction,
+    "log_input_warning": LogInputWarningAction,
     "check_weight_anomaly": CheckWeightAnomalyAction,
     "batch_check_anomalies": BatchCheckAnomaliesAction,
     "get_high_risk_animals": GetHighRiskAnimalsAction,

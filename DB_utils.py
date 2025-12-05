@@ -715,8 +715,10 @@ class ZooBackend:
     def check_weight_anomaly(self, a_id):
         """
         D. 分析與報表 (Analytics) - 園方功能
-        1. 呼叫 Window Function SQL 計算變化率。
-        2. 若異常 (>5%), [NoSQL] 寫入 health_alerts。
+        改進版：使用近 5 次移動平均來判斷異常
+        1. 取得最近 6 筆體重紀錄（當前 + 前 5 次）
+        2. 計算前 5 次的移動平均
+        3. 當前體重與移動平均比較，偏差 >10% 視為異常
         """
         if not self.pg_pool:
             return False, "資料庫連線池未初始化", 0.0
@@ -725,48 +727,47 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
 
-                # 1. Window Function SQL
-                # Calculate percentage change from previous weight
-                # Assuming table has: animal_id, weight, record_time
+                # 取得最近 6 筆體重紀錄
                 query = f"""
-                    WITH WeightChanges AS (
+                    WITH RecentWeights AS (
                         SELECT 
                             {COL_WEIGHT},
-                            LAG({COL_WEIGHT}) OVER (ORDER BY datetime) as prev_weight
+                            datetime,
+                            ROW_NUMBER() OVER (ORDER BY datetime DESC) as rn
                         FROM {TABLE_ANIMAL_STATE}
-                        WHERE a_id = %s
-                        ORDER BY datetime DESC
-                        LIMIT 2
+                        WHERE a_id = %s AND {COL_WEIGHT} IS NOT NULL
                     )
-                    SELECT {COL_WEIGHT}, prev_weight FROM WeightChanges
+                    SELECT {COL_WEIGHT}, rn FROM RecentWeights WHERE rn <= 6 ORDER BY rn
                 """
                 cur.execute(query, (a_id,))
                 results = cur.fetchall()
 
-                if len(results) < 2:
-                    return False, "資料不足，無法分析", 0.0
+                if len(results) < 3:
+                    return False, "資料不足（需至少 3 筆），無法分析", 0.0
 
                 current_weight = float(results[0][0])
-                prev_weight = float(results[1][0])
+                # 計算前 N-1 次的移動平均（排除當前）
+                prev_weights = [float(r[0]) for r in results[1:]]
+                moving_avg = sum(prev_weights) / len(prev_weights)
                 
-                if prev_weight == 0:
-                     return False, "前次體重為0，無法計算變化率", 0.0
+                if moving_avg == 0:
+                    return False, "移動平均為0，無法計算變化率", 0.0
 
-                change_pct = ((current_weight - prev_weight) / prev_weight) * 100
+                change_pct = ((current_weight - moving_avg) / moving_avg) * 100
 
-                # 2. Check Anomaly (> 5%)
-                if abs(change_pct) > 5:
+                # 偏差 >10% 視為異常（比單次比較更嚴謹）
+                if abs(change_pct) > 10:
                     alert = {
                         "level": "HIGH",
                         "animal_id": a_id,
-                        "message": f"體重驟變 {change_pct:.1f}% (由 {prev_weight}kg 變為 {current_weight}kg)",
+                        "message": f"體重異常 {change_pct:.1f}% (近期平均 {moving_avg:.1f}kg, 當前 {current_weight:.1f}kg)",
                         "created_at": datetime.now().isoformat(),
                         "status": "UNREAD"
                     }
                     self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(alert)
-                    return True, f"偵測到異常: 體重變化 {change_pct:.1f}%", change_pct
+                    return True, f"偵測到異常: 體重偏離近期平均 {change_pct:.1f}%", change_pct
                 
-                return False, f"體重變化正常: {change_pct:.1f}%", change_pct
+                return False, f"體重正常: 偏離近期平均 {change_pct:.1f}%", change_pct
 
         except Exception as e:
             return False, f"分析失敗: {e}", 0.0
@@ -774,8 +775,9 @@ class ZooBackend:
     def check_feeding_anomaly(self, a_id):
         """
         檢查動物食量異常
-        比較最近一次餵食量與該動物平均餵食量的差異
-        若差異超過 30%，視為異常
+        改進版：使用近 7 天平均而非全歷史平均
+        1. 計算近 7 天的平均食量
+        2. 當前食量與近期平均比較，偏差 >40% 視為異常
         """
         if not self.pg_pool:
             return False, "資料庫連線池未初始化", 0.0
@@ -784,45 +786,55 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
 
-                # 使用 Window Function 計算平均值與最新值
+                # 使用 Window Function 計算近 7 天平均（排除當天）
                 query = f"""
-                    WITH FeedingStats AS (
+                    WITH RecentFeedings AS (
                         SELECT 
                             {COL_AMOUNT},
-                            AVG({COL_AMOUNT}) OVER () as avg_amount,
+                            feed_date,
                             ROW_NUMBER() OVER (ORDER BY feed_date DESC) as rn
                         FROM {TABLE_FEEDING}
-                        WHERE a_id = %s
+                        WHERE a_id = %s AND {COL_AMOUNT} IS NOT NULL
+                    ),
+                    Stats AS (
+                        SELECT 
+                            {COL_AMOUNT},
+                            rn,
+                            AVG({COL_AMOUNT}) OVER (
+                                ORDER BY rn 
+                                ROWS BETWEEN 1 FOLLOWING AND 7 FOLLOWING
+                            ) as recent_avg
+                        FROM RecentFeedings
                     )
-                    SELECT {COL_AMOUNT}, avg_amount FROM FeedingStats WHERE rn = 1
+                    SELECT {COL_AMOUNT}, recent_avg FROM Stats WHERE rn = 1
                 """
                 cur.execute(query, (a_id,))
                 result = cur.fetchone()
 
                 if not result or result[1] is None:
-                    return False, "食量資料不足，無法分析", 0.0
+                    return False, "食量資料不足（需至少 2 筆），無法分析", 0.0
 
                 latest_amount = float(result[0])
-                avg_amount = float(result[1])
+                recent_avg = float(result[1])
                 
-                if avg_amount == 0:
-                    return False, "平均食量為0，無法計算變化率", 0.0
+                if recent_avg == 0:
+                    return False, "近期平均食量為0，無法計算變化率", 0.0
 
-                change_pct = ((latest_amount - avg_amount) / avg_amount) * 100
+                change_pct = ((latest_amount - recent_avg) / recent_avg) * 100
 
-                # 食量變化超過 30% 視為異常
-                if abs(change_pct) > 30:
+                # 食量偏離近期平均 >40% 視為異常
+                if abs(change_pct) > 40:
                     alert = {
                         "level": "MEDIUM",
                         "animal_id": a_id,
-                        "message": f"食量異常 {change_pct:.1f}% (平均 {avg_amount:.1f}kg, 最近 {latest_amount:.1f}kg)",
+                        "message": f"食量異常 {change_pct:.1f}% (近期平均 {recent_avg:.1f}kg, 當前 {latest_amount:.1f}kg)",
                         "created_at": datetime.now().isoformat(),
                         "status": "UNREAD"
                     }
                     self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(alert)
-                    return True, f"偵測到異常: 食量變化 {change_pct:.1f}%", change_pct
+                    return True, f"偵測到異常: 食量偏離近期平均 {change_pct:.1f}%", change_pct
                 
-                return False, f"食量變化正常: {change_pct:.1f}%", change_pct
+                return False, f"食量正常: 偏離近期平均 {change_pct:.1f}%", change_pct
 
         except Exception as e:
             return False, f"分析失敗: {e}", 0.0
@@ -872,6 +884,31 @@ class ZooBackend:
             print(f"Batch check failed: {e}")
             return []
 
+    def log_input_warning(self, user_id, animal_id, warning_type, input_value, expected_value, confirmed):
+        """
+        [NEW] 記錄輸入警告事件到 MongoDB
+        用於追蹤哪些員工經常觸發異常輸入警告
+        """
+        if self.mongo_client is None:
+            return False
+        
+        try:
+            log_entry = {
+                "event_type": "INPUT_WARNING",
+                "employee_id": user_id,
+                "animal_id": animal_id,
+                "warning_type": warning_type,  # "WEIGHT" or "FEEDING"
+                "input_value": float(input_value),
+                "expected_value": float(expected_value),
+                "confirmed": confirmed,  # True = 使用者確認儲存, False = 取消
+                "timestamp": datetime.now()
+            }
+            self.mongo_db[COLLECTION_AUDIT_LOGS].insert_one(log_entry)
+            return True
+        except Exception as e:
+            print(f"Error logging input warning: {e}")
+            return False
+
     def get_audit_logs(self):
         """
         從 MongoDB 撈出修正紀錄給管理員看。
@@ -908,31 +945,61 @@ class ZooBackend:
             print(f"Error fetching high risk animals: {e}")
     def get_careless_employees(self):
         """
-        [NEW] 找出冒失鬼 (被修正次數過多的員工)
+        [NEW] 找出冒失鬼 (被修正次數 + 輸入警告次數過多的員工)
         """
         if not self.pg_pool:
             return []
 
         try:
-            pipeline = [
+            # 統計被修正次數
+            correction_pipeline = [
                 {"$match": {"event_type": "DATA_CORRECTION"}},
-                {"$group": {"_id": "$original_creator_id", "count": {"$sum": 1}}},
-                {"$match": {"count": {"$gte": 5}}}, # 5次以上算冒失鬼
-                {"$sort": {"count": -1}}
+                {"$group": {"_id": "$original_creator_id", "correction_count": {"$sum": 1}}}
             ]
-            results = list(self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(pipeline))
+            correction_results = {r['_id']: r['correction_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(correction_pipeline)}
+            
+            # 統計輸入警告次數 (確認儲存的才算)
+            warning_pipeline = [
+                {"$match": {"event_type": "INPUT_WARNING", "confirmed": True}},
+                {"$group": {"_id": "$employee_id", "warning_count": {"$sum": 1}}}
+            ]
+            warning_results = {r['_id']: r['warning_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(warning_pipeline)}
+            
+            # 合併統計
+            all_employees = set(correction_results.keys()) | set(warning_results.keys())
+            combined = []
+            for e_id in all_employees:
+                if e_id:
+                    corrections = correction_results.get(e_id, 0)
+                    warnings = warning_results.get(e_id, 0)
+                    total = corrections + warnings
+                    if total >= 3:  # 3次以上算冒失鬼
+                        combined.append({
+                            "id": e_id,
+                            "corrections": corrections,
+                            "warnings": warnings,
+                            "total": total
+                        })
+            
+            # 按總數排序
+            combined.sort(key=lambda x: x['total'], reverse=True)
 
             # Enrich with employee names from SQL
             enriched_results = []
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
-                for res in results:
-                    e_id = res['_id']
-                    if e_id:
-                        cur.execute(f"SELECT {COL_NAME} FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s", (e_id,))
-                        row = cur.fetchone()
-                        name = row[0] if row else "Unknown"
-                        enriched_results.append({"id": e_id, "name": name, "count": res['count']})
+                for res in combined:
+                    e_id = res['id']
+                    cur.execute(f"SELECT {COL_NAME} FROM {TABLE_EMPLOYEES} WHERE {COL_EMPLOYEE_ID} = %s", (e_id,))
+                    row = cur.fetchone()
+                    name = row[0] if row else "Unknown"
+                    enriched_results.append({
+                        "id": e_id, 
+                        "name": name, 
+                        "corrections": res['corrections'],
+                        "warnings": res['warnings'],
+                        "total": res['total']
+                    })
             
             return enriched_results
         except Exception as e:
