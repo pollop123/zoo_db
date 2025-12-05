@@ -1138,7 +1138,7 @@ class ZooBackend:
             # 從 careless_logs 找出自己的錯誤
             careless = list(self.mongo_db[COLLECTION_CARELESS_LOGS].find({
                 "employee_id": e_id
-            }).sort("original_timestamp", -1).limit(20))
+            }).sort("created_at", -1).limit(20))
             
             # 從 audit_logs 找出自己的資料被修正的紀錄
             corrections = list(self.mongo_db[COLLECTION_AUDIT_LOGS].find({

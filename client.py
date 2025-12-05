@@ -403,11 +403,15 @@ def view_my_corrections_ui(user_id):
         table.add_column("時間", style="dim")
         
         for c in careless:
+            # 支援多種欄位格式
+            error_type = c.get("record_type") or c.get("error_type") or ""
+            wrong_val = c.get("original_value") or c.get("wrong_value") or ""
+            timestamp = c.get("created_at") or c.get("original_timestamp") or c.get("timestamp") or ""
             table.add_row(
                 c.get("animal_id", ""),
-                c.get("error_type", ""),
-                str(c.get("wrong_value", "")),
-                str(c.get("original_timestamp", ""))[:19] if c.get("original_timestamp") else ""
+                error_type,
+                str(wrong_val),
+                str(timestamp)[:19].replace("T", " ") if timestamp else ""
             )
         console.print(table)
     
