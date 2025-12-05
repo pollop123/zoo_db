@@ -1,99 +1,99 @@
-# Zoo Database ER Diagram
+# Zoo Database ER Diagram (Conceptual - Chen's Notation Style)
+
+```mermaid
+flowchart TD
+    %% Styles
+    classDef entity fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef attribute fill:#fff9c4,stroke:#fbc02d,stroke-width:1px;
+    classDef pk fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,text-decoration:underline;
+    classDef relationship fill:#fce4ec,stroke:#880e4f,stroke-width:2px,shape:diamond;
+
+    %% --- Employee ---
+    E[Employee]:::entity
+    E_id([e_id]):::pk
+    E_name([e_name]):::attribute
+    E_role([role]):::attribute
+    E_status([status]):::attribute
+    
+    E --- E_id
+    E --- E_name
+    E --- E_role
+    E --- E_status
+
+    %% --- Animal ---
+    A[Animal]:::entity
+    A_id([a_id]):::pk
+    A_species([species]):::attribute
+    A_sex([sex]):::attribute
+    
+    A --- A_id
+    A --- A_species
+    A --- A_sex
+
+    %% --- Feeds ---
+    F[Feeds]:::entity
+    F_id([f_id]):::pk
+    F_name([feed_name]):::attribute
+    
+    F --- F_id
+    F --- F_name
+
+    %% --- Relationships ---
+    
+    %% Feeding (Action)
+    R_Feed{Feeds}:::relationship
+    R_Feed_attr([amount]):::attribute
+    R_Feed_time([time]):::attribute
+    
+    E --- R_Feed
+    R_Feed --- A
+    R_Feed --- F
+    R_Feed --- R_Feed_attr
+    R_Feed --- R_Feed_time
+
+    %% Care / Record (Action)
+    R_Record{Records State}:::relationship
+    R_Record_w([weight]):::attribute
+    R_Record_s([status_id]):::attribute
+    
+    E --- R_Record
+    R_Record --- A
+    R_Record --- R_Record_w
+    R_Record --- R_Record_s
+
+    %% Schedule (Action)
+    R_Task{Assigned Task}:::relationship
+    T[Task]:::entity
+    T_name([t_name]):::attribute
+    
+    T --- T_name
+    E --- R_Task
+    R_Task --- T
+    R_Task -.->|Target| A
+
+```
+
+# Zoo Database Schema (Physical - Crow's Foot Notation)
 
 ```mermaid
 erDiagram
-    %% Entities
+    employee ||--o{ feeding_records : logs
+    employee ||--o{ animal_state_record : records
+    employee ||--o{ employee_shift : assigned
+    animal ||--o{ feeding_records : receives
+    animal ||--o{ animal_state_record : has
+    feeds ||--o{ feeding_records : consumed
+    
     employee {
         string e_id PK
-        string e_name
-        string role
-        string status
-        string password_hash
+        string name
     }
-
     animal {
         string a_id PK
         string species
-        string sex
-        string life_status
-        string required_skill
     }
-
-    feeds {
-        string f_id PK
-        string feed_name
-        string category
-    }
-
-    task {
-        string t_id PK
-        string t_name
-    }
-
-    status_type {
-        int s_id PK
-        string s_name
-        string description
-    }
-
-    %% Relationships & Transactions
     feeding_records {
-        int feeding_id PK
-        string a_id FK
-        string f_id FK
-        string fed_by FK "employee.e_id"
-        decimal feeding_amount_kg
-        datetime feed_date
+        int id PK
+        decimal amount
     }
-
-    animal_state_record {
-        int record_id PK
-        string a_id FK
-        string recorded_by FK "employee.e_id"
-        int state_id FK
-        decimal weight
-        datetime datetime
-    }
-
-    feeding_inventory {
-        int stock_entry_id PK
-        string f_id FK
-        int feeding_id FK "Nullable"
-        decimal quantity_delta_kg
-        string reason
-        datetime datetime
-    }
-
-    employee_shift {
-        string shift_id PK
-        string e_id FK
-        string t_id FK
-        string a_id FK "Nullable"
-        datetime shift_start
-        datetime shift_end
-    }
-
-    employee_skills {
-        string e_id FK
-        string skill_name
-    }
-
-    %% Relationships Lines
-    employee ||--o{ feeding_records : "logs"
-    employee ||--o{ animal_state_record : "records"
-    employee ||--o{ employee_shift : "assigned_to"
-    employee ||--o{ employee_skills : "has"
-
-    animal ||--o{ feeding_records : "eats"
-    animal ||--o{ animal_state_record : "has_state"
-    animal ||--o{ employee_shift : "is_target_of"
-
-    feeds ||--o{ feeding_records : "is_used_in"
-    feeds ||--o{ feeding_inventory : "stocks"
-
-    task ||--o{ employee_shift : "defines"
-
-    status_type ||--o{ animal_state_record : "describes"
-
-    feeding_records ||--o{ feeding_inventory : "triggers_deduction"
 ```
