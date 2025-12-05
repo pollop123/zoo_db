@@ -82,10 +82,13 @@ class ZooBackend:
                     if status != 'active':
                         # Log failed attempt (Inactive)
                         log_entry = {
-                            "event_type": "LOGIN",
                             "employee_id": e_id,
-                            "timestamp": datetime.now().isoformat(),
-                            "status": f"FAILED ({status})"
+                            "employee_name": name,
+                            "action": "login",
+                            "status": "failed",
+                            "reason": f"帳號狀態異常 ({status})",
+                            "ip": "127.0.0.1",
+                            "timestamp": datetime.now().isoformat()
                         }
                         self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
                         return False, None, None, f"登入失敗: 帳號狀態異常 ({status})"
@@ -96,30 +99,38 @@ class ZooBackend:
                         input_hash = hashlib.sha256(password.encode()).hexdigest()
                         if input_hash != password_hash:
                             log_entry = {
-                                "event_type": "LOGIN",
                                 "employee_id": e_id,
-                                "timestamp": datetime.now().isoformat(),
-                                "status": "FAILED (Wrong Password)"
+                                "employee_name": name,
+                                "action": "login",
+                                "status": "failed",
+                                "reason": "密碼錯誤",
+                                "ip": "127.0.0.1",
+                                "timestamp": datetime.now().isoformat()
                             }
                             self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
                             return False, None, None, "登入失敗: 密碼錯誤"
 
                     # 3. [NoSQL] Log login (Success)
                     log_entry = {
-                        "event_type": "LOGIN",
                         "employee_id": e_id,
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "SUCCESS"
+                        "employee_name": name,
+                        "action": "login",
+                        "status": "success",
+                        "ip": "127.0.0.1",
+                        "timestamp": datetime.now().isoformat()
                     }
                     self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
                     return True, name, role, "登入成功"
                 else:
                     # Log failed attempt (User not found)
                     log_entry = {
-                        "event_type": "LOGIN",
                         "employee_id": e_id,
-                        "timestamp": datetime.now().isoformat(),
-                        "status": "FAILED (Not Found)"
+                        "employee_name": None,
+                        "action": "login",
+                        "status": "failed",
+                        "reason": "員工不存在",
+                        "ip": "127.0.0.1",
+                        "timestamp": datetime.now().isoformat()
                     }
                     self.mongo_db[COLLECTION_LOGIN_LOGS].insert_one(log_entry)
                     return False, None, None, "登入失敗: 查無此員工 ID"
@@ -689,15 +700,14 @@ class ZooBackend:
                     if pending_alert:
                         # 移到 careless_logs（冒失鬼紀錄）
                         careless_entry = {
-                            "event_type": "INPUT_ERROR",
-                            "employee_id": pending_alert.get("input_by", "UNKNOWN"),
+                            "employee_id": pending_alert.get("recorded_by") or pending_alert.get("input_by", "UNKNOWN"),
                             "animal_id": a_id,
-                            "error_type": pending_alert.get("alert_type", "WEIGHT_ANOMALY"),
-                            "wrong_value": pending_alert.get("input_value"),
+                            "record_type": "weighing" if "weight" in pending_alert.get("alert_type", "").lower() else "feeding",
+                            "original_value": pending_alert.get("detected_value") or pending_alert.get("input_value"),
                             "corrected_value": float(new_val),
                             "corrected_by": user_id,
-                            "original_timestamp": pending_alert.get("timestamp"),
-                            "correction_timestamp": datetime.now()
+                            "reason": "管理員修正異常數值",
+                            "created_at": datetime.now().isoformat()
                         }
                         self.mongo_db[COLLECTION_CARELESS_LOGS].insert_one(careless_entry)
                         
@@ -779,11 +789,13 @@ class ZooBackend:
                 # 偏差 >10% 視為異常（比單次比較更嚴謹）
                 if abs(change_pct) > 10:
                     alert = {
-                        "level": "HIGH",
                         "animal_id": a_id,
-                        "message": f"體重異常 {change_pct:.1f}% (近期平均 {moving_avg:.1f}kg, 當前 {current_weight:.1f}kg)",
+                        "alert_type": "weight_anomaly",
+                        "description": f"體重異常 {change_pct:.1f}% (近期平均 {moving_avg:.1f}kg, 當前 {current_weight:.1f}kg)",
+                        "detected_value": current_weight,
+                        "expected_range": f"{moving_avg*0.9:.1f}-{moving_avg*1.1:.1f}",
                         "created_at": datetime.now().isoformat(),
-                        "status": "UNREAD"
+                        "status": "pending"
                     }
                     self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(alert)
                     return True, f"偵測到異常: 體重偏離近期平均 {change_pct:.1f}%", change_pct
@@ -846,11 +858,13 @@ class ZooBackend:
                 # 食量偏離近期平均 >40% 視為異常
                 if abs(change_pct) > 40:
                     alert = {
-                        "level": "MEDIUM",
                         "animal_id": a_id,
-                        "message": f"食量異常 {change_pct:.1f}% (近期平均 {recent_avg:.1f}kg, 當前 {latest_amount:.1f}kg)",
+                        "alert_type": "food_anomaly",
+                        "description": f"食量異常 {change_pct:.1f}% (近期平均 {recent_avg:.1f}kg, 當前 {latest_amount:.1f}kg)",
+                        "detected_value": latest_amount,
+                        "expected_range": f"{recent_avg*0.6:.1f}-{recent_avg*1.4:.1f}",
                         "created_at": datetime.now().isoformat(),
-                        "status": "UNREAD"
+                        "status": "pending"
                     }
                     self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(alert)
                     return True, f"偵測到異常: 食量偏離近期平均 {change_pct:.1f}%", change_pct
@@ -921,13 +935,13 @@ class ZooBackend:
                 # 使用者確認異常數據 → 記錄到 health_alerts (待檢查)
                 health_alert = {
                     "animal_id": animal_id,
-                    "alert_type": f"{warning_type}_ANOMALY",
+                    "alert_type": f"{warning_type.lower()}_anomaly",
                     "description": f"員工 {user_id} 輸入異常數值: {input_value}, 預期約 {expected_value:.2f}",
-                    "input_by": user_id,
-                    "input_value": float(input_value),
-                    "expected_value": float(expected_value),
-                    "status": "PENDING",  # 待管理員確認
-                    "timestamp": datetime.now()
+                    "detected_value": float(input_value),
+                    "expected_range": f"{expected_value*0.8:.1f}-{expected_value*1.2:.1f}",
+                    "recorded_by": user_id,
+                    "status": "pending",
+                    "created_at": datetime.now().isoformat()
                 }
                 self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(health_alert)
             # 取消輸入的話不記錄任何東西（使用者自己發現打錯了）
@@ -980,9 +994,8 @@ class ZooBackend:
             return []
 
         try:
-            # 從 careless_logs 統計
+            # 從 careless_logs 統計（統一格式：按 employee_id 分組）
             careless_pipeline = [
-                {"$match": {"event_type": "INPUT_ERROR"}},
                 {"$group": {"_id": "$employee_id", "error_count": {"$sum": 1}}}
             ]
             careless_results = {r['_id']: r['error_count'] for r in self.mongo_db[COLLECTION_CARELESS_LOGS].aggregate(careless_pipeline)}
@@ -1092,13 +1105,14 @@ class ZooBackend:
             elif status == "INPUT_ERROR":
                 # 判定為輸入錯誤 → 移到 careless_logs
                 careless_entry = {
-                    "event_type": "INPUT_ERROR",
-                    "employee_id": alert.get("input_by", "UNKNOWN"),
+                    "employee_id": alert.get("recorded_by") or alert.get("input_by", "UNKNOWN"),
                     "animal_id": alert.get("animal_id"),
-                    "error_type": alert.get("alert_type", "UNKNOWN"),
-                    "wrong_value": alert.get("input_value"),
-                    "original_timestamp": alert.get("timestamp"),
-                    "marked_as_error_at": datetime.now().isoformat()
+                    "record_type": "weighing" if "weight" in alert.get("alert_type", "").lower() else "feeding",
+                    "original_value": alert.get("detected_value") or alert.get("input_value"),
+                    "corrected_value": None,
+                    "corrected_by": None,
+                    "reason": "管理員判定為輸入錯誤",
+                    "created_at": datetime.now().isoformat()
                 }
                 self.mongo_db[COLLECTION_CARELESS_LOGS].insert_one(careless_entry)
                 
