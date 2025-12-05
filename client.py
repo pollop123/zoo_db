@@ -624,25 +624,53 @@ def manage_diet_ui():
             for i, s in enumerate(species_list, 1):
                 console.print(f"  {i}. {s}")
             
-            species = prompt_with_back("請輸入物種名稱")
-            if species == BACK:
+            species_choice = prompt_with_back(f"請選擇物種 (1-{len(species_list)})")
+            if species_choice == BACK:
                 continue
+            
+            # 支援輸入編號或物種名稱
+            try:
+                idx = int(species_choice) - 1
+                if 0 <= idx < len(species_list):
+                    species = species_list[idx]
+                else:
+                    console.print("[red]無效的編號[/red]")
+                    continue
+            except ValueError:
+                # 直接輸入物種名稱
+                species = species_choice
             
             # 顯示所有飼料
             response = client.send_request("get_all_feeds", {})
             feeds = response.get("data", [])
-            console.print("\n[bold]可用飼料:[/bold]")
+            console.print(f"\n[bold]為 {species} 新增可食用飼料:[/bold]")
             table = Table()
+            table.add_column("#", style="dim")
             table.add_column("ID", style="cyan")
             table.add_column("名稱", style="green")
             table.add_column("類別", style="yellow")
-            for f_id, name, cat in feeds:
-                table.add_row(f_id, name, cat)
+            for i, f in enumerate(feeds, 1):
+                f_id = f.get('f_id') if isinstance(f, dict) else f[0]
+                name = f.get('feed_name') if isinstance(f, dict) else f[1]
+                cat = f.get('category') if isinstance(f, dict) else f[2]
+                table.add_row(str(i), f_id, name, cat)
             console.print(table)
             
-            f_id = prompt_with_back("請輸入飼料 ID")
-            if f_id == BACK:
+            feed_choice = prompt_with_back(f"請選擇飼料 (1-{len(feeds)})")
+            if feed_choice == BACK:
                 continue
+            
+            try:
+                idx = int(feed_choice) - 1
+                if 0 <= idx < len(feeds):
+                    f = feeds[idx]
+                    f_id = f.get('f_id') if isinstance(f, dict) else f[0]
+                else:
+                    console.print("[red]無效的編號[/red]")
+                    continue
+            except ValueError:
+                # 直接輸入飼料 ID
+                f_id = feed_choice.upper()
             
             response = client.send_request("add_diet", {"species": species, "f_id": f_id})
             if response.get("success"):
@@ -652,9 +680,26 @@ def manage_diet_ui():
             
         elif choice == "4":
             # 移除飼料
-            species = prompt_with_back("請輸入物種名稱")
-            if species == BACK:
+            # 先顯示物種列表
+            response = client.send_request("get_all_species", {})
+            species_list = response.get("data", [])
+            console.print("\n[bold]可用物種:[/bold]")
+            for i, s in enumerate(species_list, 1):
+                console.print(f"  {i}. {s}")
+            
+            species_choice = prompt_with_back(f"請選擇物種 (1-{len(species_list)})")
+            if species_choice == BACK:
                 continue
+            
+            try:
+                idx = int(species_choice) - 1
+                if 0 <= idx < len(species_list):
+                    species = species_list[idx]
+                else:
+                    console.print("[red]無效的編號[/red]")
+                    continue
+            except ValueError:
+                species = species_choice
             
             # 顯示目前該物種的飼料
             response = client.send_request("get_animal_diet", {"species": species})
@@ -665,12 +710,26 @@ def manage_diet_ui():
                 continue
             
             console.print(f"\n[bold]{species} 目前可食用:[/bold]")
-            for f_id, name, cat in feeds:
-                console.print(f"  {f_id} - {name} ({cat})")
+            for i, f in enumerate(feeds, 1):
+                f_id = f[0] if isinstance(f, (list, tuple)) else f.get('f_id')
+                name = f[1] if isinstance(f, (list, tuple)) else f.get('feed_name')
+                cat = f[2] if isinstance(f, (list, tuple)) else f.get('category')
+                console.print(f"  {i}. {f_id} - {name} ({cat})")
             
-            f_id = prompt_with_back("請輸入要移除的飼料 ID")
-            if f_id == BACK:
+            feed_choice = prompt_with_back(f"請選擇要移除的飼料 (1-{len(feeds)})")
+            if feed_choice == BACK:
                 continue
+            
+            try:
+                idx = int(feed_choice) - 1
+                if 0 <= idx < len(feeds):
+                    f = feeds[idx]
+                    f_id = f[0] if isinstance(f, (list, tuple)) else f.get('f_id')
+                else:
+                    console.print("[red]無效的編號[/red]")
+                    continue
+            except ValueError:
+                f_id = feed_choice.upper()
             
             response = client.send_request("remove_diet", {"species": species, "f_id": f_id})
             if response.get("success"):
