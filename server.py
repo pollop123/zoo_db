@@ -13,7 +13,8 @@ from action.record import CorrectRecordAction, GetRecentRecordsAction, LogInputW
 from action.analysis import (
     CheckWeightAnomalyAction, BatchCheckAnomaliesAction, 
     GetHighRiskAnimalsAction, GetAnimalTrendsAction, GetAuditLogsAction,
-    GetCarelessEmployeesAction
+    GetCarelessEmployeesAction, GetPendingHealthAlertsAction, 
+    ConfirmHealthAlertAction, GetMyCorrectionsAction
 )
 from action.reference import GetReferenceDataAction
 from action.body_info import AddAnimalStateAction
@@ -72,6 +73,9 @@ ACTION_MAP = {
     "update_employee_role": UpdateEmployeeRoleAction,
     "get_all_tasks": GetAllTasksAction,
     "get_all_animals": GetAllAnimalsAction,
+    "get_pending_health_alerts": GetPendingHealthAlertsAction,
+    "confirm_health_alert": ConfirmHealthAlertAction,
+    "get_my_corrections": GetMyCorrectionsAction,
 }
 
 class ClientHandler(threading.Thread):

@@ -31,3 +31,21 @@ class GetCarelessEmployeesAction(Action):
     def execute(self, db_utils, **kwargs):
         data = db_utils.get_careless_employees()
         return {"success": True, "data": data}
+
+class GetPendingHealthAlertsAction(Action):
+    def execute(self, db_utils, **kwargs):
+        data = db_utils.get_pending_health_alerts()
+        return {"success": True, "data": data}
+
+class ConfirmHealthAlertAction(Action):
+    def execute(self, db_utils, **kwargs):
+        alert_id = kwargs.get('alert_id')
+        status = kwargs.get('status')
+        success, msg = db_utils.confirm_health_alert(alert_id, status)
+        return {"success": success, "message": msg}
+
+class GetMyCorrectionsAction(Action):
+    def execute(self, db_utils, **kwargs):
+        e_id = kwargs.get('e_id')
+        data = db_utils.get_my_corrections(e_id)
+        return {"success": True, "data": data}

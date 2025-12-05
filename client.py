@@ -218,9 +218,10 @@ def show_user_menu(user_id, name):
         console.print("3. [查詢班表] View Schedule")
         console.print("4. [修正自己紀錄] Correct My Record")
         console.print("5. [修改密碼] Change Password")
+        console.print("6. [我的修正紀錄] View My Corrections")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "0"])
         
         if choice == "1":
             add_feeding_ui(user_id)
@@ -232,6 +233,8 @@ def show_user_menu(user_id, name):
             correct_record_ui(user_id)
         elif choice == "5":
             change_password_ui(user_id)
+        elif choice == "6":
+            view_my_corrections_ui(user_id)
         elif choice == "0":
             break
 
@@ -279,9 +282,10 @@ def health_monitor_ui():
         console.print("1. 批量異常掃描 (所有動物)")
         console.print("2. 高風險動物列表")
         console.print("3. 查詢個別動物趨勢")
+        console.print("4. 待處理健康警示")
         console.print("0. 返回")
         
-        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "0"])
+        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "4", "0"])
         
         if choice == "1":
             batch_check_anomalies_ui()
@@ -289,6 +293,8 @@ def health_monitor_ui():
             view_high_risk_animals_ui()
         elif choice == "3":
             view_animal_trends_ui()
+        elif choice == "4":
+            view_pending_health_alerts_ui()
         elif choice == "0":
             break
 
@@ -373,6 +379,56 @@ def change_password_ui(user_id):
         console.print(f"[green]{response.get('message')}[/green]")
     else:
         console.print(f"[red]{response.get('message')}[/red]")
+
+def view_my_corrections_ui(user_id):
+    """飼養員查看自己被修正的紀錄"""
+    console.print("[bold]我的修正紀錄[/bold]")
+    
+    response = client.send_request("get_my_corrections", {"e_id": user_id})
+    data = response.get("data", {})
+    
+    careless = data.get("careless", [])
+    corrections = data.get("corrections", [])
+    
+    if not careless and not corrections:
+        console.print("[green]你沒有任何被修正的紀錄，做得很好！[/green]")
+        return
+    
+    # 顯示輸入錯誤紀錄 (careless_logs)
+    if careless:
+        table = Table(title="輸入錯誤紀錄 (已被標記)")
+        table.add_column("動物 ID", style="red")
+        table.add_column("錯誤類型", style="yellow")
+        table.add_column("錯誤值", style="white")
+        table.add_column("時間", style="dim")
+        
+        for c in careless:
+            table.add_row(
+                c.get("animal_id", ""),
+                c.get("error_type", ""),
+                str(c.get("wrong_value", "")),
+                str(c.get("original_timestamp", ""))[:19] if c.get("original_timestamp") else ""
+            )
+        console.print(table)
+    
+    # 顯示被管理員修正的紀錄 (audit_logs)
+    if corrections:
+        table2 = Table(title="被管理員修正的紀錄")
+        table2.add_column("資料表", style="blue")
+        table2.add_column("欄位", style="yellow")
+        table2.add_column("舊值 -> 新值", style="white")
+        table2.add_column("修正時間", style="dim")
+        
+        for c in corrections:
+            change = c.get("change", {})
+            change_str = f"{change.get('old_value', '')} -> {change.get('new_value', '')}"
+            table2.add_row(
+                c.get("target_table", ""),
+                change.get("field", ""),
+                change_str,
+                str(c.get("timestamp", ""))[:19] if c.get("timestamp") else ""
+            )
+        console.print(table2)
 
 def manage_employees_ui():
     """員工管理 (Admin) - 合併證照管理"""
@@ -1096,6 +1152,96 @@ def view_high_risk_animals_ui():
         table.add_row(str(res['_id']), str(res['count']))
     
     console.print(table)
+
+def view_pending_health_alerts_ui():
+    """查看待處理的健康警示，管理員可確認或修正"""
+    response = client.send_request("get_pending_health_alerts")
+    alerts = response.get("data", [])
+    
+    if not alerts:
+        console.print("[green]目前沒有待處理的健康警示。[/green]")
+        return
+    
+    while True:
+        table = Table(title="待處理健康警示 (PENDING)")
+        table.add_column("#", style="cyan")
+        table.add_column("動物 ID", style="red")
+        table.add_column("動物名", style="yellow")
+        table.add_column("警示類型", style="magenta")
+        table.add_column("輸入值", style="white")
+        table.add_column("輸入者", style="blue")
+        table.add_column("時間", style="dim")
+        
+        for i, alert in enumerate(alerts, 1):
+            table.add_row(
+                str(i),
+                alert.get("animal_id", ""),
+                alert.get("animal_name", ""),
+                alert.get("alert_type", ""),
+                str(alert.get("input_value", "")),
+                alert.get("input_by", ""),
+                alert.get("timestamp", "")[:19] if alert.get("timestamp") else ""
+            )
+        
+        console.print(table)
+        console.print("\n[bold]處理選項:[/bold]")
+        console.print("輸入編號 → 處理該筆警示")
+        console.print("0 → 返回")
+        
+        choice = prompt_with_back("請選擇")
+        if choice == BACK or choice == "0":
+            break
+        
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(alerts):
+                handle_health_alert(alerts[idx])
+                # 重新載入
+                response = client.send_request("get_pending_health_alerts")
+                alerts = response.get("data", [])
+                if not alerts:
+                    console.print("[green]所有警示已處理完畢。[/green]")
+                    break
+            else:
+                console.print("[red]無效的編號[/red]")
+        except ValueError:
+            console.print("[red]請輸入數字[/red]")
+
+def handle_health_alert(alert):
+    """處理單一健康警示"""
+    console.print(f"\n[bold]處理警示: {alert.get('animal_id')} - {alert.get('animal_name', '')}[/bold]")
+    console.print(f"警示類型: {alert.get('alert_type')}")
+    console.print(f"輸入值: {alert.get('input_value')}")
+    console.print(f"輸入者: {alert.get('input_by')}")
+    console.print(f"時間: {alert.get('timestamp', '')[:19] if alert.get('timestamp') else ''}")
+    
+    console.print("\n[bold]請選擇處理方式:[/bold]")
+    console.print("1. 確認為真實健康問題 (保留警示)")
+    console.print("2. 判定為輸入錯誤 (移至冒失鬼名單，請稍後去修正紀錄)")
+    console.print("0. 取消")
+    
+    choice = Prompt.ask("請選擇", choices=["1", "2", "0"])
+    
+    if choice == "0":
+        return
+    
+    if choice == "1":
+        # 確認為真實健康問題
+        response = client.send_request("confirm_health_alert", {
+            "alert_id": alert.get("_id"),
+            "status": "CONFIRMED"
+        })
+    elif choice == "2":
+        # 判定為輸入錯誤
+        response = client.send_request("confirm_health_alert", {
+            "alert_id": alert.get("_id"),
+            "status": "INPUT_ERROR"
+        })
+    
+    if response.get("success"):
+        console.print(f"[green]{response.get('message')}[/green]")
+    else:
+        console.print(f"[red]{response.get('message')}[/red]")
 
 def view_careless_employees_ui():
     response = client.send_request("get_careless_employees")

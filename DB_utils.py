@@ -1032,6 +1032,116 @@ class ZooBackend:
             print(f"Error fetching careless employees: {e}")
             return []
 
+    def get_pending_health_alerts(self):
+        """
+        [NEW] 取得待處理的健康警示 (PENDING 或 UNREAD)
+        """
+        if self.mongo_client is None:
+            return []
+        
+        try:
+            alerts = list(self.mongo_db[COLLECTION_HEALTH_ALERTS].find({
+                "status": {"$in": ["PENDING", "UNREAD"]}
+            }).sort("timestamp", -1).limit(50))
+            
+            # 用動物名稱豐富資料
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                for alert in alerts:
+                    alert['_id'] = str(alert['_id'])
+                    a_id = alert.get("animal_id")
+                    if a_id:
+                        cur.execute(f"SELECT {COL_ANIMAL_NAME} FROM {TABLE_ANIMAL} WHERE {COL_ANIMAL_ID} = %s", (a_id,))
+                        row = cur.fetchone()
+                        alert['animal_name'] = row[0] if row else ""
+            
+            return alerts
+        except Exception as e:
+            print(f"Error fetching pending health alerts: {e}")
+            return []
+
+    def confirm_health_alert(self, alert_id, status):
+        """
+        [NEW] 確認健康警示
+        status: 
+          - "CONFIRMED" = 確認為真實健康問題
+          - "INPUT_ERROR" = 判定為輸入錯誤
+        """
+        if self.mongo_client is None:
+            return False, "MongoDB 未連線"
+        
+        try:
+            from bson.objectid import ObjectId
+            
+            # 找出該警示
+            alert = self.mongo_db[COLLECTION_HEALTH_ALERTS].find_one({"_id": ObjectId(alert_id)})
+            if not alert:
+                return False, "找不到該警示"
+            
+            if status == "CONFIRMED":
+                # 確認為真實健康問題 → 更新狀態
+                self.mongo_db[COLLECTION_HEALTH_ALERTS].update_one(
+                    {"_id": ObjectId(alert_id)},
+                    {"$set": {"status": "CONFIRMED", "confirmed_at": datetime.now().isoformat()}}
+                )
+                return True, "已確認為真實健康問題，警示已標記為 CONFIRMED"
+            
+            elif status == "INPUT_ERROR":
+                # 判定為輸入錯誤 → 移到 careless_logs
+                careless_entry = {
+                    "event_type": "INPUT_ERROR",
+                    "employee_id": alert.get("input_by", "UNKNOWN"),
+                    "animal_id": alert.get("animal_id"),
+                    "error_type": alert.get("alert_type", "UNKNOWN"),
+                    "wrong_value": alert.get("input_value"),
+                    "original_timestamp": alert.get("timestamp"),
+                    "marked_as_error_at": datetime.now().isoformat()
+                }
+                self.mongo_db[COLLECTION_CARELESS_LOGS].insert_one(careless_entry)
+                
+                # 刪除健康警示
+                self.mongo_db[COLLECTION_HEALTH_ALERTS].delete_one({"_id": ObjectId(alert_id)})
+                
+                return True, "已標記為輸入錯誤，請至「修正紀錄」修正該筆資料"
+            
+            else:
+                return False, f"未知的狀態: {status}"
+                
+        except Exception as e:
+            return False, f"處理失敗: {e}"
+
+    def get_my_corrections(self, e_id):
+        """
+        [NEW] 飼養員查看自己被修正的紀錄
+        """
+        if self.mongo_client is None:
+            return []
+        
+        try:
+            # 從 careless_logs 找出自己的錯誤
+            careless = list(self.mongo_db[COLLECTION_CARELESS_LOGS].find({
+                "employee_id": e_id
+            }).sort("original_timestamp", -1).limit(20))
+            
+            # 從 audit_logs 找出自己的資料被修正的紀錄
+            corrections = list(self.mongo_db[COLLECTION_AUDIT_LOGS].find({
+                "original_creator_id": e_id,
+                "event_type": "DATA_CORRECTION"
+            }).sort("timestamp", -1).limit(20))
+            
+            for c in careless:
+                c['_id'] = str(c['_id'])
+                c['source'] = 'careless_logs'
+            
+            for c in corrections:
+                c['_id'] = str(c['_id'])
+                c['source'] = 'audit_logs'
+            
+            return {"careless": careless, "corrections": corrections}
+        except Exception as e:
+            print(f"Error fetching my corrections: {e}")
+            return {"careless": [], "corrections": []}
+
     # Assuming this new function is where the inventory check and lock should be added.
     # This function is not present in the original document, but the instruction implies its existence.
     # The provided snippet seems to be a mix of existing code and new code.

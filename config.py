@@ -33,6 +33,7 @@ COL_NAME = "e_name"
 COL_ROLE = "role" 
 COL_FEED_ID = "f_id"
 COL_ANIMAL_ID = "a_id"
+COL_ANIMAL_NAME = "a_name"
 COL_QUANTITY_DELTA = "quantity_delta_kg"
 COL_STOCK_ID = "stock_entry_id"
 
