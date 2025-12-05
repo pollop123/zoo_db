@@ -22,3 +22,13 @@ class AssignTaskAction(Action):
         
         success, msg = db_utils.assign_task(e_id, t_id, start_time, end_time, a_id)
         return {"success": success, "message": msg}
+
+class GetAllTasksAction(Action):
+    def execute(self, db_utils, **kwargs):
+        data = db_utils.get_all_tasks()
+        return {"success": True, "data": data}
+
+class GetAllAnimalsAction(Action):
+    def execute(self, db_utils, **kwargs):
+        data = db_utils.get_all_animals()
+        return {"success": True, "data": data}

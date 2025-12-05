@@ -750,13 +750,67 @@ def view_schedule_ui(user_id):
 def assign_task_ui(user_id):
     console.print("[bold]指派工作 / 排班[/bold]")
     
-    target_e_id = prompt_with_back("請輸入目標員工 ID")
-    if target_e_id == BACK:
+    # 1. 選擇員工
+    response = client.send_request("get_all_employees", {})
+    if not response.get("success"):
+        console.print(f"[red]{response.get('message')}[/red]")
         return
     
-    t_id = prompt_with_back("請輸入工作 ID")
-    if t_id == BACK:
+    employees = response.get("data", [])
+    active_employees = [e for e in employees if e.get("e_status") == "active"]
+    
+    if not active_employees:
+        console.print("[yellow]目前沒有可用員工[/yellow]")
         return
+    
+    console.print("\n[cyan]可選員工列表:[/cyan]")
+    for i, emp in enumerate(active_employees, 1):
+        role = emp.get("role", "User")
+        console.print(f"  {i}. {emp['e_id']} - {emp['e_name']} ({role})")
+    
+    emp_choice = prompt_with_back(f"請選擇員工 (1-{len(active_employees)})")
+    if emp_choice == BACK:
+        return
+    try:
+        emp_idx = int(emp_choice) - 1
+        if emp_idx < 0 or emp_idx >= len(active_employees):
+            raise ValueError
+        target_e_id = active_employees[emp_idx]["e_id"]
+    except ValueError:
+        console.print("[red]無效選擇[/red]")
+        return
+    
+    # 2. 選擇工作類型
+    response = client.send_request("get_all_tasks", {})
+    if not response.get("success"):
+        console.print(f"[red]{response.get('message')}[/red]")
+        return
+    
+    tasks = response.get("data", [])
+    if not tasks:
+        console.print("[yellow]目前沒有工作類型[/yellow]")
+        return
+    
+    console.print("\n[cyan]工作類型列表:[/cyan]")
+    for i, task in enumerate(tasks, 1):
+        console.print(f"  {i}. {task['t_id']} - {task['t_name']}")
+    
+    task_choice = prompt_with_back(f"請選擇工作類型 (1-{len(tasks)})")
+    if task_choice == BACK:
+        return
+    try:
+        task_idx = int(task_choice) - 1
+        if task_idx < 0 or task_idx >= len(tasks):
+            raise ValueError
+        t_id = tasks[task_idx]["t_id"]
+    except ValueError:
+        console.print("[red]無效選擇[/red]")
+        return
+    
+    # 3. 輸入時間
+    from datetime import datetime, timedelta
+    today = datetime.now().strftime("%Y-%m-%d")
+    console.print(f"\n[dim]提示: 今天是 {today}[/dim]")
     
     start_time = prompt_with_back("請輸入開始時間 (YYYY-MM-DD HH:MM:SS)")
     if start_time == BACK:
@@ -766,12 +820,28 @@ def assign_task_ui(user_id):
     if end_time == BACK:
         return
     
-    # Optional a_id
-    a_id = prompt_with_back("請輸入負責動物 ID (選填, 若無請直接 Enter)")
-    if a_id == BACK:
-        return
-    if a_id == "": 
-        a_id = None
+    # 4. 選擇動物 (選填)
+    response = client.send_request("get_all_animals", {})
+    animals = response.get("data", []) if response.get("success") else []
+    
+    a_id = None
+    if animals:
+        console.print("\n[cyan]可選動物列表 (選填):[/cyan]")
+        console.print("  0. 不指派特定動物")
+        for i, animal in enumerate(animals, 1):
+            name = animal.get('a_name', '')
+            species = animal.get('species', '')
+            console.print(f"  {i}. {animal['a_id']} - {name} ({species})")
+        
+        animal_choice = prompt_with_back(f"請選擇動物 (0-{len(animals)})")
+        if animal_choice == BACK:
+            return
+        try:
+            animal_idx = int(animal_choice)
+            if animal_idx > 0 and animal_idx <= len(animals):
+                a_id = animals[animal_idx - 1]["a_id"]
+        except ValueError:
+            pass
     
     response = client.send_request("assign_task", {
         "e_id": target_e_id, "t_id": t_id, "start_time": start_time, "end_time": end_time, "a_id": a_id
@@ -785,11 +855,39 @@ def assign_task_ui(user_id):
 def restock_inventory_ui(user_id):
     console.print("[bold]庫存進貨[/bold]")
     
-    f_id = prompt_with_back("請輸入飼料 ID")
-    if f_id == BACK:
+    # 取得飼料清單 (含目前庫存)
+    response = client.send_request("get_inventory_report", {})
+    if not response.get("success"):
+        console.print(f"[red]{response.get('message')}[/red]")
         return
     
-    amount = float_prompt_with_back("請輸入數量 (kg)")
+    inventory = response.get("data", [])
+    if not inventory:
+        console.print("[yellow]目前沒有飼料資料[/yellow]")
+        return
+    
+    console.print("\n[cyan]飼料庫存列表:[/cyan]")
+    for i, item in enumerate(inventory, 1):
+        stock = item.get('current_stock', 0)
+        unit = item.get('unit', 'kg')
+        status = "[red](低庫存)[/red]" if stock < 50 else ""
+        console.print(f"  {i}. {item['f_id']} - {item['f_name']}: {stock} {unit} {status}")
+    
+    choice = prompt_with_back(f"請選擇要進貨的飼料 (1-{len(inventory)})")
+    if choice == BACK:
+        return
+    try:
+        idx = int(choice) - 1
+        if idx < 0 or idx >= len(inventory):
+            raise ValueError
+        f_id = inventory[idx]["f_id"]
+        f_name = inventory[idx]["f_name"]
+    except ValueError:
+        console.print("[red]無效選擇[/red]")
+        return
+    
+    console.print(f"\n[dim]已選擇: {f_name}[/dim]")
+    amount = float_prompt_with_back("請輸入進貨數量 (kg)")
     if amount == BACK:
         return
     

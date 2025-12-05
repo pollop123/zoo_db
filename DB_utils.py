@@ -410,6 +410,42 @@ class ZooBackend:
             print(f"Error fetching my animals: {e}")
             return []
 
+    def get_all_tasks(self):
+        """查詢所有工作類型"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"""
+                    SELECT t_id, t_name, description
+                    FROM {TABLE_TASK}
+                    ORDER BY t_id
+                """)
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching tasks: {e}")
+            return []
+
+    def get_all_animals(self):
+        """查詢所有動物"""
+        if not self.pg_pool:
+            return []
+        
+        try:
+            with self.get_db_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(f"""
+                    SELECT a_id, a_name, species, required_skill
+                    FROM {TABLE_ANIMAL}
+                    ORDER BY a_id
+                """)
+                return cur.fetchall()
+        except Exception as e:
+            print(f"Error fetching animals: {e}")
+            return []
+
     # ===== 飲食管理 =====
     
     def get_animal_diet(self, species):

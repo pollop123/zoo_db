@@ -8,7 +8,7 @@ from DB_utils import ZooBackend
 from action.auth import LoginAction, LogoutAction, ForgotPasswordAction
 from action.feeding import AddFeedingAction
 from action.inventory import AddInventoryStockAction, GetInventoryReportAction
-from action.schedule import GetEmployeeScheduleAction, GetMyAnimalsAction, AssignTaskAction
+from action.schedule import GetEmployeeScheduleAction, GetMyAnimalsAction, AssignTaskAction, GetAllTasksAction, GetAllAnimalsAction
 from action.record import CorrectRecordAction, GetRecentRecordsAction
 from action.analysis import (
     CheckWeightAnomalyAction, BatchCheckAnomaliesAction, 
@@ -69,6 +69,8 @@ ACTION_MAP = {
     "add_employee": AddEmployeeAction,
     "update_employee_status": UpdateEmployeeStatusAction,
     "update_employee_role": UpdateEmployeeRoleAction,
+    "get_all_tasks": GetAllTasksAction,
+    "get_all_animals": GetAllAnimalsAction,
 }
 
 class ClientHandler(threading.Thread):
