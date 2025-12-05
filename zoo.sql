@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict yNBhtGNr8YK7QdFl964tKTz4UNYktEucBOmxMMRFfRXfFUSeOcjnkoKXrPZ7J5C
+\restrict znNfF1v8sXt6Gn9vLe4R284gmVWVamPvUeotYbBXBlrgj4SasUDXa3kLIqeo5jD
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -526,6 +526,7 @@ African Elephant	F001
 
 COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, recorded_by) FROM stdin;
 15007	A002	2025-12-05 15:23:06.66114	205.00	1	E003
+15016	A002	2025-12-05 19:38:46.4024	205.00	1	E003
 15	A072	2024-12-27 11:52:49	5592.20	1	E011
 15008	A002	2025-12-05 15:25:14.910041	205.00	1	E003
 15009	A002	2025-12-05 15:32:16.172793	200.00	1	E003
@@ -15598,6 +15599,7 @@ E049	黃玉蘭	Unknown	0999625132	2022-11-27 00:00:00	active	User	7bb4825e0ec98e
 E050	陳美珠	F	033 86227838	2021-12-07 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E001	郭雅惠	F	06-8403339	2025-07-20 00:00:00	active	Admin	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E003	李建宏	M	(09) 87347440	2022-06-30 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
+E999	阿偉	M	\N	\N	inactive	Admin	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 \.
 
 
@@ -16243,13 +16245,9 @@ S0605	E005	T006	2026-01-05 00:00:00	2026-01-05 23:59:59	A004
 
 COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 1	E001	Carnivore	2025-12-02
-45	E003	Bird	2025-12-04
-50	E009	Carnivore	2025-12-05
-51	E009	Carnivore	2025-12-05
 23	E003	Carnivore	2025-12-02
 24	E004	Carnivore	2025-12-02
 25	E006	Carnivore	2025-12-03
-46	E003	FakeSkill	2025-12-04
 30	E002	Penguin	2025-12-04
 31	E003	Penguin	2025-12-04
 32	E006	Penguin	2025-12-04
@@ -16266,8 +16264,6 @@ COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 43	E025	Endangered	2025-12-04
 44	E030	Endangered	2025-12-04
 47	E009	Carnivore	2025-12-05
-48	E009	Carnivore	2025-12-05
-49	E009	Carnivore	2025-12-05
 \.
 
 
@@ -18343,6 +18339,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2100	F001	\N	2025-12-05 15:25:14.894595	-5.000	feeding	2016
 2102	F001	\N	2025-12-05 15:32:16.160069	-5.000	feeding	2017
 2114	F001	\N	2025-12-05 17:50:45.77162	-5.000	feeding	2023
+2116	F002	\N	2025-12-05 19:38:36.614366	-5.000	feeding	2024
 2080	F001	\N	2025-12-04 23:10:58.026377	50.000	purchase	\N
 2082	F001	\N	2025-12-04 23:11:35.660582	50.000	purchase	\N
 2084	F001	\N	2025-12-04 23:18:05.009254	50.000	purchase	\N
@@ -18358,6 +18355,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2101	F001	\N	2025-12-05 15:25:14.9997	50.000	purchase	\N
 2103	F001	\N	2025-12-05 15:32:16.237738	10.000	purchase	\N
 2115	F001	\N	2025-12-05 17:50:45.844269	10.000	purchase	\N
+2117	F002	\N	2025-12-05 19:46:14.608664	10.000	purchase	\N
 2067	F001	\N	2025-12-04 20:42:39.438181	50.000	purchase	\N
 2070	F001	\N	2025-12-04 20:49:10.422082	50.000	purchase	\N
 2073	F001	\N	2025-12-04 20:57:42.994747	50.000	purchase	\N
@@ -18402,6 +18400,7 @@ COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_
 2015	A002	F001	E003	2025-12-05 15:23:06.641934	5.00
 2017	A002	F001	E003	2025-12-05 15:32:16.160069	5.00
 2023	A002	F001	E003	2025-12-05 17:50:45.77162	5.00
+2024	A002	F002	E003	2025-12-05 19:38:36.614366	7.00
 2016	A002	F001	E003	2025-12-05 15:25:14.894595	5.00
 2018	A002	F001	E003	2025-12-05 15:32:40.688931	5.00
 2019	A002	F001	E003	2025-12-05 15:33:15.561118	5.00
@@ -20492,7 +20491,7 @@ SELECT pg_catalog.setval('public.animal_state_record_state_id_seq', 1, false);
 -- Name: employee_skills_skill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employee_skills_skill_id_seq', 47, true);
+SELECT pg_catalog.setval('public.employee_skills_skill_id_seq', 52, true);
 
 
 --
@@ -20599,6 +20598,14 @@ ALTER TABLE ONLY public.task
 
 
 --
+-- Name: employee_skills unique_employee_skill; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employee_skills
+    ADD CONSTRAINT unique_employee_skill UNIQUE (e_id, skill_name);
+
+
+--
 -- Name: animal_diet animal_diet_f_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -20698,5 +20705,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict yNBhtGNr8YK7QdFl964tKTz4UNYktEucBOmxMMRFfRXfFUSeOcjnkoKXrPZ7J5C
+\unrestrict znNfF1v8sXt6Gn9vLe4R284gmVWVamPvUeotYbBXBlrgj4SasUDXa3kLIqeo5jD
 
