@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict DqAkqWoB3YsQk7aCQklBbkcjfHt8DUz6HXYh2F5ERfQDWhp9vNjQv9NjrC3vWgx
+\restrict lDeqgrxjekcrKv6RM3aCOzfhD1oRADlLTgsxm9ZggIJmzfSmmZfKsbUtFrGS16g
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -283,6 +283,22 @@ ALTER TABLE ONLY public.status_type ALTER COLUMN s_id SET DEFAULT nextval('publi
 
 COPY public.animal (a_id, species, sex, life_status, required_skill, a_name) FROM stdin;
 A189	Brown Bear	M	Alive	Carnivore	阿肥2號
+A004	Koala	M	Deceased	\N	尤加利
+A016	Koala	F	Transferred	\N	樹懶
+A017	Koala	M	Alive	\N	睡睡
+A021	Koala	M	Alive	\N	懶懶
+A050	Koala	M	Alive	\N	灰灰
+A051	Koala	M	Alive	\N	毛球
+A056	Koala	M	Alive	\N	抱抱
+A073	Koala	F	Alive	\N	阿樹
+A093	Koala	F	Alive	\N	無尾
+A102	Koala	F	Alive	\N	呆瓜
+A109	Koala	M	Transferred	\N	慢慢
+A110	Koala	M	Deceased	\N	夢夢
+A117	Koala	F	Alive	\N	困困
+A131	Koala	F	Alive	\N	眠眠
+A133	Koala	F	Alive	\N	安安
+A148	Koala	M	Transferred	\N	靜靜
 A008	Brown Bear	F	Alive	Carnivore	大熊
 A154	Brown Bear	M	Alive	Carnivore	山大王
 A162	Brown Bear	F	Alive	Carnivore	蜂蜜
@@ -291,22 +307,6 @@ A176	Brown Bear	M	Deceased	Carnivore	憨憨
 A179	Brown Bear	M	Alive	Carnivore	呆熊
 A185	Brown Bear	F	Alive	Carnivore	魯夫
 A187	Brown Bear	F	Alive	Carnivore	小山
-A004	Koala	M	Deceased	Endangered	尤加利
-A016	Koala	F	Transferred	Endangered	樹懶
-A017	Koala	M	Alive	Endangered	睡睡
-A021	Koala	M	Alive	Endangered	懶懶
-A050	Koala	M	Alive	Endangered	灰灰
-A051	Koala	M	Alive	Endangered	毛球
-A056	Koala	M	Alive	Endangered	抱抱
-A073	Koala	F	Alive	Endangered	阿樹
-A093	Koala	F	Alive	Endangered	無尾
-A102	Koala	F	Alive	Endangered	呆瓜
-A109	Koala	M	Transferred	Endangered	慢慢
-A110	Koala	M	Deceased	Endangered	夢夢
-A117	Koala	F	Alive	Endangered	困困
-A131	Koala	F	Alive	Endangered	眠眠
-A133	Koala	F	Alive	Endangered	安安
-A148	Koala	M	Transferred	Endangered	靜靜
 A190	Lion	F	Deceased	Carnivore	帥哥
 A195	Lion	F	Transferred	Carnivore	猛男
 A010	Panda	M	Alive	Endangered	圓仔
@@ -390,26 +390,8 @@ A178	Tiger	M	Alive	Carnivore	悠悠
 A188	Tiger	M	Alive	Carnivore	奔奔
 A191	Tiger	M	Alive	Carnivore	阿猛
 A196	Tiger	M	Alive	Carnivore	虎仔
-A041	African Elephant	M	Deceased	General	大象
-A066	African Elephant	M	Alive	General	長鼻
-A072	African Elephant	F	Alive	General	象伯
-A078	African Elephant	M	Alive	General	阿象
-A080	African Elephant	F	Alive	General	噸位
-A097	African Elephant	M	Alive	General	巨象
-A114	African Elephant	M	Alive	General	大耳
-A126	African Elephant	F	Alive	General	穩重
-A129	African Elephant	F	Alive	General	象王
-A135	African Elephant	M	Alive	General	阿肥
-A139	African Elephant	M	Transferred	General	粗腿
-A169	African Elephant	F	Alive	General	噗噗
-A193	African Elephant	F	Alive	General	長牙
-A197	African Elephant	F	Alive	General	大個
-A013	Giraffe	M	Alive	Endangered	長頸
-A170	Koala	F	Alive	Endangered	乖寶
-A171	Koala	F	Alive	Endangered	小懶
-A175	Koala	M	Alive	Endangered	棉花
-A183	Koala	F	Alive	Endangered	軟糖
-A200	Koala	F	Transferred	Endangered	布丁
+A013	Giraffe	M	Alive	\N	長頸
+A170	Koala	F	Alive	\N	乖寶
 A002	Lion	M	Alive	Carnivore	大壯
 A116	Panda	F	Alive	Endangered	大圓
 A128	Panda	M	Alive	Endangered	球球
@@ -423,65 +405,83 @@ A165	Panda	F	Deceased	Endangered	蜜蜜
 A001	Penguin	F	Transferred	Penguin	小黑
 A153	Penguin	M	Alive	Penguin	晃晃
 A156	Penguin	M	Alive	Penguin	蹦蹦
+A171	Koala	F	Alive	\N	小懶
 A180	Penguin	M	Alive	Penguin	肥肥
 A184	Penguin	F	Deceased	Penguin	叮叮
 A192	Penguin	M	Transferred	Penguin	噹噹
-A007	Zebra	M	Alive	Endangered	條紋
-A100	African Elephant	M	Alive	General	灰灰2號
 A160	Penguin	M	Alive	Penguin	黑白2號
-A167	African Elephant	M	Alive	General	阿胖2號
-A149	African Elephant	F	Transferred	General	踏踏
-A026	Giraffe	F	Alive	Endangered	高高
-A039	Giraffe	F	Alive	Endangered	斑點
-A052	Giraffe	F	Alive	Endangered	阿長
-A060	Giraffe	M	Alive	Endangered	天天
-A074	Giraffe	M	Alive	Endangered	雲端
-A085	Giraffe	F	Alive	Endangered	長腿
-A086	Giraffe	M	Alive	Endangered	小鹿
-A094	Giraffe	M	Alive	Endangered	優雅
-A096	Giraffe	F	Alive	Endangered	飄飄
-A104	Giraffe	M	Deceased	Endangered	阿高
-A106	Giraffe	M	Alive	Endangered	頂天
-A113	Giraffe	F	Transferred	Endangered	看遠
-A137	Giraffe	F	Alive	Endangered	修長
-A147	Giraffe	M	Deceased	Endangered	長長
-A163	Giraffe	M	Alive	Endangered	小高
-A006	Hippopotamus	M	Alive	Endangered	河馬哥
-A018	Hippopotamus	F	Alive	Endangered	大嘴
-A024	Hippopotamus	M	Alive	Endangered	胖河
-A030	Hippopotamus	M	Deceased	Endangered	水水
-A036	Hippopotamus	M	Deceased	Endangered	泡泡
-A059	Hippopotamus	M	Transferred	Endangered	潛水
-A076	Hippopotamus	F	Deceased	Endangered	阿河
-A120	Hippopotamus	M	Alive	Endangered	厚皮
-A121	Hippopotamus	M	Deceased	Endangered	大胖
-A127	Hippopotamus	M	Alive	Endangered	噸噸
-A143	Hippopotamus	M	Alive	Endangered	肥嘟
-A159	Hippopotamus	M	Alive	Endangered	阿噸
-A166	Hippopotamus	M	Alive	Endangered	河伯
-A168	Hippopotamus	F	Alive	Endangered	潮潮
-A174	Hippopotamus	F	Alive	Endangered	浮浮
-A177	Hippopotamus	M	Transferred	Endangered	沉沉
-A181	Hippopotamus	M	Alive	Endangered	水牛
-A186	Hippopotamus	F	Alive	Endangered	阿潛
-A198	Hippopotamus	F	Deceased	Endangered	大水
-A022	Zebra	M	Alive	Endangered	斑馬哥
-A033	Zebra	M	Alive	Endangered	黑白
-A040	Zebra	F	Alive	Endangered	阿斑
-A045	Zebra	F	Alive	Endangered	奔馳
-A058	Zebra	M	Alive	Endangered	飛毛
-A068	Zebra	M	Transferred	Endangered	快腿
-A069	Zebra	F	Alive	Endangered	小馬
-A084	Zebra	M	Alive	Endangered	條條
-A090	Zebra	F	Transferred	Endangered	阿條
-A095	Zebra	M	Alive	Endangered	賽跑
-A107	Zebra	M	Alive	Endangered	閃電
-A122	Zebra	F	Alive	Endangered	黑線
-A146	Zebra	M	Alive	Endangered	白線
-A152	Zebra	F	Alive	Endangered	小斑
-A157	Giraffe	F	Alive	Endangered	花花2號
-A141	African Elephant	F	Alive	General	厚皮2號
-A194	Hippopotamus	M	Deceased	Endangered	嘟嘟2號
+A175	Koala	M	Alive	\N	棉花
+A183	Koala	F	Alive	\N	軟糖
+A200	Koala	F	Transferred	\N	布丁
+A007	Zebra	M	Alive	\N	條紋
+A041	African Elephant	M	Deceased	\N	大象
+A066	African Elephant	M	Alive	\N	長鼻
+A072	African Elephant	F	Alive	\N	象伯
+A078	African Elephant	M	Alive	\N	阿象
+A080	African Elephant	F	Alive	\N	噸位
+A097	African Elephant	M	Alive	\N	巨象
+A114	African Elephant	M	Alive	\N	大耳
+A126	African Elephant	F	Alive	\N	穩重
+A129	African Elephant	F	Alive	\N	象王
+A135	African Elephant	M	Alive	\N	阿肥
+A139	African Elephant	M	Transferred	\N	粗腿
+A169	African Elephant	F	Alive	\N	噗噗
+A193	African Elephant	F	Alive	\N	長牙
+A197	African Elephant	F	Alive	\N	大個
+A100	African Elephant	M	Alive	\N	灰灰2號
+A167	African Elephant	M	Alive	\N	阿胖2號
+A026	Giraffe	F	Alive	\N	高高
+A039	Giraffe	F	Alive	\N	斑點
+A052	Giraffe	F	Alive	\N	阿長
+A060	Giraffe	M	Alive	\N	天天
+A074	Giraffe	M	Alive	\N	雲端
+A085	Giraffe	F	Alive	\N	長腿
+A086	Giraffe	M	Alive	\N	小鹿
+A094	Giraffe	M	Alive	\N	優雅
+A096	Giraffe	F	Alive	\N	飄飄
+A104	Giraffe	M	Deceased	\N	阿高
+A106	Giraffe	M	Alive	\N	頂天
+A113	Giraffe	F	Transferred	\N	看遠
+A137	Giraffe	F	Alive	\N	修長
+A147	Giraffe	M	Deceased	\N	長長
+A163	Giraffe	M	Alive	\N	小高
+A006	Hippopotamus	M	Alive	\N	河馬哥
+A018	Hippopotamus	F	Alive	\N	大嘴
+A024	Hippopotamus	M	Alive	\N	胖河
+A030	Hippopotamus	M	Deceased	\N	水水
+A036	Hippopotamus	M	Deceased	\N	泡泡
+A059	Hippopotamus	M	Transferred	\N	潛水
+A076	Hippopotamus	F	Deceased	\N	阿河
+A120	Hippopotamus	M	Alive	\N	厚皮
+A121	Hippopotamus	M	Deceased	\N	大胖
+A127	Hippopotamus	M	Alive	\N	噸噸
+A143	Hippopotamus	M	Alive	\N	肥嘟
+A159	Hippopotamus	M	Alive	\N	阿噸
+A166	Hippopotamus	M	Alive	\N	河伯
+A168	Hippopotamus	F	Alive	\N	潮潮
+A174	Hippopotamus	F	Alive	\N	浮浮
+A177	Hippopotamus	M	Transferred	\N	沉沉
+A181	Hippopotamus	M	Alive	\N	水牛
+A186	Hippopotamus	F	Alive	\N	阿潛
+A198	Hippopotamus	F	Deceased	\N	大水
+A022	Zebra	M	Alive	\N	斑馬哥
+A033	Zebra	M	Alive	\N	黑白
+A040	Zebra	F	Alive	\N	阿斑
+A045	Zebra	F	Alive	\N	奔馳
+A058	Zebra	M	Alive	\N	飛毛
+A068	Zebra	M	Transferred	\N	快腿
+A069	Zebra	F	Alive	\N	小馬
+A084	Zebra	M	Alive	\N	條條
+A090	Zebra	F	Transferred	\N	阿條
+A095	Zebra	M	Alive	\N	賽跑
+A107	Zebra	M	Alive	\N	閃電
+A122	Zebra	F	Alive	\N	黑線
+A146	Zebra	M	Alive	\N	白線
+A152	Zebra	F	Alive	\N	小斑
+A157	Giraffe	F	Alive	\N	花花2號
+A194	Hippopotamus	M	Deceased	\N	嘟嘟2號
+A149	African Elephant	F	Transferred	\N	踏踏
+A141	African Elephant	F	Alive	\N	厚皮2號
 \.
 
 
@@ -534,6 +534,7 @@ COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, re
 15012	A002	2025-12-05 15:33:38.910654	200.00	1	E003
 15013	A002	2025-12-05 15:37:12.829938	200.00	1	E003
 15014	A002	2025-12-05 15:37:49.984899	200.00	1	E003
+15015	A002	2025-12-05 17:50:45.786203	200.00	1	E003
 11651	A166	2025-03-25 01:36:34	2613.90	5	E037
 11670	A177	2025-07-10 00:04:31	3160.60	4	E023
 11679	A194	2025-10-31 06:55:18	2196.40	5	E037
@@ -15547,6 +15548,7 @@ COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, re
 --
 
 COPY public.employee (e_id, e_name, sex, phone, start_time, status, role, password_hash) FROM stdin;
+E002	廖文龍	M	0976-372619	2021-08-02 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E004	江俊豪	M	09-7590773	2022-07-09 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E005	黃慧玲	Unknown	06-63921451	2024-02-19 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E006	王志豪	M	(06) 97836921	2025-11-01 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
@@ -15572,7 +15574,6 @@ E025	任淑華	F	00 8370474	2025-03-10 00:00:00	leave	User	7bb4825e0ec98e03b99da
 E026	劉慧玲	Unknown	(01) 76157065	2025-10-02 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E027	施承翰	M	(02) 71282914	2025-02-19 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E028	江美珍	Unknown	0950-609062	2025-05-16 00:00:00	inactive	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
-E002	廖文龍	M	0976-372619	2021-08-02 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E029	周鈺婷	Unknown	06 9348775	2025-04-21 00:00:00	leave	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E030	李明輝	M	02-3496812	2021-04-09 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
 E031	吳淑華	Unknown	09-8805138	2023-01-10 00:00:00	active	User	7bb4825e0ec98e03b99daaa80b8f5a1393444b185796678a092b7b7fc4b34b3e
@@ -18341,6 +18342,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2049	F001	\N	2025-12-04 20:20:37.945643	-3.000	feeding	\N
 2100	F001	\N	2025-12-05 15:25:14.894595	-5.000	feeding	2016
 2102	F001	\N	2025-12-05 15:32:16.160069	-5.000	feeding	2017
+2114	F001	\N	2025-12-05 17:50:45.77162	-5.000	feeding	2023
 2080	F001	\N	2025-12-04 23:10:58.026377	50.000	purchase	\N
 2082	F001	\N	2025-12-04 23:11:35.660582	50.000	purchase	\N
 2084	F001	\N	2025-12-04 23:18:05.009254	50.000	purchase	\N
@@ -18355,6 +18357,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2050	F001	\N	2025-12-04 20:20:37.946047	-3.000	feeding	\N
 2101	F001	\N	2025-12-05 15:25:14.9997	50.000	purchase	\N
 2103	F001	\N	2025-12-05 15:32:16.237738	10.000	purchase	\N
+2115	F001	\N	2025-12-05 17:50:45.844269	10.000	purchase	\N
 2067	F001	\N	2025-12-04 20:42:39.438181	50.000	purchase	\N
 2070	F001	\N	2025-12-04 20:49:10.422082	50.000	purchase	\N
 2073	F001	\N	2025-12-04 20:57:42.994747	50.000	purchase	\N
@@ -18398,6 +18401,7 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_amount_kg) FROM stdin;
 2015	A002	F001	E003	2025-12-05 15:23:06.641934	5.00
 2017	A002	F001	E003	2025-12-05 15:32:16.160069	5.00
+2023	A002	F001	E003	2025-12-05 17:50:45.77162	5.00
 2016	A002	F001	E003	2025-12-05 15:25:14.894595	5.00
 2018	A002	F001	E003	2025-12-05 15:32:40.688931	5.00
 2019	A002	F001	E003	2025-12-05 15:33:15.561118	5.00
@@ -20694,5 +20698,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict DqAkqWoB3YsQk7aCQklBbkcjfHt8DUz6HXYh2F5ERfQDWhp9vNjQv9NjrC3vWgx
+\unrestrict lDeqgrxjekcrKv6RM3aCOzfhD1oRADlLTgsxm9ZggIJmzfSmmZfKsbUtFrGS16g
 
