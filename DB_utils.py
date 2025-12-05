@@ -1357,11 +1357,10 @@ class ZooBackend:
                     SELECT 
                         f.f_id,
                         f.feed_name, 
-                        f.unit,
                         COALESCE(SUM(i.quantity_delta_kg), 0) as current_stock
                     FROM {TABLE_FEEDS} f
                     LEFT JOIN {TABLE_INVENTORY} i ON i.f_id = f.f_id
-                    GROUP BY f.f_id, f.feed_name, f.unit
+                    GROUP BY f.f_id, f.feed_name
                     ORDER BY current_stock ASC
                 """
                 cur.execute(query)
@@ -1370,8 +1369,8 @@ class ZooBackend:
                     results.append({
                         "f_id": row[0],
                         "f_name": row[1],
-                        "unit": row[2] or "kg",
-                        "current_stock": float(row[3]) if row[3] else 0
+                        "unit": "kg",
+                        "current_stock": float(row[2]) if row[2] else 0
                     })
                 return results
         except Exception as e:
