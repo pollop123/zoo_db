@@ -82,7 +82,7 @@ python3 -c "
 import json
 from pymongo import MongoClient
 client = MongoClient('mongodb://localhost:27017/')
-db = client['zoo_logs']
+db = client['zoo_nosql']
 with open('mongo_backup.json', 'r') as f:
     data = json.load(f)
 for collection, docs in data.items():
@@ -105,7 +105,7 @@ PG_USER = "postgres"
 PG_PASSWORD = "your_password"  # 修改為您的密碼
 
 MONGO_URI = "mongodb://localhost:27017/"
-MONGO_DB = "zoo_logs"
+MONGO_DB = "zoo_nosql"
 ```
 
 ---
