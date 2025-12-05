@@ -216,13 +216,11 @@ def show_user_menu(user_id, name):
         console.print("1. [新增餵食] Add Feeding Record")
         console.print("2. [新增身體資訊] Add Body Info (Weight)")
         console.print("3. [查詢班表] View Schedule")
-        console.print("4. [查詢代碼表] View Reference Data")
-        console.print("5. [修正自己紀錄] Correct My Record")
-        console.print("6. [查詢個別動物趨勢] View Animal Trends")
-        console.print("7. [修改密碼] Change Password")
+        console.print("4. [修正自己紀錄] Correct My Record")
+        console.print("5. [修改密碼] Change Password")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "0"])
         
         if choice == "1":
             add_feeding_ui(user_id)
@@ -231,12 +229,8 @@ def show_user_menu(user_id, name):
         elif choice == "3":
             view_schedule_ui(user_id)
         elif choice == "4":
-            view_reference_data_ui()
-        elif choice == "5":
             correct_record_ui(user_id)
-        elif choice == "6":
-            view_animal_trends_ui()
-        elif choice == "7":
+        elif choice == "5":
             change_password_ui(user_id)
         elif choice == "0":
             break
@@ -244,49 +238,74 @@ def show_user_menu(user_id, name):
 def show_admin_menu(user_id, name):
     while True:
         console.print("\n[bold magenta]管理員選單 (Admin Menu)[/bold magenta]")
-        console.print("1. [修正紀錄稽核] View Audit Logs")
-        console.print("2. [批量異常掃描] Batch Anomaly Scan (All Animals)")
-        console.print("3. [庫存報表] View Inventory Report")
-        console.print("4. [庫存進貨] Restock Inventory")
-        console.print("5. [指派工作] Assign Task/Shift")
-        console.print("6. [修正紀錄] Correct Record (Admin Override)")
-        console.print("7. [高風險動物] View High Risk Animals")
-        console.print("8. [查詢個別動物趨勢] View Animal Trends")
-        console.print("9. [查詢代碼表] View Reference Data")
-        console.print("10. [冒失鬼名單] View Careless Employees")
-        console.print("11. [管理員工證照] Manage Employee Skills")
-        console.print("12. [飲食管理] Manage Animal Diet")
-        console.print("13. [員工管理] Manage Employees")
+        console.print("1. [稽核日誌] View Audit Logs")
+        console.print("2. [健康監控] Health Monitor (Anomaly + Risk)")
+        console.print("3. [庫存管理] Inventory Management")
+        console.print("4. [指派工作] Assign Task/Shift")
+        console.print("5. [修正紀錄] Correct Record")
+        console.print("6. [冒失鬼名單] View Careless Employees")
+        console.print("7. [員工管理] Manage Employees")
+        console.print("8. [飲食管理] Manage Animal Diet")
+        console.print("9. [查詢動物趨勢] View Animal Trends")
         console.print("0. 登出 (Logout)")
         
-        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "0"])
+        choice = Prompt.ask("請選擇功能", choices=["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"])
         
         if choice == "1":
             view_audit_logs_ui()
         elif choice == "2":
-            batch_check_anomalies_ui()
+            health_monitor_ui()
         elif choice == "3":
-            view_inventory_report_ui()
+            inventory_management_ui(user_id)
         elif choice == "4":
-            restock_inventory_ui(user_id)
-        elif choice == "5":
             assign_task_ui(user_id)
-        elif choice == "6":
+        elif choice == "5":
             correct_record_ui(user_id)
-        elif choice == "7":
-            view_high_risk_animals_ui()
-        elif choice == "8":
-            view_animal_trends_ui()
-        elif choice == "9":
-            view_reference_data_ui()
-        elif choice == "10":
+        elif choice == "6":
             view_careless_employees_ui()
-        elif choice == "11":
-            manage_skills_ui()
-        elif choice == "12":
-            manage_diet_ui()
-        elif choice == "13":
+        elif choice == "7":
             manage_employees_ui()
+        elif choice == "8":
+            manage_diet_ui()
+        elif choice == "9":
+            view_animal_trends_ui()
+        elif choice == "0":
+            break
+
+def health_monitor_ui():
+    """健康監控 (合併：批量異常掃描 + 高風險動物)"""
+    while True:
+        console.print("\n[bold]健康監控[/bold]")
+        console.print("1. 批量異常掃描 (所有動物)")
+        console.print("2. 高風險動物列表")
+        console.print("3. 查詢個別動物趨勢")
+        console.print("0. 返回")
+        
+        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "0"])
+        
+        if choice == "1":
+            batch_check_anomalies_ui()
+        elif choice == "2":
+            view_high_risk_animals_ui()
+        elif choice == "3":
+            view_animal_trends_ui()
+        elif choice == "0":
+            break
+
+def inventory_management_ui(user_id):
+    """庫存管理 (合併：庫存報表 + 庫存進貨)"""
+    while True:
+        console.print("\n[bold]庫存管理[/bold]")
+        console.print("1. 查看庫存報表")
+        console.print("2. 庫存進貨")
+        console.print("0. 返回")
+        
+        choice = Prompt.ask("請選擇", choices=["1", "2", "0"])
+        
+        if choice == "1":
+            view_inventory_report_ui()
+        elif choice == "2":
+            restock_inventory_ui(user_id)
         elif choice == "0":
             break
 
@@ -356,16 +375,17 @@ def change_password_ui(user_id):
         console.print(f"[red]{response.get('message')}[/red]")
 
 def manage_employees_ui():
-    """員工管理 (Admin)"""
+    """員工管理 (Admin) - 合併證照管理"""
     while True:
         console.print("\n[bold]員工管理[/bold]")
         console.print("1. 查看所有員工")
         console.print("2. 新增員工")
         console.print("3. 停用/啟用員工")
         console.print("4. 變更員工角色")
+        console.print("5. 管理員工證照")
         console.print("0. 返回")
         
-        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "4", "0"])
+        choice = Prompt.ask("請選擇", choices=["1", "2", "3", "4", "5", "0"])
         
         if choice == "1":
             # 查看所有員工
@@ -437,6 +457,10 @@ def manage_employees_ui():
                 console.print(f"[green]{response.get('message')}[/green]")
             else:
                 console.print(f"[red]{response.get('message')}[/red]")
+        
+        elif choice == "5":
+            # 管理證照
+            manage_skills_ui()
             
         elif choice == "0":
             break
