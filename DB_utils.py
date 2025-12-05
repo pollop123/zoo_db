@@ -987,44 +987,27 @@ class ZooBackend:
             print(f"Error fetching high risk animals: {e}")
     def get_careless_employees(self):
         """
-        [NEW] 找出冒失鬼 (輸入錯誤被修正的員工)
-        從 careless_logs 統計
+        [NEW] 找出冒失鬼 (資料被修正的員工)
+        只統計 audit_logs 中被修正的次數
         """
         if not self.pg_pool:
             return []
 
         try:
-            # 從 careless_logs 統計（統一格式：按 employee_id 分組）
-            careless_pipeline = [
-                {"$group": {"_id": "$employee_id", "error_count": {"$sum": 1}}}
-            ]
-            careless_results = {r['_id']: r['error_count'] for r in self.mongo_db[COLLECTION_CARELESS_LOGS].aggregate(careless_pipeline)}
-            
-            # 也統計被 audit_logs 記錄的修正（向後相容）
+            # 只統計 audit_logs 中被修正的次數
             correction_pipeline = [
                 {"$match": {"event_type": "DATA_CORRECTION"}},
                 {"$group": {"_id": "$original_creator_id", "correction_count": {"$sum": 1}}}
             ]
             correction_results = {r['_id']: r['correction_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(correction_pipeline)}
             
-            # 合併統計
-            all_employees = set(careless_results.keys()) | set(correction_results.keys())
             combined = []
-            for e_id in all_employees:
-                if e_id:
-                    careless = careless_results.get(e_id, 0)
-                    corrections = correction_results.get(e_id, 0)
-                    total = careless + corrections
-                    if total >= 1:  # 至少1次才顯示
-                        combined.append({
-                            "id": e_id,
-                            "careless": careless,
-                            "corrections": corrections,
-                            "total": total
-                        })
+            for e_id, count in correction_results.items():
+                if e_id and count >= 1:
+                    combined.append({"id": e_id, "corrections": count})
             
-            # 按總數排序
-            combined.sort(key=lambda x: x['total'], reverse=True)
+            # 按次數排序
+            combined.sort(key=lambda x: x['corrections'], reverse=True)
 
             # Enrich with employee names from SQL
             enriched_results = []
@@ -1038,10 +1021,13 @@ class ZooBackend:
                     enriched_results.append({
                         "id": e_id, 
                         "name": name, 
-                        "input_errors": res['careless'],
-                        "corrections": res['corrections'],
-                        "total": res['total']
+                        "corrections": res['corrections']
                     })
+            
+            return enriched_results
+        except Exception as e:
+            print(f"Error fetching careless employees: {e}")
+            return []
             
             return enriched_results
         except Exception as e:
