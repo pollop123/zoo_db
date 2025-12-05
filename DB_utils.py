@@ -193,7 +193,8 @@ class ZooBackend:
                     FROM {TABLE_EMPLOYEES}
                     ORDER BY {COL_EMPLOYEE_ID}
                 """)
-                return cur.fetchall()
+                rows = cur.fetchall()
+                return [{"e_id": r[0], "e_name": r[1], "role": r[2], "e_status": r[3]} for r in rows]
         except Exception as e:
             print(f"Error fetching employees: {e}")
             return []
@@ -423,7 +424,8 @@ class ZooBackend:
                     FROM {TABLE_TASK}
                     ORDER BY t_id
                 """)
-                return cur.fetchall()
+                rows = cur.fetchall()
+                return [{"t_id": r[0], "t_name": r[1], "description": r[2]} for r in rows]
         except Exception as e:
             print(f"Error fetching tasks: {e}")
             return []
@@ -441,7 +443,8 @@ class ZooBackend:
                     FROM {TABLE_ANIMAL}
                     ORDER BY a_id
                 """)
-                return cur.fetchall()
+                rows = cur.fetchall()
+                return [{"a_id": r[0], "a_name": r[1], "species": r[2], "required_skill": r[3]} for r in rows]
         except Exception as e:
             print(f"Error fetching animals: {e}")
             return []
