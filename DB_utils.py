@@ -674,14 +674,32 @@ class ZooBackend:
                 old_val = result[0]
                 original_creator_id = result[1]
                 
-                # If correcting weight, check if we need to clear alerts
+                # If correcting weight, move alert from health_alerts to careless_logs
                 if table == TABLE_ANIMAL_STATE and col_name == COL_WEIGHT:
                     a_id = result[2]
-                    # [Logic] If weight is corrected, remove recent UNREAD alerts for this animal
-                    self.mongo_db[COLLECTION_HEALTH_ALERTS].delete_many({
+                    # 找出該動物的待確認健康警報
+                    pending_alert = self.mongo_db[COLLECTION_HEALTH_ALERTS].find_one({
                         "animal_id": a_id,
-                        "status": "UNREAD"
+                        "status": {"$in": ["PENDING", "UNREAD"]}
                     })
+                    
+                    if pending_alert:
+                        # 移到 careless_logs（冒失鬼紀錄）
+                        careless_entry = {
+                            "event_type": "INPUT_ERROR",
+                            "employee_id": pending_alert.get("input_by", "UNKNOWN"),
+                            "animal_id": a_id,
+                            "error_type": pending_alert.get("alert_type", "WEIGHT_ANOMALY"),
+                            "wrong_value": pending_alert.get("input_value"),
+                            "corrected_value": float(new_val),
+                            "corrected_by": user_id,
+                            "original_timestamp": pending_alert.get("timestamp"),
+                            "correction_timestamp": datetime.now()
+                        }
+                        self.mongo_db[COLLECTION_CARELESS_LOGS].insert_one(careless_entry)
+                        
+                        # 刪除 health_alert
+                        self.mongo_db[COLLECTION_HEALTH_ALERTS].delete_one({"_id": pending_alert["_id"]})
 
                 # 2. Update SQL
                 update_query = f"UPDATE {table} SET {col_name} = %s WHERE {pk_col} = %s"
@@ -887,37 +905,29 @@ class ZooBackend:
     def log_input_warning(self, user_id, animal_id, warning_type, input_value, expected_value, confirmed):
         """
         [NEW] 記錄輸入警告事件到 MongoDB
-        - confirmed=True (忽略警告繼續儲存) → 記錄到 health_alerts (可能是真實健康問題)
-        - confirmed=False (取消輸入) → 記錄到 audit_logs (冒失鬼統計用)
+        新流程:
+        - 無論確認與否，異常數據都先記錄到 health_alerts (status: PENDING)
+        - 之後管理員檢查時再決定是「真的健康問題」還是「輸入錯誤」
+        - 如果是輸入錯誤，correct_record 會將其移到 careless_logs
         """
         if self.mongo_client is None:
             return False
         
         try:
-            log_entry = {
-                "event_type": "INPUT_WARNING",
-                "employee_id": user_id,
-                "animal_id": animal_id,
-                "warning_type": warning_type,  # "WEIGHT" or "FEEDING"
-                "input_value": float(input_value),
-                "expected_value": float(expected_value),
-                "confirmed": confirmed,
-                "timestamp": datetime.now()
-            }
-            
             if confirmed:
-                # 忽略警告 → 可能是真實健康問題，記錄到 health_alerts
+                # 使用者確認異常數據 → 記錄到 health_alerts (待檢查)
                 health_alert = {
                     "animal_id": animal_id,
-                    "alert_type": f"CONFIRMED_{warning_type}_ANOMALY",
-                    "description": f"員工 {user_id} 確認異常數值: 輸入 {input_value}, 預期 {expected_value:.2f}",
-                    "confirmed_by": user_id,
+                    "alert_type": f"{warning_type}_ANOMALY",
+                    "description": f"員工 {user_id} 輸入異常數值: {input_value}, 預期約 {expected_value:.2f}",
+                    "input_by": user_id,
+                    "input_value": float(input_value),
+                    "expected_value": float(expected_value),
+                    "status": "PENDING",  # 待管理員確認
                     "timestamp": datetime.now()
                 }
                 self.mongo_db[COLLECTION_HEALTH_ALERTS].insert_one(health_alert)
-            else:
-                # 取消輸入 → 冒失鬼統計用
-                self.mongo_db[COLLECTION_AUDIT_LOGS].insert_one(log_entry)
+            # 取消輸入的話不記錄任何東西（使用者自己發現打錯了）
             
             return True
         except Exception as e:
@@ -960,39 +970,40 @@ class ZooBackend:
             print(f"Error fetching high risk animals: {e}")
     def get_careless_employees(self):
         """
-        [NEW] 找出冒失鬼 (被修正次數 + 輸入警告次數過多的員工)
+        [NEW] 找出冒失鬼 (輸入錯誤被修正的員工)
+        從 careless_logs 統計
         """
         if not self.pg_pool:
             return []
 
         try:
-            # 統計被修正次數
+            # 從 careless_logs 統計
+            careless_pipeline = [
+                {"$match": {"event_type": "INPUT_ERROR"}},
+                {"$group": {"_id": "$employee_id", "error_count": {"$sum": 1}}}
+            ]
+            careless_results = {r['_id']: r['error_count'] for r in self.mongo_db[COLLECTION_CARELESS_LOGS].aggregate(careless_pipeline)}
+            
+            # 也統計被 audit_logs 記錄的修正（向後相容）
             correction_pipeline = [
                 {"$match": {"event_type": "DATA_CORRECTION"}},
                 {"$group": {"_id": "$original_creator_id", "correction_count": {"$sum": 1}}}
             ]
             correction_results = {r['_id']: r['correction_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(correction_pipeline)}
             
-            # 統計輸入警告次數 (取消輸入的才算冒失鬼，confirmed=False)
-            warning_pipeline = [
-                {"$match": {"event_type": "INPUT_WARNING"}},
-                {"$group": {"_id": "$employee_id", "warning_count": {"$sum": 1}}}
-            ]
-            warning_results = {r['_id']: r['warning_count'] for r in self.mongo_db[COLLECTION_AUDIT_LOGS].aggregate(warning_pipeline)}
-            
             # 合併統計
-            all_employees = set(correction_results.keys()) | set(warning_results.keys())
+            all_employees = set(careless_results.keys()) | set(correction_results.keys())
             combined = []
             for e_id in all_employees:
                 if e_id:
+                    careless = careless_results.get(e_id, 0)
                     corrections = correction_results.get(e_id, 0)
-                    warnings = warning_results.get(e_id, 0)
-                    total = corrections + warnings
-                    if total >= 3:  # 3次以上算冒失鬼
+                    total = careless + corrections
+                    if total >= 1:  # 至少1次才顯示
                         combined.append({
                             "id": e_id,
+                            "careless": careless,
                             "corrections": corrections,
-                            "warnings": warnings,
                             "total": total
                         })
             
@@ -1011,8 +1022,8 @@ class ZooBackend:
                     enriched_results.append({
                         "id": e_id, 
                         "name": name, 
+                        "input_errors": res['careless'],
                         "corrections": res['corrections'],
-                        "warnings": res['warnings'],
                         "total": res['total']
                     })
             

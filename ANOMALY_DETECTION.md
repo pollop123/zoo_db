@@ -137,32 +137,55 @@ WHERE ABS(l.amount - r.avg_amount) / r.avg_amount > 0.30;
 ### 演算法：輸入警告 + 修正頻率統計
 
 **原理**：追蹤員工的輸入品質：
-1. **取消輸入次數** - 輸入時觸發異常警告後取消（代表輸入錯誤）
-2. **被修正次數** - 紀錄被管理員修正的次數
+### 異常處理流程
+
+```
+輸入異常數據
+    │
+    ▼
+自動記錄到 health_alerts (status: PENDING)
+    │
+    ▼
+管理員/飼養員檢查
+    │
+    ├─ 確認是真的健康問題 → health_alerts 保留 (status: CONFIRMED)
+    │
+    └─ 發現是輸入錯誤 → 修正數據 
+                           │
+                           ├─ health_alerts 刪除
+                           └─ careless_logs 增加 (冒失鬼紀錄)
+```
+
+### 冒失鬼統計
+
+**統計來源**：
+1. **careless_logs** - 輸入錯誤後被修正的紀錄
+2. **audit_logs** - 被管理員修正的紀錄（向後相容）
 
 **判定標準**：
-- 取消輸入 + 被修正總次數 >= 3 次：列入冒失鬼名單
+- 只要有 1 次以上輸入錯誤就會顯示在名單
 
-### 輸入警告記錄分流
+### NoSQL Collection 分工
 
-| 使用者行為 | 記錄位置 | 用途 |
-|------------|----------|------|
-| 觸發警告後**確認儲存** | health_alerts | 可能是真實健康問題，需追蹤 |
-| 觸發警告後**取消輸入** | audit_logs | 冒失鬼統計用 |
+| Collection | 用途 | 寫入時機 |
+|------------|------|----------|
+| health_alerts | 健康警示 | 異常數據輸入時 (PENDING)，確認後 (CONFIRMED) |
+| careless_logs | 冒失鬼紀錄 | 管理員修正數據時，將錯誤歸咎於原輸入者 |
+| audit_logs | 操作稽核 | 管理員修正紀錄、系統操作日誌 |
 
-**資料來源**：MongoDB audit_logs collection
+**資料來源**：MongoDB careless_logs collection
 
 ```javascript
 // 統計冒失鬼
-db.audit_logs.aggregate([
-    { $match: { event_type: "INPUT_WARNING" } },
+db.careless_logs.aggregate([
+    { $match: { event_type: "INPUT_ERROR" } },
     { $group: { 
         _id: "$employee_id", 
-        warning_count: { $sum: 1 } 
+        error_count: { $sum: 1 } 
     }},
-    { $match: { warning_count: { $gte: 3 } } },
-    { $sort: { warning_count: -1 } }
+    { $sort: { error_count: -1 } }
 ])
+```
 ```
 
 ---

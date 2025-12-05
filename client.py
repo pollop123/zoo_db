@@ -1102,22 +1102,22 @@ def view_careless_employees_ui():
     results = response.get("data", [])
     
     if not results:
-        console.print("[green]未發現冒失鬼 (總次數 < 3)。[/green]")
+        console.print("[green]目前沒有輸入錯誤紀錄。[/green]")
         return
 
-    table = Table(title="冒失鬼名單 (被修正 + 輸入警告 >= 3)")
+    table = Table(title="冒失鬼名單 (輸入錯誤紀錄)")
     table.add_column("員工 ID", style="red")
     table.add_column("姓名", style="yellow")
+    table.add_column("輸入錯誤", style="white")
     table.add_column("被修正次數", style="white")
-    table.add_column("輸入警告次數", style="white")
     table.add_column("總計", style="bold red")
 
     for res in results:
         table.add_row(
             str(res['id']), 
             res['name'], 
+            str(res.get('input_errors', 0)),
             str(res.get('corrections', 0)),
-            str(res.get('warnings', 0)),
             str(res.get('total', 0))
         )
     
