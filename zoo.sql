@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict znNfF1v8sXt6Gn9vLe4R284gmVWVamPvUeotYbBXBlrgj4SasUDXa3kLIqeo5jD
+\restrict 7Awa8iHgBy9Cb5Xie54rfZtTtAF3IKFcLSqdmbUrAvUuHDrmIgE5je0yFcDwb8q
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -529,6 +529,8 @@ COPY public.animal_state_record (record_id, a_id, datetime, weight, state_id, re
 15016	A002	2025-12-05 19:38:46.4024	205.00	1	E003
 15	A072	2024-12-27 11:52:49	5592.20	1	E011
 15008	A002	2025-12-05 15:25:14.910041	205.00	1	E003
+15017	A002	2025-12-05 20:03:30.819477	210.00	1	E003
+15018	A002	2025-12-06 13:47:13.364488	100.00	2	E003
 15009	A002	2025-12-05 15:32:16.172793	200.00	1	E003
 15010	A002	2025-12-05 15:32:40.705107	200.00	1	E003
 15011	A002	2025-12-05 15:33:15.573527	200.00	1	E003
@@ -16245,6 +16247,7 @@ S0605	E005	T006	2026-01-05 00:00:00	2026-01-05 23:59:59	A004
 
 COPY public.employee_skills (skill_id, e_id, skill_name, issue_date) FROM stdin;
 1	E001	Carnivore	2025-12-02
+53	E999	Carnivore	2025-12-05
 23	E003	Carnivore	2025-12-02
 24	E004	Carnivore	2025-12-02
 25	E006	Carnivore	2025-12-03
@@ -18363,14 +18366,17 @@ COPY public.feeding_inventory (stock_entry_id, f_id, location_id, datetime, quan
 2062	F001	\N	2025-12-04 20:36:54.966668	-3.000	feeding	\N
 2051	F001	\N	2025-12-04 20:20:37.946105	-3.000	feeding	\N
 2104	F001	\N	2025-12-05 15:32:40.688931	-5.000	feeding	2018
+2118	F002	\N	2025-12-05 20:03:21.72891	-6.000	feeding	2025
 2094	F001	\N	2025-12-05 13:57:20.628393	50.000	purchase	\N
 2063	F001	\N	2025-12-04 20:36:54.966698	-3.000	feeding	\N
 2052	F001	\N	2025-12-04 20:20:37.946295	-3.000	feeding	\N
 2105	F001	\N	2025-12-05 15:32:40.760973	10.000	purchase	\N
+2119	F002	\N	2025-12-06 13:42:40.427418	-30.000	feeding	2026
 2095	F001	\N	2025-12-05 14:01:21.281756	-5.000	feeding	\N
 2064	F001	\N	2025-12-04 20:36:54.968729	-3.000	feeding	\N
 2053	F001	\N	2025-12-04 20:21:25.127562	-3.000	feeding	\N
 2106	F001	\N	2025-12-05 15:33:15.561118	-5.000	feeding	2019
+2120	F003	\N	2025-12-06 13:46:35.985878	-50.000	feeding	2027
 2096	F001	\N	2025-12-05 14:01:21.402113	50.000	purchase	\N
 2054	F001	\N	2025-12-04 20:21:25.127608	-3.000	feeding	\N
 2107	F001	\N	2025-12-05 15:33:15.628102	10.000	purchase	\N
@@ -18403,8 +18409,11 @@ COPY public.feeding_records (feeding_id, a_id, f_id, fed_by, feed_date, feeding_
 2024	A002	F002	E003	2025-12-05 19:38:36.614366	7.00
 2016	A002	F001	E003	2025-12-05 15:25:14.894595	5.00
 2018	A002	F001	E003	2025-12-05 15:32:40.688931	5.00
+2025	A002	F002	E003	2025-12-05 20:03:21.72891	7.00
 2019	A002	F001	E003	2025-12-05 15:33:15.561118	5.00
+2026	A002	F002	E003	2025-12-06 13:42:40.427418	10.00
 2020	A002	F001	E003	2025-12-05 15:33:38.896495	5.00
+2027	A002	F003	E003	2025-12-06 13:46:35.985878	50.00
 2021	A002	F001	E003	2025-12-05 15:37:12.815388	5.00
 2022	A002	F001	E003	2025-12-05 15:37:49.970651	5.00
 1932	A100	F002	E042	2025-06-20 00:00:00	56.50
@@ -20491,7 +20500,7 @@ SELECT pg_catalog.setval('public.animal_state_record_state_id_seq', 1, false);
 -- Name: employee_skills_skill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.employee_skills_skill_id_seq', 52, true);
+SELECT pg_catalog.setval('public.employee_skills_skill_id_seq', 53, true);
 
 
 --
@@ -20705,5 +20714,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict znNfF1v8sXt6Gn9vLe4R284gmVWVamPvUeotYbBXBlrgj4SasUDXa3kLIqeo5jD
+\unrestrict 7Awa8iHgBy9Cb5Xie54rfZtTtAF3IKFcLSqdmbUrAvUuHDrmIgE5je0yFcDwb8q
 
