@@ -948,14 +948,18 @@ class ZooBackend:
             return False
         
         try:
+            # 確保數值型別正確
+            input_val = float(input_value) if input_value else 0
+            expected_val = float(expected_value) if expected_value else 0
+            
             if confirmed:
                 # 使用者確認異常數據 → 記錄到 health_alerts (待檢查)
                 health_alert = {
                     "animal_id": animal_id,
                     "alert_type": f"{warning_type.lower()}_anomaly",
-                    "description": f"員工 {user_id} 輸入異常數值: {input_value}, 預期約 {expected_value:.2f}",
-                    "detected_value": float(input_value),
-                    "expected_range": f"{expected_value*0.8:.1f}-{expected_value*1.2:.1f}",
+                    "description": f"員工 {user_id} 輸入異常數值: {input_val}, 預期約 {expected_val:.2f}",
+                    "detected_value": input_val,
+                    "expected_range": f"{expected_val*0.8:.1f}-{expected_val*1.2:.1f}",
                     "recorded_by": user_id,
                     "status": "pending",
                     "created_at": datetime.now().isoformat()
