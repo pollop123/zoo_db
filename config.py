@@ -42,3 +42,4 @@ COLLECTION_AUDIT_LOGS = "audit_logs"
 COLLECTION_HEALTH_ALERTS = "health_alerts"
 COLLECTION_LOGIN_LOGS = "login_logs"
 COLLECTION_CARELESS_LOGS = "careless_logs"
+# Force update
