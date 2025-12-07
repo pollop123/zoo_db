@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict nJdZjv4WJxRtTugVf6NkBcvgy5914eJ1yHNhjhhCmUVvgZjwMs62mjrS7pbfwTP
+\restrict n2KVomwhD0ndcaOge7FmgSgyoMiTycN7xfXVmAgg4UhsTpL6ivoaBTx6zHjmCSD
 
 -- Dumped from database version 17.6 (Homebrew)
 -- Dumped by pg_dump version 17.7 (Homebrew)
@@ -20659,6 +20659,20 @@ ALTER TABLE ONLY public.employee_skills
 
 
 --
+-- Name: idx_animal_state_record_aid_datetime; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_animal_state_record_aid_datetime ON public.animal_state_record USING btree (a_id, datetime DESC);
+
+
+--
+-- Name: idx_feeding_records_aid_feeddate; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_feeding_records_aid_feeddate ON public.feeding_records USING btree (a_id, feed_date DESC);
+
+
+--
 -- Name: animal_diet animal_diet_f_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -20774,5 +20788,5 @@ ALTER TABLE ONLY public.animal_state_record
 -- PostgreSQL database dump complete
 --
 
-\unrestrict nJdZjv4WJxRtTugVf6NkBcvgy5914eJ1yHNhjhhCmUVvgZjwMs62mjrS7pbfwTP
+\unrestrict n2KVomwhD0ndcaOge7FmgSgyoMiTycN7xfXVmAgg4UhsTpL6ivoaBTx6zHjmCSD
 
