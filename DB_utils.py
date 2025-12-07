@@ -467,9 +467,10 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 cur.execute(f"""
-                    SELECT a_id, a_name, species, required_skill
-                    FROM {TABLE_ANIMAL}
-                    ORDER BY a_id
+                    SELECT a.a_id, a.a_name, a.species, s.required_skill
+                    FROM {TABLE_ANIMAL} a
+                    JOIN {TABLE_SPECIES} s ON a.species = s.s_name
+                    ORDER BY a.a_id
                 """)
                 rows = cur.fetchall()
                 return [{"a_id": r[0], "a_name": r[1], "species": r[2], "required_skill": r[3]} for r in rows]
@@ -527,7 +528,7 @@ class ZooBackend:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
                 # 檢查物種是否存在
-                cur.execute("SELECT DISTINCT species FROM animal WHERE species = %s", (species,))
+                cur.execute(f"SELECT s_name FROM {TABLE_SPECIES} WHERE s_name = %s", (species,))
                 if not cur.fetchone():
                     return False, f"物種 {species} 不存在"
                 
@@ -569,7 +570,7 @@ class ZooBackend:
         try:
             with self.get_db_connection() as conn:
                 cur = conn.cursor()
-                cur.execute("SELECT DISTINCT species FROM animal ORDER BY species")
+                cur.execute(f"SELECT s_name FROM {TABLE_SPECIES} ORDER BY s_name")
                 return [r[0] for r in cur.fetchall()]
         except Exception as e:
             print(f"Error fetching species: {e}")
@@ -625,7 +626,12 @@ class ZooBackend:
                 # 1. Skill Check (Warning)
                 if a_id:
                     # Get required skill
-                    cur.execute(f"SELECT required_skill FROM {TABLE_ANIMAL} WHERE {COL_ANIMAL_ID} = %s", (a_id,))
+                    cur.execute(f"""
+                        SELECT s.required_skill 
+                        FROM {TABLE_ANIMAL} a
+                        JOIN {TABLE_SPECIES} s ON a.species = s.s_name
+                        WHERE a.{COL_ANIMAL_ID} = %s
+                    """, (a_id,))
                     row = cur.fetchone()
                     req_skill = row[0] if row else 'General'
                     
@@ -1200,7 +1206,12 @@ class ZooBackend:
 
                 # 2. Skill Check
                 # Get required skill for animal
-                cur.execute(f"SELECT required_skill FROM {TABLE_ANIMAL} WHERE {COL_ANIMAL_ID} = %s", (a_id,))
+                cur.execute(f"""
+                    SELECT s.required_skill 
+                    FROM {TABLE_ANIMAL} a
+                    JOIN {TABLE_SPECIES} s ON a.species = s.s_name
+                    WHERE a.{COL_ANIMAL_ID} = %s
+                """, (a_id,))
                 row = cur.fetchone()
                 req_skill = row[0] if row else 'General'
                 
