@@ -1,0 +1,385 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{fullpage}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{hyperref}
+
+% for Chinese
+\usepackage{fontspec}
+\usepackage[BoldFont, SlantFont]{xeCJK}
+% [字型設定]
+\setCJKmainfont{Noto Serif CJK TC} 
+% 其他備選字型 (若編譯失敗可嘗試切換):
+% \setCJKmainfont{PingFang TC}       % MacOS
+% \setCJKmainfont{Heiti TC}          % MacOS
+% \setCJKmainfont{Microsoft JhengHei}% Windows
+% \setCJKmainfont{FandolSong}        % TeX Live 內建 (Linux/Overleaf)
+
+\renewcommand{\baselinestretch}{1.3}
+
+\parskip=5pt
+\parindent=22pt
+\newtheorem{lemma}{Lemma}
+\newtheorem{ques}{Question}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{rmk}{Remark}
+\newtheorem{note}{Note}
+\newtheorem{eg}{Example}
+\newtheorem{aspt}{Assumption}
+
+\definecolor{emphOrange}{RGB}{247, 80, 0}
+\definecolor{stringGray}{RGB}{109, 109, 109}
+\definecolor{commentGreen}{RGB}{0, 96, 0}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  language = SQL,
+  showstringspaces=false,
+  basicstyle = \ttfamily\small, 
+  keywordstyle = \bfseries\color{blue}, 
+  emph = {symbol1, symbol2},
+  emphstyle = \color{red},
+  emph = {[2]symbol3, symbol4},
+  emphstyle = {[2]\color{emphOrange}},
+  commentstyle = \color{commentGreen}, 
+  stringstyle = \color{stringGray}, 
+}
+
+\renewcommand{\abstractname}{\bf 摘要}
+\renewcommand{\tablename}{表}
+\renewcommand{\figurename}{圖}
+\renewcommand{\refname}{\bf 參考文獻}
+
+\begin{document}
+
+\title{}
+\author{}
+\date{}
+
+\begin{center}
+\textbf{\Large 資料庫管理（114-1） \\ [5pt]
+期末專案完整報告} \\ [10pt] 
+第 X 組 \ % 請填入組別
+學號 姓名、學號 姓名 \ % 請填入組員資訊
+2025 年 12 月 3 日 \ 
+\href{https://github.com/pollop123/zoo_db}{GitHub 專案連結}、 \href{YOUR_VIDEO_LINK}{展示影片連結}
+\footnote{展示影片的需求請以 NTU COOL 作業區的「期末專案任務敘述」為準。}
+ \ 
+\end{center}
+
+\section{系統分析}
+
+\subsection{系統介紹}
+
+「ZooKeeper Pro」是一個專為現代化動物園設計的綜合管理系統，旨在解決傳統紙本記錄在資料保存、檢索與即時性上的不足。動物園的日常營運涉及大量且異質的數據，包括動物的健康狀況（如體重變化）、飲食紀錄、飼料庫存管理，以及員工的排班與證照管理等。
+
+本系統採用 SQL 與 NoSQL 混合架構，利用 PostgreSQL 處理結構化且關聯性強的核心業務資料（如員工、動物、餵食紀錄），並引入 MongoDB 處理高寫入頻率且結構多變的日誌型資料（如稽核日誌與健康警示）。透過 CLI (Command-Line Interface) 介面，照養員可以快速回報動物狀況，管理員則能即時監控園區異常，實現數據驅動的智慧化管理。
+
+根據權限不同，系統使用者分為兩種身分：User（照養員）及 Admin（管理員）。照養員主要負責現場的數據蒐集與回報，而管理員則負責資源調度、異常處理與系統維護。
+
+\subsection{系統功能} 
+\label{subsection:system functions}
+
+\subsubsection{給 User (照養員) 的功能}
+
+在本系統中，User 可以執行以下功能：
+\begin{enumerate}
+\item \textbf{新增餵食紀錄}：照養員在餵食動物後，需輸入動物 ID、飼料種類及數量。系統會即時檢查庫存，若庫存充足則扣除數量並記錄餵食時間。
+\item \textbf{新增身體資訊}：定期量測並回報動物體重及健康狀態（如：正常、生病、受傷）。系統會自動比對歷史數據，若發現異常波動（如體重驟降）會即時發出警示。
+\item \textbf{查詢班表}：查詢自己近期的排班資訊，包括負責的動物與工作項目。
+\item \textbf{修正個人紀錄}：若照養員發現剛才輸入的資料有誤（例如輸入錯誤的體重），可在一定時間內進行修正。系統會保留修正前的數值作為稽核紀錄。
+\item \textbf{查詢個別動物趨勢}：可查看特定動物近期的體重變化曲線與餵食歷程，輔助判斷動物健康狀況。
+\end{enumerate}
+   
+\subsubsection{給 Admin (管理員) 的功能}
+
+在本系統中，Admin 擁有所有 User 的功能，並額外包含：
+\begin{enumerate}
+\item \textbf{庫存管理}：查看所有飼料的庫存水位，並進行進貨操作。
+\item \textbf{指派工作/排班}：新增或修改員工的排班紀錄。系統會自動檢查該員工是否具備照顧該特定動物所需的專業證照（如：猛獸專家、企鵝專家）。
+\item \textbf{批量異常掃描}：一鍵掃描全園區所有動物的近期體重變化，列出變化率超過閾值（如 5%）的高風險清單。
+\item \textbf{稽核日誌查看}：查詢所有資料修正紀錄，找出頻繁出錯的員工（冒失鬼名單）或異常的資料更動。
+\item \textbf{員工與證照管理}：新增員工帳號，或授予員工特定的專業證照。
+\end{enumerate}
+
+\section{系統設計}
+
+\subsection{ER Diagram}
+
+圖 \ref{fig:erDiagram} 是「ZooKeeper Pro」的 ER Diagram。系統包含五個主要實體：\verb|EMPLOYEE|（員工）、\verb|ANIMAL|（動物）、\verb|FEEDS|（飼料）、\verb|TASK|（工作項目）以及 \verb|STATUS_TYPE|（狀態類別）。
+
+\begin{itemize}
+    \item \verb|EMPLOYEE| 與 \verb|ANIMAL| 之間存在多對多的 \verb|FEED|（餵食）關係，記錄誰餵了哪隻動物吃什麼。
+    \item \verb|EMPLOYEE| 與 \verb|TASK| 之間存在多對多的 \verb|SHIFT|（排班）關係，每一次排班可指定負責的特定 \verb|ANIMAL|。
+    \item \verb|ANIMAL| 擁有多筆 \verb|STATE_RECORD|（狀態紀錄），由 \verb|EMPLOYEE| 記錄。
+    \item \verb|FEEDS| 擁有多筆 \verb|INVENTORY_LOG|（庫存變動），記錄進貨或餵食消耗。
+\end{itemize}
+
+% 請自行插入圖片，這裡使用 placeholder
+%\begin{figure}[hbt]
+%\centering
+%\includegraphics[width=\textwidth]{figures/ER_diagram} 
+%\caption{ZooKeeper Pro ER Diagram}
+%\label{fig:erDiagram}
+%\end{figure}
+
+\subsection{Relational Database Schema Diagram}
+\label{subsection:schema}
+
+本系統採用 PostgreSQL 實作關聯式資料庫，主要資料表如下：
+
+\begin{itemize}
+    \item \verb|employee| (e\_id, e\_name, role, status, password\_hash)
+    \item \verb|animal| (a\_id, species, sex, life\_status, required\_skill)
+    \item \verb|feeds| (f\_id, feed\_name, category)
+    \item \verb|feeding_records| (feeding\_id, a\_id, f\_id, fed\_by, amount, date)
+    \item \verb|feeding_inventory| (stock\_entry\_id, f\_id, quantity\_delta, reason, date)
+    \item \verb|animal_state_record| (record\_id, a\_id, weight, state\_id, recorded\_by, date)
+    \item \verb|employee_shift| (shift\_id, e\_id, t\_id, a\_id, start\_time, end\_time)
+    \item \verb|employee_skills| (e\_id, skill\_name)
+\end{itemize}
+
+此外，我們使用 MongoDB 儲存非結構化資料：
+\begin{itemize}
+    \item \verb|audit_logs|: 記錄資料修正與敏感操作的詳細軌跡。
+    \item \verb|health_alerts|: 記錄系統自動偵測到的動物健康異常警示。
+    \item \verb|login_logs|: 記錄員工的登入嘗試與結果。
+\end{itemize}
+
+\subsection{Data Dictionary}
+
+以下列出部分關鍵資料表的欄位定義。
+
+% ANIMAL
+\begin{table}[H]
+    \centering
+    \resizebox{1\columnwidth}{!}{
+    \begin{tabular}{llllll}
+    \toprule
+        Column Name & Meaning & Data Type & Key & Constraint & Domain \\ 
+    \midrule
+        a\_id & 動物編號 & varchar(10) & PK & Not Null & \\ 
+        species & 物種 & varchar(50) & ~ & Not Null & ~ \\ 
+        required\_skill & 所需技能 & varchar(50) & ~ & ~ & General, Carnivore... \\ 
+        life\_status & 存活狀態 & varchar(20) & ~ & Not Null & In\_Zoo, Deceased \\ 
+    \bottomrule
+    \end{tabular}}
+    \caption{資料表 ANIMAL 的欄位資訊} 
+\end{table}
+
+% FEEDING_RECORDS
+\begin{table}[H]
+    \centering
+    \resizebox{1\columnwidth}{!}{
+    \begin{tabular}{llllll}
+    \toprule
+        Column Name & Meaning & Data Type & Key & Constraint & Domain \\ 
+    \midrule
+        feeding\_id & 紀錄編號 & int & PK & Not Null & AUTO\_INCREMENT \\ 
+        a\_id & 動物編號 & varchar(10) & FK & Not Null & \\ 
+        f\_id & 飼料編號 & varchar(10) & FK & Not Null & \\ 
+        fed\_by & 操作員工 & varchar(10) & FK & Not Null & \\ 
+        amount & 餵食量(kg) & decimal & ~ & Not Null & > 0 \\ 
+    \bottomrule
+    \end{tabular}}
+    \caption{資料表 FEEDING\_RECORDS 的欄位資訊} 
+\end{table}
+
+\section{系統實作}
+
+\subsection{資料庫建置方式及資料來源說明}
+
+為了模擬真實且大量的運作情境，本系統的測試資料並非手動輸入，而是透過 Python 的 \verb|Faker| 函式庫與自定義腳本生成。
+\begin{itemize}
+    \item \textbf{員工資料}：生成 50 位虛擬員工，隨機分配 User 與 Admin 角色及不同性別。
+    \item \textbf{動物資料}：建立了包含 20 種物種（如獅子、大象、企鵝等）的資料庫，並為每種動物設定了特定的 \verb|required_skill|（照養門檻）。
+    \item \textbf{歷史紀錄}：模擬過去一年的營運數據，生成了超過 2,000 筆餵食紀錄與超過 15,000 筆體重變化紀錄，龐大的體重數據也驗證了我們導入 NoSQL 處理健康警示的必要性。
+\end{itemize}
+
+\subsection{重要功能及對應的 SQL 指令}
+
+\subsubsection{給 User 的功能}
+
+\begin{enumerate}
+\item \textbf{新增動物體重紀錄}：
+當照養員量測完體重後，系統會將數值寫入 PostgreSQL，同時透過 Window Function 計算變化率，若異常則寫入 MongoDB。
+在此之前，系統會執行嚴格的 **權限檢查 (Permission Check)**：
+\begin{enumerate}
+    \item \textbf{排班檢查}：確認該員工目前是否處於值班時間，且該動物是否為其負責對象。
+    \item \textbf{技能檢定}：若該動物屬於特殊物種（如企鵝），檢查員工是否持有對應證照。
+\end{enumerate}
+\begin{lstlisting}[language=SQL, caption={權限檢查 SQL}, captionpos=b]
+-- 1. 檢查是否值班中
+SELECT shift_id FROM employee_shift
+WHERE e_id = %s AND a_id = %s AND NOW() BETWEEN start_time AND end_time;
+
+-- 2. 檢查是否擁有特定技能 (若動物需要)
+SELECT skill_id FROM employee_skills 
+WHERE e_id = %s AND skill_name = (SELECT required_skill FROM animal WHERE a_id = %s);
+\end{lstlisting}
+
+\item \textbf{查詢我的班表}：
+使用 Join 查詢員工的排班表以及對應的工作項目。
+\begin{lstlisting}[language=SQL, caption={查詢班表 SQL}, captionpos=b]
+SELECT s.shift_start, s.shift_end, t.t_name, s.a_id
+FROM employee_shift s
+JOIN task t ON s.t_id = t.t_id
+WHERE s.e_id = %s
+ORDER BY s.shift_start DESC LIMIT 10;
+\end{lstlisting}
+\end{enumerate}
+
+\subsubsection{給 Admin 的功能}
+
+\begin{enumerate}
+\item \textbf{庫存管理 (進貨與報表)}：
+管理員可查看各類飼料的庫存水位。系統透過聚合函數計算 `feeding_inventory` 表中的所有變動（進貨為正，消耗為負）來得出當前庫存。
+\begin{lstlisting}[language=SQL, caption={庫存報表 SQL}, captionpos=b]
+SELECT f.feed_name, SUM(i.quantity_delta_kg) as current_stock
+FROM feeding_inventory i
+JOIN feeds f ON i.f_id = f.f_id
+GROUP BY f.feed_name
+ORDER BY current_stock ASC;
+\end{lstlisting}
+
+\item \textbf{指派工作 (Assign Task)}：
+在指派工作前，系統同樣會執行技能檢查，確保不會將需要特殊照護的動物指派給未受訓的員工。
+\end{enumerate}
+
+\subsection{交易管理 (Transaction Management)}
+
+在「新增餵食紀錄」功能中，我們嚴格實作了交易管理機制，以確保庫存數據的一致性。
+操作流程包含：(1) 鎖定飼料庫存 (2) 寫入餵食紀錄 (3) 扣除庫存。這些步驟必須在同一個 Transaction 中完成，若中途庫存不足或發生錯誤，則全數 Rollback。
+
+我們使用 Python 的 Context Manager 配合 \verb|psycopg2| 的連線池來實作：
+\begin{lstlisting}[language=Python, caption={交易管理實作 (Python)}, captionpos=b]
+try:
+    with self.get_db_connection() as conn:
+        cur = conn.cursor()
+        # 1. 鎖定並檢查庫存
+        cur.execute("SELECT f_id FROM feeds WHERE f_id = %s FOR UPDATE", (f_id,))
+        # ... 檢查庫存邏輯 ...
+        
+        # 2. 寫入紀錄 & 3. 扣除庫存
+        cur.execute(insert_feeding_sql, ...)
+        cur.execute(update_inventory_sql, ...)
+        
+        # 成功則自動 Commit
+        conn.commit()
+except Exception:
+    # 失敗則自動 Rollback
+    conn.rollback()
+\end{lstlisting}
+
+\subsection{併行控制 (Concurrency Control)}
+
+為了防止多位照養員同時領取飼料導致「超賣（庫存變成負數）」，我們使用了 PostgreSQL 的 **悲觀鎖 (Pessimistic Locking)**。
+
+在上述的交易中，我們使用了 \verb|FOR UPDATE| 語句：
+\begin{lstlisting}[language=SQL]
+SELECT f_id FROM feeds WHERE f_id = 'F001' FOR UPDATE;
+\end{lstlisting}
+這確保了當一個交易正在計算並扣除庫存時，其他試圖讀取或修改該飼料庫存的交易必須等待，直到前一個交易 Commit 或 Rollback 為止。這有效解決了 Race Condition 問題。
+
+此外，為了防止在高併發寫入時 Primary Key 衝突，我們在寫入前使用了 Table Lock：
+\begin{lstlisting}[language=SQL]
+LOCK TABLE feeding_records, feeding_inventory IN SHARE ROW EXCLUSIVE MODE;
+\end{lstlisting}
+
+\subsection{NoSQL 資料庫整合}
+
+本系統引入 MongoDB 作為輔助資料庫，專門處理具備「高寫入頻率」、「結構多變」或「時序性」特徵的資料。相較於 PostgreSQL 的嚴格綱要，MongoDB 的 Schema-less 特性為日誌與警示系統提供了極大的靈活性。
+
+\subsubsection{稽核日誌 (Audit Logs)}
+當管理員或照養員執行敏感操作（如修正過往的餵食或體重紀錄）時，系統會自動記錄一筆稽核日誌。由於不同資料表（如 \verb|feeding_records| 與 \verb|animal_state_record|）的欄位差異甚大，使用關聯式資料庫儲存變更紀錄相當繁瑣。
+MongoDB 允許我們將變更前後的數值快照（Snapshot）直接以巢狀 JSON 文件儲存，保留完整的操作軌跡。
+
+\begin{lstlisting}[language=Python, caption={Audit Log JSON 結構範例}, captionpos=b]
+{
+    "event_type": "DATA_CORRECTION",
+    "timestamp": "2025-12-03T14:30:00",
+    "operator_id": "E001",
+    "target_table": "animal_state_record",
+    "record_id": 105,
+    "change": {
+        "field": "weight",
+        "old_value": 150.5,
+        "new_value": 155.0
+    },
+    "original_creator_id": "E005"
+}
+\end{lstlisting}
+
+\subsubsection{健康警示 (Health Alerts)}
+系統內建的分析模組會定期檢查動物的生理數值（例如體重）。一旦偵測到異常波動（如變化率超過 5\%），系統會即時寫入一筆警示紀錄至 \verb|health_alerts| 集合。
+我們利用 MongoDB 強大的聚合框架（Aggregation Framework）來實作「高風險動物名單」功能，快速統計特定時間區間內異常次數過多的動物。
+
+\begin{lstlisting}[language=Python, caption={MongoDB 聚合查詢 (找出高風險動物)}, captionpos=b]
+pipeline = [
+    # 1. 依照動物 ID 分組並計算警示次數
+    {"$group": {"_id": "$animal_id", "count": {"$sum": 1}}},
+    # 2. 篩選出異常次數 >= 3 次的動物
+    {"$match": {"count": {"$gte": 3}}}, 
+    # 3. 依照次數由高到低排序
+    {"$sort": {"count": -1}}
+]
+high_risk_animals = db.health_alerts.aggregate(pipeline)
+\end{lstlisting}
+
+
+
+\subsection{跨資料庫整合應用案例：冒失鬼名單 (Careless Employees)}
+
+本系統的一大特色是結合 SQL 與 NoSQL 的優勢，實作了「冒失鬼名單」分析功能。此功能旨在找出輸入錯誤率過高（經常被修正紀錄）的員工，以利管理員進行教育訓練。
+
+此功能的實作流程展示了跨資料庫的資料整合：
+\begin{enumerate}
+    \item \textbf{NoSQL 聚合分析}：首先在 MongoDB 的 \verb|audit_logs| 中，篩選出 \verb|DATA_CORRECTION| 事件，並依照原始建立者 (\verb|original_creator_id|) 分組統計被修正的次數。我們設定閾值（例如 5 次），篩選出錯誤頻率過高的員工 ID。
+    \item \textbf{SQL 資料豐富化 (Enrichment)}：取得上述的員工 ID 列表後，系統會查詢 PostgreSQL 的 \verb|employee| 資料表，獲取該員工的真實姓名與職稱，將冰冷的 ID 轉換為具可讀性的報表。
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={冒失鬼名單實作邏輯}, captionpos=b]
+# 1. MongoDB: 找出被修正次數 >= 5 的員工 ID
+pipeline = [
+    {"$match": {"event_type": "DATA_CORRECTION"}},
+    {"$group": {"_id": "$original_creator_id", "count": {"$sum": 1}}},
+    {"$match": {"count": {"$gte": 5}}},
+    {"$sort": {"count": -1}}
+]
+careless_list = db.audit_logs.aggregate(pipeline)
+
+# 2. PostgreSQL: 查詢員工姓名並整合結果
+results = []
+with self.get_db_connection() as conn:
+    cur = conn.cursor()
+    for item in careless_list:
+        e_id = item['_id']
+        # 跨資料庫查詢員工姓名
+        cur.execute("SELECT e_name FROM employee WHERE e_id = %s", (e_id,))
+        name = cur.fetchone()[0]
+        results.append({"name": name, "error_count": item['count']})
+\end{lstlisting}
+
+\section{分工資訊}
+% 請自行填寫
+
+\section{專案心得}
+% 請自行填寫
+
+\end{document}
