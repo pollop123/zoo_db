@@ -27,6 +27,14 @@ services/report_service.py
 
 Move methods such as `get_reference_data`, `get_all_species`, `get_all_feeds`, `get_all_tasks`, and read-only report queries first. Keep `ZooBackend` as the public facade and delegate to the new modules.
 
+Prepared first slice:
+
+```text
+services/reference_service.py
+```
+
+This first slice keeps all existing `ZooBackend` method names and delegates read-only reference/report methods to the service module. It does not move transaction-heavy feeding logic, permission checks, employee updates, or MongoDB write paths.
+
 ### Step 2: Extract MongoDB Event Helpers
 
 Create a small helper for MongoDB serialization and event writes:

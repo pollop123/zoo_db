@@ -224,6 +224,7 @@ zoo_db/
 ├── action/             # 業務功能模組 (Command Pattern)
 ├── docs/               # 設計與重構規劃文件
 ├── role/               # 角色定義與權限
+├── services/           # 從 DB_utils.py 漸進拆出的服務 helper
 ├── scripts/            # 展示資料刷新與系統驗證腳本
 ├── test/               # 自動化測試套件
 │   ├── test_smoke.py   # 低變更 smoke check

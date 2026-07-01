@@ -5,6 +5,7 @@ import pymongo
 from datetime import datetime
 from decimal import Decimal
 from config import *
+from services import reference_service
 
 class ZooBackend:
     def __init__(self):
@@ -441,83 +442,21 @@ class ZooBackend:
 
     def get_all_tasks(self):
         """查詢所有工作類型"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute(f"""
-                    SELECT t_id, t_name
-                    FROM {TABLE_TASK}
-                    ORDER BY t_id
-                """)
-                rows = cur.fetchall()
-                return [{"t_id": r[0], "t_name": r[1]} for r in rows]
-        except Exception as e:
-            print(f"Error fetching tasks: {e}")
-            return []
+        return reference_service.get_all_tasks(self)
 
     def get_all_animals(self):
         """查詢所有動物"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute(f"""
-                    SELECT a.a_id, a.a_name, a.species, s.required_skill
-                    FROM {TABLE_ANIMAL} a
-                    JOIN {TABLE_SPECIES} s ON a.species = s.s_name
-                    ORDER BY a.a_id
-                """)
-                rows = cur.fetchall()
-                return [{"a_id": r[0], "a_name": r[1], "species": r[2], "required_skill": r[3]} for r in rows]
-        except Exception as e:
-            print(f"Error fetching animals: {e}")
-            return []
+        return reference_service.get_all_animals(self)
 
     # ===== 飲食管理 =====
     
     def get_animal_diet(self, species):
         """查詢某物種可食用的飼料"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute("""
-                    SELECT d.f_id, f.feed_name, f.category
-                    FROM animal_diet d
-                    JOIN feeds f ON d.f_id = f.f_id
-                    WHERE d.species = %s
-                    ORDER BY f.category, f.f_id
-                """, (species,))
-                return cur.fetchall()
-        except Exception as e:
-            print(f"Error fetching animal diet: {e}")
-            return []
+        return reference_service.get_animal_diet(self, species)
 
     def get_all_diet_settings(self):
         """查詢所有物種的飲食設定"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute("""
-                    SELECT d.species, d.f_id, f.feed_name, f.category
-                    FROM animal_diet d
-                    JOIN feeds f ON d.f_id = f.f_id
-                    ORDER BY d.species, f.category, f.f_id
-                """)
-                return cur.fetchall()
-        except Exception as e:
-            print(f"Error fetching diet settings: {e}")
-            return []
+        return reference_service.get_all_diet_settings(self)
 
     def add_diet(self, species, f_id):
         """新增某物種可食用的飼料"""
@@ -564,31 +503,11 @@ class ZooBackend:
 
     def get_all_species(self):
         """取得所有物種列表"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute(f"SELECT s_name FROM {TABLE_SPECIES} ORDER BY s_name")
-                return [r[0] for r in cur.fetchall()]
-        except Exception as e:
-            print(f"Error fetching species: {e}")
-            return []
+        return reference_service.get_all_species(self)
 
     def get_all_feeds(self):
         """取得所有飼料列表"""
-        if not self.pg_pool:
-            return []
-        
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                cur.execute("SELECT f_id, feed_name, category FROM feeds ORDER BY category, f_id")
-                return cur.fetchall()
-        except Exception as e:
-            print(f"Error fetching feeds: {e}")
-            return []
+        return reference_service.get_all_feeds(self)
 
     def assign_task(self, e_id, t_id, start_time, end_time, a_id=None):
         """
@@ -1378,146 +1297,25 @@ class ZooBackend:
         """
         [NEW] 庫存報表
         """
-        if not self.pg_pool:
-            return []
-
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                # Aggregate inventory changes by food_id
-                query = f"""
-                    SELECT 
-                        f.f_id,
-                        f.feed_name, 
-                        COALESCE(SUM(i.quantity_delta_kg), 0) as current_stock
-                    FROM {TABLE_FEEDS} f
-                    LEFT JOIN {TABLE_INVENTORY} i ON i.f_id = f.f_id
-                    GROUP BY f.f_id, f.feed_name
-                    ORDER BY current_stock ASC
-                """
-                cur.execute(query)
-                results = []
-                for row in cur.fetchall():
-                    results.append({
-                        "f_id": row[0],
-                        "f_name": row[1],
-                        "unit": "kg",
-                        "current_stock": float(row[2]) if row[2] else 0
-                    })
-                return results
-        except Exception as e:
-            print(f"Error fetching inventory report: {e}")
-            return []
+        return reference_service.get_inventory_report(self)
 
     def get_animal_trends(self, a_id):
         """
         [NEW] 動物趨勢 (體重與餵食)
         """
-        if not self.pg_pool:
-            return {}, {}
-
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                
-                # 1. Recent Weights
-                weight_query = f"""
-                    SELECT datetime, {COL_WEIGHT}
-                    FROM {TABLE_ANIMAL_STATE}
-                    WHERE a_id = %s
-                    ORDER BY datetime DESC
-                    LIMIT 5
-                """
-                cur.execute(weight_query, (a_id,))
-                weights = cur.fetchall()
-
-                # 2. Recent Feedings
-                feeding_query = f"""
-                    SELECT feed_date, f.feed_name, r.{COL_AMOUNT}
-                    FROM {TABLE_FEEDING} r
-                    JOIN {TABLE_FEEDS} f ON r.f_id = f.f_id
-                    WHERE r.a_id = %s
-                    ORDER BY feed_date DESC
-                    LIMIT 5
-                """
-                cur.execute(feeding_query, (a_id,))
-                feedings = cur.fetchall()
-
-                return weights, feedings
-        except Exception as e:
-            print(f"Error fetching trends: {e}")
-            return {}, {}
+        return reference_service.get_animal_trends(self, a_id)
 
     def get_reference_data(self, table_name):
         """
         [NEW] 查詢代碼表 (Reference Lookup)
         """
-        if not self.pg_pool:
-            return []
-
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                query = ""
-                
-                if table_name == "animal":
-                    query = f"SELECT a_id, a_name, species FROM {TABLE_ANIMAL} ORDER BY a_id"
-                elif table_name == "feeds":
-                    query = f"SELECT f_id, feed_name, category FROM {TABLE_FEEDS} ORDER BY f_id"
-                elif table_name == "task":
-                    query = f"SELECT t_id, t_name FROM {TABLE_TASK} ORDER BY t_id"
-                elif table_name == "employee":
-                    query = f"SELECT e_id, e_name, role FROM {TABLE_EMPLOYEES} ORDER BY e_id"
-                elif table_name == "status_type":
-                    query = f"SELECT s_id, s_name, description FROM {TABLE_STATUS_TYPE} ORDER BY s_id"
-                else:
-                    return []
-
-                cur.execute(query)
-                return cur.fetchall()
-        except Exception as e:
-            print(f"Error fetching reference data: {e}")
-            return []
+        return reference_service.get_reference_data(self, table_name)
 
     def get_recent_records(self, table_name, filter_id):
         """
         [NEW] 取得最近的紀錄，輔助修正功能
         """
-        if not self.pg_pool:
-            return []
-
-        try:
-            with self.get_db_connection() as conn:
-                cur = conn.cursor()
-                query = ""
-                
-                if table_name == TABLE_FEEDING:
-                    # Show ID, Date, Feed Name, Amount
-                    query = f"""
-                        SELECT r.{COL_FEEDING_ID}, r.feed_date, f.feed_name, r.{COL_AMOUNT}
-                        FROM {TABLE_FEEDING} r
-                        JOIN {TABLE_FEEDS} f ON r.f_id = f.f_id
-                        WHERE r.a_id = %s
-                        ORDER BY r.feed_date DESC
-                        LIMIT 10
-                    """
-                elif table_name == TABLE_ANIMAL_STATE:
-                    # Show ID, Date, Weight
-                    query = f"""
-                        SELECT record_id, datetime, {COL_WEIGHT}
-                        FROM {TABLE_ANIMAL_STATE}
-                        WHERE a_id = %s
-                        ORDER BY datetime DESC
-                        LIMIT 10
-                    """
-                else:
-                    return []
-
-                cur.execute(query, (filter_id,))
-                return cur.fetchall()
-        except Exception as e:
-            print(f"Error fetching recent records: {e}")
-            return []
+        return reference_service.get_recent_records(self, table_name, filter_id)
 
     def close(self):
         if self.pg_pool:
