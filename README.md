@@ -1,5 +1,7 @@
 # 動物園管理系統 (Zoo Management System)
 
+> 本文件是專案目前的主要說明與安裝依據。展示流程請看 `DEMO_GUIDE.md`，異常偵測細節請看 `ANOMALY_DETECTION.md`。
+
 ## 專案概述
 
 本動物園管理系統是一套全方位的軟體解決方案，旨在簡化現代動物園的日常營運流程。透過安全且基於角色的操作介面，本系統協助管理動物照護、庫存控制、員工排班以及異常偵測等關鍵任務。
@@ -50,7 +52,7 @@ python3 -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 安裝套件
-pip install psycopg2-binary pymongo rich
+pip install -r requirements.txt
 ```
 
 ### 步驟 2: 安裝資料庫
@@ -118,7 +120,7 @@ MONGO_DB = "zoo_nosql"
 ### 啟動伺服器
 ```bash
 python server.py
-# 顯示: Server listening on 127.0.0.1:60000
+# 顯示: [LISTENING] Server is listening on 127.0.0.1:60000
 ```
 
 ### 啟動客戶端 (另開終端機)
@@ -191,7 +193,7 @@ zoo_db/
 ├── mongo_backup.json   # MongoDB 資料備份
 ├── requirements.txt    # Python 相依套件
 ├── DEMO_GUIDE.md       # 功能展示指南與測試帳號
-├── OPERATION_MANUAL.md # 操作手冊
+├── OPERATION_MANUAL.md # 快速操作備忘
 ├── ANOMALY_DETECTION.md# 異常檢測邏輯說明
 ├── CHANGELOG.md        # 變更紀錄
 └── README.md           # 本文件
@@ -211,6 +213,7 @@ zoo_db/
 
 ## 相關文件
 
-- [DEMO_GUIDE.md](DEMO_GUIDE.md) - 功能展示指南與測試帳號
+- [DEMO_GUIDE.md](DEMO_GUIDE.md) - 展示流程與測試帳號
+- [ANOMALY_DETECTION.md](ANOMALY_DETECTION.md) - 異常偵測與 MongoDB 紀錄邏輯
+- [OPERATION_MANUAL.md](OPERATION_MANUAL.md) - 快速操作備忘；安裝與還原仍以本 README 為準
 - [CHANGELOG.md](CHANGELOG.md) - 版本變更紀錄
-- [OPERATION_MANUAL.md](OPERATION_MANUAL.md) - 操作手冊

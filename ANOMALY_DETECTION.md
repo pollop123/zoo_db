@@ -165,7 +165,7 @@ WHERE ABS(l.amount - r.avg_amount) / r.avg_amount > 0.30;
 2. **audit_logs** - 被管理員修正的紀錄（向後相容）
 
 **判定標準**：
-- 只要有 1 次以上輸入錯誤就會顯示在名單
+- 錯誤次數 >= 冒失鬼門檻（預設 5 次）才顯示於名單
 
 ### NoSQL Collection 分工
 

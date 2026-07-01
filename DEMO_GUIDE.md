@@ -111,9 +111,9 @@ User 輸入異常數據 → 記錄到 health_alerts
 ### 3. 長連線展示
 ```
 Server 終端機會顯示：
-[CONNECTED] ('127.0.0.1', xxxxx) - E003 (李建宏)
-[ONLINE] 目前上線人數: 1
-[REQUEST] E003: add_feeding_record
+[ONLINE] ('127.0.0.1', xxxxx) 上線，目前上線人數: 1
+[E003] add_feeding -> A002, F001, 3kg -> 成功: 已餵食...
+[OFFLINE] ('127.0.0.1', xxxxx) 離線，目前上線人數: 0
 ```
 
 ### 4. Lock 機制展示 (選用)
@@ -190,5 +190,5 @@ Server 終端機會顯示：
 - PostgreSQL 資料庫名稱：`zoo_db`
 - MongoDB 資料庫名稱：`zoo_nosql`
 - 若展示日期值班資料過期，需更新 `employee_shift` 表
-- 重置資料庫：`psql zoo_db < zoo.backup`
+- 重置 PostgreSQL：使用 `README.md` 的 `zoo.sql` 或 `zoo.backup` 還原指令
 - 重置 MongoDB：使用 `mongo_backup.json` 重新匯入
