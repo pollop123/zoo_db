@@ -154,9 +154,13 @@ python client.py
 
 ### 執行自動化測試
 ```bash
+python scripts/refresh_demo_data.py
+python test/test_smoke.py
 python scripts/verify_system.py
 python test/test_agent.py
 ```
+
+測試分層請參考 [TESTING.md](TESTING.md)。`test/test_smoke.py` 偏向低變更 smoke check；`test/test_agent.py` 與 `test/test_lock_demo.py` 會修改展示資料，適合完整整合測試或併發控制展示。
 
 ---
 
@@ -218,9 +222,11 @@ zoo_db/
 ├── docker-compose.yml  # 選用：啟動 PostgreSQL 與 MongoDB
 ├── .env.example        # 環境變數範例
 ├── action/             # 業務功能模組 (Command Pattern)
+├── docs/               # 設計與重構規劃文件
 ├── role/               # 角色定義與權限
 ├── scripts/            # 展示資料刷新與系統驗證腳本
 ├── test/               # 自動化測試套件
+│   ├── test_smoke.py   # 低變更 smoke check
 │   └── test_agent.py   # 自動化測試代理人
 ├── zoo.sql             # PostgreSQL 資料庫備份 (SQL 格式)
 ├── zoo.backup          # PostgreSQL 資料庫備份 (二進位格式)
@@ -229,6 +235,7 @@ zoo_db/
 ├── DEMO_GUIDE.md       # 功能展示指南與測試帳號
 ├── OPERATION_MANUAL.md # 快速操作備忘
 ├── ANOMALY_DETECTION.md# 異常檢測邏輯說明
+├── TESTING.md          # 測試分類與執行順序
 ├── CHANGELOG.md        # 變更紀錄
 └── README.md           # 本文件
 ```
@@ -250,4 +257,6 @@ zoo_db/
 - [DEMO_GUIDE.md](DEMO_GUIDE.md) - 展示流程與測試帳號
 - [ANOMALY_DETECTION.md](ANOMALY_DETECTION.md) - 異常偵測與 MongoDB 紀錄邏輯
 - [OPERATION_MANUAL.md](OPERATION_MANUAL.md) - 快速操作備忘；安裝與還原仍以本 README 為準
+- [TESTING.md](TESTING.md) - 測試分類與執行順序
+- [docs/DB_UTILS_SPLIT_PLAN.md](docs/DB_UTILS_SPLIT_PLAN.md) - `DB_utils.py` 後續漸進拆分計畫
 - [CHANGELOG.md](CHANGELOG.md) - 版本變更紀錄

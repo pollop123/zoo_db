@@ -1524,4 +1524,3 @@ class ZooBackend:
             self.pg_pool.closeall()
         if self.mongo_client:
             self.mongo_client.close()
-# Force update

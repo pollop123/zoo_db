@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Lock 機制展示腳本
 展示多執行緒同時扣庫存時的併發控制
@@ -205,7 +206,16 @@ def restore_database():
         env['PGPASSWORD'] = PG_PASSWORD
         
         result = subprocess.run(
-            ['psql', '-h', PG_HOST, '-p', str(PG_PORT), '-U', PG_USER, '-d', PG_DB, '-f', backup_path],
+            [
+                'pg_restore',
+                '-h', PG_HOST,
+                '-p', str(PG_PORT),
+                '-U', PG_USER,
+                '-d', PG_DB,
+                '--clean',
+                '--if-exists',
+                backup_path,
+            ],
             capture_output=True,
             text=True,
             env=env
@@ -217,8 +227,8 @@ def restore_database():
             print(f"[還原] 警告: {result.stderr[:100] if result.stderr else '未知錯誤'}")
             
     except FileNotFoundError:
-        print("[還原] 錯誤: 找不到 psql，請手動還原:")
-        print(f"  psql -U {PG_USER} -d {PG_DB} < zoo.backup")
+        print("[還原] 錯誤: 找不到 pg_restore，請手動還原:")
+        print(f"  pg_restore -U {PG_USER} -d {PG_DB} --clean --if-exists zoo.backup")
     except Exception as e:
         print(f"[還原] 錯誤: {e}")
 

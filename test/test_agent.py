@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+"""Broad integration/demo test agent.
+
+This script intentionally exercises write paths and can mutate demo data,
+including feeding records, body records, inventory, employee status, skills,
+diet settings, audit logs, and careless records. Use test/test_smoke.py for a
+quick low-mutation confidence check.
+"""
+
 import threading
 import time
 import psycopg2
