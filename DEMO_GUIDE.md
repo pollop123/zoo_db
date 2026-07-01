@@ -15,10 +15,14 @@ source venv/bin/activate
 
 # 3. 確認 PostgreSQL 和 MongoDB 已啟動
 
-# 4. 啟動 Server (終端機 1)
+# 4. 更新展示班表並驗證系統
+python3 scripts/refresh_demo_data.py
+python3 scripts/verify_system.py
+
+# 5. 啟動 Server (終端機 1)
 python3 server.py
 
-# 5. 啟動 Client (終端機 2)
+# 6. 啟動 Client (終端機 2)
 python3 client.py
 ```
 
@@ -48,6 +52,7 @@ python3 client.py
 | **E002** | 林佳穎 | Penguin | 測試權限不足 |
 
 > User 只能操作**今日值班且有證照的動物**，系統會自動顯示可選動物清單。
+> 展示前執行 `python3 scripts/refresh_demo_data.py` 可建立未來 7 天展示班表。
 
 ---
 
@@ -189,6 +194,6 @@ Server 終端機會顯示：
 
 - PostgreSQL 資料庫名稱：`zoo_db`
 - MongoDB 資料庫名稱：`zoo_nosql`
-- 若展示日期值班資料過期，需更新 `employee_shift` 表
+- 若展示日期值班資料過期，執行 `python3 scripts/refresh_demo_data.py`
 - 重置 PostgreSQL：使用 `README.md` 的 `zoo.sql` 或 `zoo.backup` 還原指令
 - 重置 MongoDB：使用 `mongo_backup.json` 重新匯入

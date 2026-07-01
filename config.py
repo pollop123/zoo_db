@@ -1,15 +1,18 @@
-# [Config] 資料庫設定 (待 DB 組員確認後修改此處即可)
+import os
+
+# [Config] 資料庫設定
+# 預設值保留展示用設定；部署或不同本機環境可用環境變數覆蓋。
 
 # PostgreSQL Configuration
-PG_HOST = "localhost"
-PG_PORT = "5432"
-PG_DB = "zoo_db"
-PG_USER = "postgres"
-PG_PASSWORD = "password"
+PG_HOST = os.getenv("PG_HOST", "localhost")
+PG_PORT = os.getenv("PG_PORT", "5432")
+PG_DB = os.getenv("PG_DB", "zoo_db")
+PG_USER = os.getenv("PG_USER", "postgres")
+PG_PASSWORD = os.getenv("PG_PASSWORD", "password")
 
 # MongoDB Configuration
-MONGO_URI = "mongodb://localhost:27017/"
-MONGO_DB = "zoo_nosql"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_DB = os.getenv("MONGO_DB", "zoo_nosql")
 
 # Table Names (SQL)
 TABLE_FEEDING = "feeding_records"       # 餵食紀錄表
@@ -44,4 +47,3 @@ COLLECTION_AUDIT_LOGS = "audit_logs"
 COLLECTION_HEALTH_ALERTS = "health_alerts"
 COLLECTION_LOGIN_LOGS = "login_logs"
 COLLECTION_CARELESS_LOGS = "careless_logs"
-# Force update

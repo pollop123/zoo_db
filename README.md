@@ -70,6 +70,12 @@ brew install mongodb-community@7.0
 brew services start mongodb/brew/mongodb-community
 ```
 
+也可以用 Docker 啟動資料庫服務：
+
+```bash
+docker compose up -d
+```
+
 ### 步驟 3: 初始化資料庫
 
 ```bash
@@ -100,22 +106,36 @@ for collection, docs in data.items():
 
 ### 步驟 4: 設定連線參數
 
-編輯 `config.py`，確認資料庫連線設定：
+`config.py` 內建展示用預設值，也可用環境變數覆蓋：
 
-```python
-PG_HOST = "localhost"
-PG_PORT = "5432"
-PG_DB = "zoo_db"
-PG_USER = "postgres"
-PG_PASSWORD = "your_password"  # 修改為您的密碼
+```bash
+# 方式一：使用範例檔套用到目前 shell
+set -a
+source .env.example
+set +a
 
-MONGO_URI = "mongodb://localhost:27017/"
-MONGO_DB = "zoo_nosql"
+# 方式二：手動設定
+export PG_HOST=localhost
+export PG_PORT=5432
+export PG_DB=zoo_db
+export PG_USER=postgres
+export PG_PASSWORD=password
+export MONGO_URI=mongodb://localhost:27017/
+export MONGO_DB=zoo_nosql
 ```
 
 ---
 
 ## 執行系統
+
+### 更新展示資料與驗證
+```bash
+# 更新未來 7 天展示班表，避免 User 流程因班表過期無法操作
+python scripts/refresh_demo_data.py
+
+# 驗證 PostgreSQL、MongoDB、登入、庫存、健康警示與 E003 今日負責動物
+python scripts/verify_system.py
+```
 
 ### 啟動伺服器
 ```bash
@@ -134,6 +154,7 @@ python client.py
 
 ### 執行自動化測試
 ```bash
+python scripts/verify_system.py
 python test/test_agent.py
 ```
 
@@ -176,6 +197,16 @@ python test/test_agent.py
 
 ---
 
+## 設計取捨
+
+- PostgreSQL 負責員工、動物、班表、餵食與庫存等核心交易資料，利用 foreign key、transaction 與 lock 維持一致性。
+- MongoDB 負責登入紀錄、稽核日誌、健康警示與冒失鬼紀錄，適合保存結構彈性的事件資料。
+- 庫存扣減是最容易出現競態條件的流程，因此餵食紀錄與庫存異動會在同一個 PostgreSQL transaction 中完成。
+- PostgreSQL 與 MongoDB 沒有跨資料庫 transaction；核心營運資料以 PostgreSQL 為準，MongoDB 作為稽核與警示輔助。
+- 預設密碼與忘記密碼查詢保留為課程展示用途，正式部署時應改成重設密碼流程。
+
+---
+
 ## 檔案結構
 
 ```
@@ -184,8 +215,11 @@ zoo_db/
 ├── client.py           # 前端 CLI 主程式
 ├── DB_utils.py         # 核心資料庫邏輯與商業規則
 ├── config.py           # 系統設定與連線參數
+├── docker-compose.yml  # 選用：啟動 PostgreSQL 與 MongoDB
+├── .env.example        # 環境變數範例
 ├── action/             # 業務功能模組 (Command Pattern)
 ├── role/               # 角色定義與權限
+├── scripts/            # 展示資料刷新與系統驗證腳本
 ├── test/               # 自動化測試套件
 │   └── test_agent.py   # 自動化測試代理人
 ├── zoo.sql             # PostgreSQL 資料庫備份 (SQL 格式)

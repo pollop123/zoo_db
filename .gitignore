@@ -18,6 +18,3 @@ zoo_readable.sql
 
 # Archive
 _archive/
-
-# Scripts (Dev only)
-scripts/

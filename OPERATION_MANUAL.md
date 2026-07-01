@@ -16,6 +16,14 @@ brew services list
 
 ### 2. 啟動 Server
 
+展示前建議先刷新班表並做 smoke check：
+
+```bash
+source venv/bin/activate
+python scripts/refresh_demo_data.py
+python scripts/verify_system.py
+```
+
 ```bash
 source venv/bin/activate
 python server.py
@@ -95,7 +103,14 @@ User 操作會檢查是否在值班時間、是否負責該動物，以及是否
 
 ### User 沒有可選動物
 
-這通常表示目前時間沒有符合條件的班表，或員工沒有被指派負責動物。可由 Admin 重新指派工作與動物。
+這通常表示目前時間沒有符合條件的班表，或員工沒有被指派負責動物。展示前可先執行：
+
+```bash
+python scripts/refresh_demo_data.py
+python scripts/verify_system.py
+```
+
+若仍失敗，再由 Admin 重新指派工作與動物。
 
 ### 權限不足
 
